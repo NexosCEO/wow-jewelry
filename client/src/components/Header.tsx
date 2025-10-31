@@ -2,7 +2,7 @@ import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import logoUrl from "@assets/IMG_6918_1761884520979.png";
+import logoUrl from "@assets/IMG_3548_1761884766204.jpeg";
 
 interface HeaderProps {
   cartItemCount: number;
