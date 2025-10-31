@@ -31,16 +31,27 @@ Preferred communication style: Simple, everyday language.
 - TanStack Query for API response caching with infinite stale time (no automatic refetching)
 - Context providers for toast notifications and tooltips
 
-**Design System** (Updated October 2025)
-- Warm luxury color palette: champagne/beige backgrounds (hsl 33 42% 96%) instead of stark white
+**Design System - Rose-Gold Theme** (Updated October 2025)
+- **Rose-Gold Core Palette** (easily customizable at top of index.css):
+  - Soft blush pink (#e9b3b7) for accents and gradients
+  - Warm brushed gold (#caa55b) for primary actions and highlights
+  - Deeper rose (#d78895) and gold (#a8832f) for contrast and shadows
+  - Warm charcoal (#3a362f) for text, warm muted (#6f6a60) for secondary text
+  - Off-white card backgrounds (#fbf8f3) with warm borders (#ece6dc)
+  - Clean white (#ffffff) base background
+- **Gradient Accents**: Rose-to-gold gradient used for:
+  - Announcement bar
+  - Primary CTA buttons (Shop Collection, Add to Cart, Apply Filters)
+  - Cart count badge
+- **Typography**: Serif headings (Playfair Display) with bold weight, sans-serif body (Inter)
+- **Rounded Elements**: xl border radius (14px) for cards, full rounded buttons for primary CTAs
+- **Card Hover Effects**: Lift animation (-translate-y-1) with shadow increase on hover
+- **Product Cards**: Show category, gradient gold Add to Cart button, hover image swap
+- **Footer**: Dark charcoal (#0f0d0b) with warm link colors (#f0e7d6)
+- **Filter System**: Type, Sort, Max Price filters with instant results
 - Responsive grid layouts using Tailwind breakpoints (sm≤640, md≤768, lg≥1024, xl)
 - Elevation system using CSS custom properties (--elevate-1, --elevate-2)
-- Consistent spacing scale based on Tailwind units (2, 4, 8, 12, 16, 24)
-- Custom border radius values (sm: 3px, md: 6px, lg: 9px)
-- Hover and active state treatments with backdrop filters and opacity changes
-- Mobile-first responsive header with hamburger menu (80-96px height)
-- Compact logo sizing (40-48px height) for professional appearance
-- Hero section with warm gradient (champagne-to-cream) and prominent CTA button
+- Mobile-first responsive header with hamburger menu
 
 ### Backend Architecture
 

@@ -16,21 +16,21 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
   return (
     <>
-      <div className="bg-primary text-primary-foreground py-2.5 text-center text-xs uppercase tracking-[0.15em] font-semibold">
+      <div className="py-2.5 text-center text-xs uppercase tracking-[0.15em] font-semibold" style={{ background: 'linear-gradient(90deg, var(--rose) 0%, var(--gold) 100%)', color: '#2b211b' }}>
         FREE SHIPPING ON ALL ORDERS
       </div>
       
       <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm backdrop-blur-sm bg-card/95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16 md:h-20">
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2.5">
               <img 
                 src={logoUrl} 
                 alt="WOW by Dany logo" 
-                className="h-10 md:h-12 w-auto cursor-pointer hover:opacity-90 transition-opacity rounded-md"
+                className="h-11 w-auto cursor-pointer hover:opacity-90 transition-opacity rounded-lg shadow-sm"
                 data-testid="link-home"
               />
-              <span className="text-lg md:text-xl font-semibold tracking-tight hidden sm:inline" data-testid="text-brand">
+              <span className="font-serif text-lg md:text-xl font-bold tracking-wide hidden sm:inline" data-testid="text-brand">
                 WOW by Dany
               </span>
             </Link>
@@ -54,21 +54,21 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
             </nav>
 
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={onCartClick}
-              className="relative h-9 px-3 gap-2"
+              className="relative gap-2 rounded-full font-bold"
               data-testid="button-cart"
             >
               <span className="hidden sm:inline text-sm">Cart</span>
               <ShoppingCart className="w-5 h-5" />
               {cartItemCount > 0 && (
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                <span 
+                  className="absolute -top-1 -right-1 h-5.5 w-5.5 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                  style={{ background: 'var(--gold)' }}
                   data-testid="badge-cart-count"
                 >
                   {cartItemCount}
-                </Badge>
+                </span>
               )}
             </Button>
 

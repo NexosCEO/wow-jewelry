@@ -2,7 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Product } from "@shared/schema";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { useState, useMemo } from "react";
 import heroImage from "@assets/IMG_3464_1761882788256.jpeg";
 
 interface HomeProps {
@@ -13,6 +17,48 @@ export default function Home({ onAddToCart }: HomeProps) {
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const [filterType, setFilterType] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("featured");
+  const [maxPrice, setMaxPrice] = useState<string>("");
+
+  const filteredAndSortedProducts = useMemo(() => {
+    if (!products) return [];
+
+    let result = [...products];
+
+    // Filter by type/category
+    if (filterType !== "all") {
+      result = result.filter((p) => 
+        p.category.toLowerCase().includes(filterType.toLowerCase()) ||
+        p.name.toLowerCase().includes(filterType.toLowerCase())
+      );
+    }
+
+    // Filter by max price
+    if (maxPrice && !isNaN(parseFloat(maxPrice))) {
+      const maxPriceNum = parseFloat(maxPrice);
+      result = result.filter((p) => parseFloat(p.price) <= maxPriceNum);
+    }
+
+    // Sort
+    switch (sortBy) {
+      case "price-asc":
+        result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        break;
+      case "price-desc":
+        result.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+        break;
+      case "alpha":
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      default:
+        // featured - keep original order
+        break;
+    }
+
+    return result;
+  }, [products, filterType, sortBy, maxPrice]);
 
   if (isLoading) {
     return (
@@ -45,7 +91,8 @@ export default function Home({ onAddToCart }: HomeProps) {
               <Button 
                 asChild 
                 size="lg" 
-                className="text-base px-10 h-14 bg-gradient-to-r from-primary to-primary/90 shadow-lg hover:shadow-xl transition-all"
+                className="text-base px-10 h-14 shadow-lg hover:shadow-xl transition-all font-bold rounded-full"
+                style={{ background: 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: '#2b211b' }}
                 data-testid="button-shop-collection"
               >
                 <a href="#products">Shop Collection</a>
@@ -54,7 +101,7 @@ export default function Home({ onAddToCart }: HomeProps) {
                 asChild 
                 variant="outline"
                 size="lg" 
-                className="text-base px-10 h-14 backdrop-blur-sm bg-background/30 hover:bg-background/50 border-2"
+                className="text-base px-10 h-14 backdrop-blur-sm bg-background/30 hover:bg-background/50 border-2 font-bold rounded-full"
                 data-testid="button-learn-more"
               >
                 <a href="#about">Learn More</a>
@@ -66,17 +113,79 @@ export default function Home({ onAddToCart }: HomeProps) {
 
       <section id="products" className="py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-16">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              Best Sellers
+              All Products
             </h2>
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Discover our carefully curated selection of handcrafted jewelry
             </p>
           </div>
+
+          <div className="mb-8 p-6 bg-card rounded-lg border border-border shadow-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+              <div className="space-y-2">
+                <Label htmlFor="filter-type" className="text-sm font-medium">Type</Label>
+                <Select value={filterType} onValueChange={setFilterType}>
+                  <SelectTrigger id="filter-type" data-testid="select-filter-type">
+                    <SelectValue placeholder="All" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="rings">Rings</SelectItem>
+                    <SelectItem value="earrings">Earrings</SelectItem>
+                    <SelectItem value="necklaces">Necklaces</SelectItem>
+                    <SelectItem value="bracelets">Bracelets</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sort-by" className="text-sm font-medium">Sort</Label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger id="sort-by" data-testid="select-sort-by">
+                    <SelectValue placeholder="Featured" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="featured">Featured</SelectItem>
+                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                    <SelectItem value="alpha">Alphabetical</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="max-price" className="text-sm font-medium">Max Price</Label>
+                <Input
+                  id="max-price"
+                  type="number"
+                  placeholder="e.g. 80"
+                  min="0"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  data-testid="input-max-price"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium opacity-0 hidden sm:block">Apply</Label>
+                <Button 
+                  className="w-full font-bold rounded-lg"
+                  style={{ background: 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: '#2b211b' }}
+                  onClick={() => {
+                    // Filters apply automatically via useMemo, this is just for UX feedback
+                  }}
+                  data-testid="button-apply-filters"
+                >
+                  Apply
+                </Button>
+              </div>
+            </div>
+          </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-            {products?.map((product) => (
+            {filteredAndSortedProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -85,10 +194,10 @@ export default function Home({ onAddToCart }: HomeProps) {
             ))}
           </div>
 
-          {products && products.length === 0 && (
+          {filteredAndSortedProducts.length === 0 && (
             <div className="text-center py-12 md:py-16">
               <p className="text-muted-foreground" data-testid="text-no-products">
-                No products available at the moment. Check back soon!
+                No products match your filters. Try adjusting your selection.
               </p>
             </div>
           )}
@@ -123,31 +232,31 @@ export default function Home({ onAddToCart }: HomeProps) {
         </div>
       </section>
 
-      <footer className="bg-muted/30 border-t border-border py-12 md:py-16 px-4">
+      <footer className="border-t border-border py-12 md:py-16 px-4" style={{ background: '#0f0d0b', color: '#fff' }}>
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             <div>
               <h3 className="font-serif text-xl font-bold mb-3">WOW by Dany</h3>
-              <p className="text-muted-foreground mb-4 max-w-md">
+              <p className="mb-4 max-w-md" style={{ color: '#f0e7d6' }}>
                 Handmade modern jewelry inspired by everyday moments of delight.
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs" style={{ color: '#c9c0b0' }}>
                 &copy; {new Date().getFullYear()} WOW by Dany. All rights reserved.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-8">
               <div>
                 <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider">Shop</h4>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <a href="/" className="block hover:text-primary transition-colors">Shop All</a>
-                  <a href="#products" className="block hover:text-primary transition-colors">Best Sellers</a>
+                <div className="space-y-2 text-sm">
+                  <a href="/" className="block transition-colors" style={{ color: '#f0e7d6' }}>Shop All</a>
+                  <a href="#products" className="block transition-colors" style={{ color: '#f0e7d6' }}>Best Sellers</a>
                 </div>
               </div>
               <div>
                 <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider">Support</h4>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <a href="#" className="block hover:text-primary transition-colors">Shipping & Returns</a>
-                  <a href="#" className="block hover:text-primary transition-colors">Contact</a>
+                <div className="space-y-2 text-sm">
+                  <a href="#" className="block transition-colors" style={{ color: '#f0e7d6' }}>Shipping & Returns</a>
+                  <a href="#" className="block transition-colors" style={{ color: '#f0e7d6' }}>Contact</a>
                 </div>
               </div>
             </div>

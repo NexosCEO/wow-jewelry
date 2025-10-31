@@ -2,8 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE */
+/* WOW by Dany — Rose-Gold Theme */
+/* Palette from logo - easy to tweak for different tones */
 :root {
+  /* Rose-Gold Core Palette */
+  --rose: #e9b3b7;          /* soft blush pink */
+  --rose-deep: #d78895;     /* deeper blush for contrast */
+  --gold: #caa55b;          /* warm brushed gold */
+  --gold-deep: #a8832f;     /* deeper gold for shadows */
+  --warm-charcoal: #3a362f; /* warm charcoal text */
+  --warm-muted: #6f6a60;    /* warm muted text */
+  --warm-border: #ece6dc;   /* warm border */
+  --warm-card: #fbf8f3;     /* off-white card */
+  --warm-white: #ffffff;    /* clean white background */
+
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
 
@@ -14,67 +26,68 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --background: 33 35% 92%;
+  /* Main colors using rose-gold palette */
+  --background: 0 0% 100%;         /* warm-white */
+  
+  --foreground: 39 14% 21%;        /* warm-charcoal */
 
-  --foreground: 25 20% 20%;
+  --border: 36 29% 90%;            /* warm-border */
 
-  --border: 33 25% 85%;
+  --card: 36 50% 97%;              /* warm-card */
 
-  --card: 0 0% 100%;
+  --card-foreground: 39 14% 21%;   /* warm-charcoal */
 
-  --card-foreground: 25 20% 20%;
+  --card-border: 36 29% 90%;       /* warm-border */
 
-  --card-border: 33 20% 88%;
+  --sidebar: 36 50% 97%;
 
-  --sidebar: 240 4% 96%;
+  --sidebar-foreground: 39 14% 21%;
 
-  --sidebar-foreground: 240 6% 10%;
+  --sidebar-border: 36 29% 90%;
 
-  --sidebar-border: 240 5% 92%;
+  --sidebar-primary: 42 51% 58%;   /* gold */
 
-  --sidebar-primary: 340 75% 45%;
+  --sidebar-primary-foreground: 39 14% 21%;
 
-  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 36 50% 97%;
 
-  --sidebar-accent: 240 8% 92%;
+  --sidebar-accent-foreground: 39 14% 21%;
 
-  --sidebar-accent-foreground: 240 6% 10%;
+  --sidebar-ring: 42 51% 58%;
 
-  --sidebar-ring: 340 75% 45%;
+  --popover: 36 50% 97%;
 
-  --popover: 240 6% 94%;
+  --popover-foreground: 39 14% 21%;
 
-  --popover-foreground: 240 6% 10%;
+  --popover-border: 36 29% 90%;
 
-  --popover-border: 240 6% 90%;
+  --primary: 42 51% 58%;           /* gold */
 
-  --primary: 345 75% 48%;
+  --primary-foreground: 39 14% 21%; /* warm-charcoal */
 
-  --primary-foreground: 0 0% 100%;
+  --secondary: 354 58% 80%;        /* rose */
 
-  --secondary: 33 20% 88%;
+  --secondary-foreground: 39 14% 21%;
 
-  --secondary-foreground: 25 15% 15%;
+  --muted: 36 29% 93%;
 
-  --muted: 33 20% 90%;
+  --muted-foreground: 36 8% 41%;   /* warm-muted */
 
-  --muted-foreground: 25 10% 45%;
+  --accent: 354 58% 85%;           /* lighter rose */
 
-  --accent: 240 10% 88%;
-
-  --accent-foreground: 240 6% 10%;
+  --accent-foreground: 39 14% 21%;
 
   --destructive: 0 72% 42%;
 
   --destructive-foreground: 0 0% 98%;
 
-  --input: 240 10% 75%;
-  --ring: 340 75% 45%;
-  --chart-1: 340 75% 45%;
-  --chart-2: 280 65% 50%;
-  --chart-3: 200 70% 45%;
-  --chart-4: 25 80% 50%;
-  --chart-5: 160 60% 40%;
+  --input: 36 29% 90%;
+  --ring: 42 51% 58%;              /* gold */
+  --chart-1: 42 51% 58%;           /* gold */
+  --chart-2: 354 58% 80%;          /* rose */
+  --chart-3: 349 49% 69%;          /* rose-deep */
+  --chart-4: 42 56% 42%;           /* gold-deep */
+  --chart-5: 36 8% 41%;            /* warm-muted */
 
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;

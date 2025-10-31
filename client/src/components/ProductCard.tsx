@@ -15,9 +15,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const images = [product.imageUrl, product.imageUrl2].filter((img): img is string => !!img);
 
   return (
-    <div className="group relative bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300" data-testid={`card-product-${product.id}`}>
+    <div className="group relative bg-card border border-card-border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1" data-testid={`card-product-${product.id}`}>
       <Link href={`/product/${product.id}`}>
-        <div className="aspect-square bg-muted overflow-hidden relative">
+        <div className="aspect-square bg-background overflow-hidden relative">
           <img
             src={images[imageIndex]}
             alt={product.name}
@@ -36,28 +36,31 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         </div>
       </Link>
       
-      <div className="p-4 space-y-3">
+      <div className="p-3.5 space-y-2.5">
         <Link href={`/product/${product.id}`}>
-          <h3 className="font-serif text-lg font-semibold hover:text-primary transition-colors leading-snug" data-testid={`text-name-${product.id}`}>
+          <h3 className="font-serif text-lg font-bold hover:text-primary transition-colors leading-snug" data-testid={`text-name-${product.id}`}>
             {product.name}
           </h3>
         </Link>
         
+        <p className="text-xs text-muted-foreground capitalize">{product.category}</p>
+        
         <div className="flex items-center gap-2">
+          <span className="text-lg font-bold" data-testid={`text-price-${product.id}`}>
+            ${parseFloat(product.price).toFixed(2)}
+          </span>
           {product.regularPrice && parseFloat(product.regularPrice) > parseFloat(product.price) && (
             <span className="text-muted-foreground line-through text-sm" data-testid={`text-regular-price-${product.id}`}>
               ${parseFloat(product.regularPrice).toFixed(2)}
             </span>
           )}
-          <span className="text-xl font-bold text-foreground" data-testid={`text-price-${product.id}`}>
-            ${parseFloat(product.price).toFixed(2)}
-          </span>
         </div>
 
         <Button
           onClick={() => onAddToCart(product)}
           disabled={!product.inStock}
-          className="w-full gap-2"
+          className="w-full gap-2 font-bold rounded-xl"
+          style={{ background: product.inStock ? 'linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%)' : undefined }}
           data-testid={`button-add-to-cart-${product.id}`}
         >
           <ShoppingCart className="w-4 h-4" />

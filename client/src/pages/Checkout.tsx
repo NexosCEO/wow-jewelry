@@ -213,8 +213,9 @@ function CheckoutForm({ cart, onSuccess }: { cart: CartItem[]; onSuccess: () => 
         <Button
           type="submit"
           disabled={!stripe || isProcessing}
-          className="w-full"
+          className="w-full font-bold rounded-lg"
           size="lg"
+          style={{ background: !stripe || isProcessing ? undefined : 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: !stripe || isProcessing ? undefined : '#2b211b' }}
           data-testid="button-place-order"
         >
           {isProcessing ? (
