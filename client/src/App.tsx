@@ -110,7 +110,13 @@ function Router() {
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
               <p className="text-sm text-muted-foreground">
-                Email: hello@wowjewelry.com
+                <a 
+                  href="mailto:jewelryboutiquewow@gmail.com" 
+                  className="hover:text-primary transition-colors"
+                  data-testid="link-email"
+                >
+                  jewelryboutiquewow@gmail.com
+                </a>
               </p>
             </div>
           </div>
