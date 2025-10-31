@@ -31,7 +31,7 @@ function generateInvoice() {
   
   doc.fontSize(10)
      .fillColor('#6f6a60')
-     .text('Web Development Services', 50, 180)
+     .text('Titan Innovations LLC', 50, 180)
      .text('Professional Website Development', 50, 195)
      .text('Full-Stack E-Commerce Solutions', 50, 210);
   
@@ -187,6 +187,22 @@ function generateInvoice() {
      .text('• Payment is due upon receipt of this invoice', 50, notesY + 20)
      .text('• All work has been completed and delivered as of ' + invoiceDate, 50, notesY + 35)
      .text('• Website is fully functional with rose-gold theme and Stripe payments', 50, notesY + 50);
+  
+  // Payment Methods
+  const paymentMethodsY = notesY + 85;
+  doc.fontSize(11)
+     .fillColor('#3a362f')
+     .font('Helvetica-Bold')
+     .text('Payment Methods Accepted', 50, paymentMethodsY);
+  
+  doc.fontSize(9)
+     .fillColor('#6f6a60')
+     .font('Helvetica')
+     .text('• Zelle', 50, paymentMethodsY + 20)
+     .text('• Cash', 50, paymentMethodsY + 35)
+     .text('• Apple Pay', 50, paymentMethodsY + 50)
+     .text('• Credit/Debit Card', 50, paymentMethodsY + 65)
+     .text('• Bank Transfer', 50, paymentMethodsY + 80);
   
   // Footer
   const footerY = 720;
