@@ -31,12 +31,16 @@ Preferred communication style: Simple, everyday language.
 - TanStack Query for API response caching with infinite stale time (no automatic refetching)
 - Context providers for toast notifications and tooltips
 
-**Design System**
-- Responsive grid layouts using Tailwind breakpoints (sm, md, lg, xl)
+**Design System** (Updated October 2025)
+- Warm luxury color palette: champagne/beige backgrounds (hsl 33 42% 96%) instead of stark white
+- Responsive grid layouts using Tailwind breakpoints (sm≤640, md≤768, lg≥1024, xl)
 - Elevation system using CSS custom properties (--elevate-1, --elevate-2)
 - Consistent spacing scale based on Tailwind units (2, 4, 8, 12, 16, 24)
 - Custom border radius values (sm: 3px, md: 6px, lg: 9px)
 - Hover and active state treatments with backdrop filters and opacity changes
+- Mobile-first responsive header with hamburger menu (80-96px height)
+- Compact logo sizing (40-48px height) for professional appearance
+- Hero section with warm gradient (champagne-to-cream) and prominent CTA button
 
 ### Backend Architecture
 
