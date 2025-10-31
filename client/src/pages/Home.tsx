@@ -21,21 +21,21 @@ export default function Home({ onAddToCart }: HomeProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <section className="relative bg-background py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="font-serif text-4xl md:text-6xl font-bold mb-4" data-testid="text-hero-title">
+    <div className="min-h-screen">
+      <section className="py-12 md:py-20 px-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6" data-testid="text-hero-title">
             Handcrafted with Love
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto" data-testid="text-hero-subtitle">
+          <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="text-hero-subtitle">
             Discover unique, handmade jewelry pieces that tell your story
           </p>
         </div>
       </section>
 
-      <section className="pb-16 md:pb-24">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+      <section className="pb-12 md:pb-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {products?.map((product) => (
               <ProductCard
                 key={product.id}
@@ -46,7 +46,7 @@ export default function Home({ onAddToCart }: HomeProps) {
           </div>
 
           {products && products.length === 0 && (
-            <div className="text-center py-16">
+            <div className="text-center py-12 md:py-16">
               <p className="text-muted-foreground" data-testid="text-no-products">
                 No products available at the moment. Check back soon!
               </p>
@@ -55,13 +55,13 @@ export default function Home({ onAddToCart }: HomeProps) {
         </div>
       </section>
 
-      <section className="bg-card border-t border-border py-16 md:py-24">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="font-serif text-3xl md:text-4xl font-bold mb-6">About WOW Jewelry</h2>
-          <p className="text-lg text-muted-foreground mb-4 leading-relaxed">
+      <section className="bg-card border-t border-border py-12 md:py-20 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6">About WOW Jewelry</h2>
+          <p className="text-base md:text-lg text-muted-foreground mb-3 md:mb-4 leading-relaxed">
             Every piece in our collection is handmade with love and attention to detail. We believe jewelry should be as unique as the person wearing it.
           </p>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
             From delicate necklaces to statement earrings, each item is crafted to bring joy and beauty to your everyday life.
           </p>
         </div>
