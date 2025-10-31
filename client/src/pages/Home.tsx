@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Product } from "@shared/schema";
 import { ProductCard } from "@/components/ProductCard";
+import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 interface HomeProps {
@@ -22,18 +23,27 @@ export default function Home({ onAddToCart }: HomeProps) {
 
   return (
     <div className="min-h-screen">
-      <section className="py-12 md:py-20 px-4">
-        <div className="max-w-7xl mx-auto text-center">
+      <section className="relative py-16 md:py-24 lg:py-32 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#f5e6d3] via-[#faf4ed] to-background -z-10"></div>
+        <div className="max-w-7xl mx-auto text-center relative">
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6" data-testid="text-hero-title">
             Handcrafted with Love
           </h1>
-          <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="text-hero-subtitle">
+          <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 md:mb-10" data-testid="text-hero-subtitle">
             Discover unique, handmade jewelry pieces that tell your story
           </p>
+          <Button 
+            asChild 
+            size="lg" 
+            className="text-base md:text-lg px-8 md:px-10 h-12 md:h-14"
+            data-testid="button-shop-collection"
+          >
+            <a href="#products">Shop Collection</a>
+          </Button>
         </div>
       </section>
 
-      <section className="pb-12 md:pb-20 px-4">
+      <section id="products" className="pb-12 md:pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {products?.map((product) => (

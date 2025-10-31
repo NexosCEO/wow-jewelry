@@ -12,7 +12,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [imageIndex, setImageIndex] = useState(0);
-  const images = [product.imageUrl, product.imageUrl2].filter(Boolean);
+  const images = [product.imageUrl, product.imageUrl2].filter((img): img is string => !!img);
 
   return (
     <div className="group relative" data-testid={`card-product-${product.id}`}>
