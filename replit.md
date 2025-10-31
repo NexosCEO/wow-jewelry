@@ -40,13 +40,17 @@ Preferred communication style: Simple, everyday language.
   - Off-white card backgrounds (#fbf8f3) with warm borders (#ece6dc)
   - Clean white (#ffffff) base background
 - **Gradient Accents**: Rose-to-gold gradient used for:
-  - Announcement bar
-  - Primary CTA buttons (Shop Collection, Add to Cart, Apply Filters)
-  - Cart count badge
+  - Announcement bar (90deg gradient)
+  - Primary CTA buttons (Shop Collection, Add to Cart, Apply Filters, Place Order) with 135deg gradient
+  - Cart count badge uses solid gold (#caa55b) with dark charcoal text for proper contrast
+- **Accessibility**: All gradient CTAs meet WCAG AA contrast requirements (≥4.5:1)
+  - Hero/Filter/Checkout buttons: dark charcoal (#2b211b) on rose-gold gradient (≥4.5:1)
+  - Cart badge: warm charcoal (#3a362f) on gold background (≈5.6:1)
 - **Typography**: Serif headings (Playfair Display) with bold weight, sans-serif body (Inter)
+  - Product card titles use serif font at text-lg for luxury hierarchy
 - **Rounded Elements**: xl border radius (14px) for cards, full rounded buttons for primary CTAs
 - **Card Hover Effects**: Lift animation (-translate-y-1) with shadow increase on hover
-- **Product Cards**: Show category, gradient gold Add to Cart button, hover image swap
+- **Product Cards**: Show category, serif titles, gradient gold Add to Cart button, hover image swap
 - **Footer**: Dark charcoal (#0f0d0b) with warm link colors (#f0e7d6)
 - **Filter System**: Type, Sort, Max Price filters with instant results
 - Responsive grid layouts using Tailwind breakpoints (sm≤640, md≤768, lg≥1024, xl)

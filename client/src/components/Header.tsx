@@ -63,8 +63,8 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
               <ShoppingCart className="w-5 h-5" />
               {cartItemCount > 0 && (
                 <span 
-                  className="absolute -top-1 -right-1 h-5.5 w-5.5 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                  style={{ background: 'var(--gold)' }}
+                  className="absolute -top-1 -right-1 h-5.5 w-5.5 rounded-full flex items-center justify-center text-xs font-bold"
+                  style={{ background: 'var(--gold)', color: 'var(--warm-charcoal)' }}
                   data-testid="badge-cart-count"
                 >
                   {cartItemCount}
