@@ -1,0 +1,798 @@
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+create-payment-intent:1   Failed to load resource: the server responded with a status of 429 ()
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+Fetch failed loading: POST "<URL>".
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:48   POST https://wowjewelery.com/api/create-payment-intent 429 (Too Many Requests)
+ag @ index-s0gds85W.js:48
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+index-s0gds85W.js:189  Payment intent creation failed: Error: 429: Too many payment attempts, please try again later.
+    at sg (index-s0gds85W.js:48:40189)
+    at async ag (index-s0gds85W.js:48:40390)
+(anonymous) @ index-s0gds85W.js:189
+Promise.catch
+(anonymous) @ index-s0gds85W.js:189
+Da @ index-s0gds85W.js:40
+Xr @ index-s0gds85W.js:40
+sp @ index-s0gds85W.js:40
+Jn @ index-s0gds85W.js:38
+x1 @ index-s0gds85W.js:40
+nr @ index-s0gds85W.js:40
+kv @ index-s0gds85W.js:40
+E @ index-s0gds85W.js:25
+M @ index-s0gds85W.js:25
+shared-9893484ee47530afb616f07026454428.js:1 Fetch finished loading: POST "https://r.stripe.com/b".
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+c @ shared-9893484ee47530afb616f07026454428.js:1
+value @ shared-9893484ee47530afb616f07026454428.js:1
+value @ shared-9893484ee47530afb616f07026454428.js:1
+value @ shared-9893484ee47530afb616f07026454428.js:1
+value @ shared-9893484ee47530afb616f07026454428.js:1
+value @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+out-4.5.45.js:1 XHR finished loading: POST "https://m.stripe.com/6".
+(anonymous) @ out-4.5.45.js:1
+i @ out-4.5.45.js:1
+s @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+Promise.then
+S @ out-4.5.45.js:1
+y @ out-4.5.45.js:1
+E @ out-4.5.45.js:1
+e @ inner.html:1
+out-4.5.45.js:1 XHR finished loading: POST "https://m.stripe.com/6".
+(anonymous) @ out-4.5.45.js:1
+i @ out-4.5.45.js:1
+s @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+Promise.then
+S @ out-4.5.45.js:1
+y @ out-4.5.45.js:1
+E @ out-4.5.45.js:1
+e @ inner.html:1

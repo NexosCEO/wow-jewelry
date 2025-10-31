@@ -261,6 +261,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
       return;
     }
 
+    // Only create payment intent once when checkout loads
     apiRequest("POST", "/api/create-payment-intent", { amount: total })
       .then((res) => res.json())
       .then((data) => {
@@ -269,13 +270,13 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
       .catch((error) => {
         console.error("Payment intent creation failed:", error);
         toast({
-          title: "Payment Not Available",
-          description: "Stripe is not configured. Browsing is available, but checkout is disabled.",
+          title: "Payment Setup Error",
+          description: error.message || "Unable to initialize payment. Please try again.",
           variant: "destructive",
         });
         setTimeout(() => setLocation("/"), 3000);
       });
-  }, [cart, total]);
+  }, []); // Only run once on mount
 
   const handleSuccess = () => {
     onClearCart();
