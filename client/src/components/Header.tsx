@@ -17,50 +17,49 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
   return (
     <>
       <div className="bg-primary text-primary-foreground py-2.5 text-center text-xs uppercase tracking-[0.15em] font-semibold">
-        Free Shipping on All Orders
+        FREE SHIPPING ON ALL ORDERS
       </div>
       
       <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm backdrop-blur-sm bg-card/95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16 md:h-20">
-            <button 
-              className="md:hidden p-2 hover-elevate active-elevate-2 rounded-md"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-              data-testid="button-mobile-menu"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-
-            <Link href="/">
+            <Link href="/" className="flex items-center gap-3">
               <img 
                 src={logoUrl} 
-                alt="WOW Jewelry" 
-                className="h-10 md:h-12 w-auto cursor-pointer hover:opacity-90 transition-opacity"
+                alt="WOW by Dany logo" 
+                className="h-10 md:h-12 w-auto cursor-pointer hover:opacity-90 transition-opacity rounded-md"
                 data-testid="link-home"
               />
+              <span className="text-lg md:text-xl font-semibold tracking-tight hidden sm:inline" data-testid="text-brand">
+                WOW by Dany
+              </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-6">
+              <Link href="/">
+                <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/" ? "text-primary font-semibold" : ""}`} data-testid="link-home-nav">
+                  Home
+                </span>
+              </Link>
               <Link href="/">
                 <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/" ? "text-primary font-semibold" : ""}`} data-testid="link-shop">
                   Shop
                 </span>
               </Link>
-              <Link href="/orders">
-                <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/orders" ? "text-primary font-semibold" : ""}`} data-testid="link-orders">
-                  Orders
+              <a href="#about">
+                <span className="text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary" data-testid="link-about">
+                  About
                 </span>
-              </Link>
+              </a>
             </nav>
 
             <Button
               variant="ghost"
-              size="icon"
               onClick={onCartClick}
-              className="relative"
+              className="relative h-9 px-3 gap-2"
               data-testid="button-cart"
             >
+              <span className="hidden sm:inline text-sm">Cart</span>
               <ShoppingCart className="w-5 h-5" />
               {cartItemCount > 0 && (
                 <Badge 
@@ -72,6 +71,15 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
                 </Badge>
               )}
             </Button>
+
+            <button 
+              className="md:hidden p-2 hover-elevate active-elevate-2 rounded-md"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+              data-testid="button-mobile-menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
 
@@ -82,20 +90,28 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
                 <span 
                   className={`block py-2 text-base cursor-pointer transition-colors hover:text-primary ${location === "/" ? "text-primary font-semibold" : ""}`}
                   onClick={() => setMobileMenuOpen(false)}
+                  data-testid="link-home-mobile"
+                >
+                  Home
+                </span>
+              </Link>
+              <Link href="/">
+                <span 
+                  className={`block py-2 text-base cursor-pointer transition-colors hover:text-primary ${location === "/" ? "text-primary font-semibold" : ""}`}
+                  onClick={() => setMobileMenuOpen(false)}
                   data-testid="link-shop-mobile"
                 >
                   Shop
                 </span>
               </Link>
-              <Link href="/orders">
-                <span 
-                  className={`block py-2 text-base cursor-pointer transition-colors hover:text-primary ${location === "/orders" ? "text-primary font-semibold" : ""}`}
-                  onClick={() => setMobileMenuOpen(false)}
-                  data-testid="link-orders-mobile"
-                >
-                  Orders
-                </span>
-              </Link>
+              <a 
+                href="#about"
+                className="block py-2 text-base cursor-pointer transition-colors hover:text-primary"
+                onClick={() => setMobileMenuOpen(false)}
+                data-testid="link-about-mobile"
+              >
+                About
+              </a>
             </nav>
           </div>
         )}

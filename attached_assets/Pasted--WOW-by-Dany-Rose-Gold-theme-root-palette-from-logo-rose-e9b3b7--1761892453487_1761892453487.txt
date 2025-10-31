@@ -1,0 +1,101 @@
+/* WOW by Dany — Rose-Gold theme */
+:root{
+  /* palette from logo */
+  --rose: #e9b3b7;          /* soft blush pink */
+  --rose-deep: #d78895;     /* deeper blush for contrast */
+  --gold: #caa55b;          /* warm brushed gold */
+  --gold-deep: #a8832f;     /* deeper gold for shadows */
+  --text: #3a362f;          /* warm charcoal */
+  --muted: #6f6a60;
+  --border: #ece6dc;        /* warm border */
+  --card: #fbf8f3;          /* off-white card */
+  --bg: #ffffff;
+  --maxw: 1200px;
+  --radius: 14px;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;}
+
+.announcement{
+  background: linear-gradient(90deg, var(--rose) 0%, var(--gold) 100%);
+  color:#2b211b; text-align:center; padding:.6rem .75rem; font-weight:700; letter-spacing:.02em;
+}
+
+.header{position:sticky; top:0; z-index:50; background:white; border-bottom:1px solid var(--border)}
+.header-inner{margin:0 auto; max-width:var(--maxw); display:flex; align-items:center; justify-content:space-between; padding: .9rem 1rem;}
+.logo-wrap{display:flex; align-items:center; gap:.65rem}
+.logo{height:44px; width:auto; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.brand{font-family: Georgia, 'Times New Roman', serif; font-weight:700; letter-spacing:.04em}
+.nav{display:flex; gap:1rem; align-items:center}
+.nav a{color:var(--text); text-decoration:none; font-weight:700}
+.badge{
+  display:inline-flex; align-items:center; gap:.35rem; background:var(--card);
+  border:1px solid var(--border); padding:.4rem .6rem; border-radius:999px; font-weight:700;
+}
+.badge .dot{width:22px;height:22px;border-radius:999px;background:var(--gold);color:white;display:grid;place-items:center;font-size:.8rem}
+
+.hero{
+  margin: 0 auto; max-width:var(--maxw);
+  display:grid; grid-template-columns: 1.1fr .9fr; gap:2rem; padding:2rem 1rem 1rem;
+}
+.hero img{width:100%; border-radius:var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,.06)}
+.hero .copy{display:flex; flex-direction:column; justify-content:center; gap:1rem}
+.h1{font-family: Georgia, serif; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height:1.1; margin:0}
+.p{color:var(--muted); font-size:1.1rem}
+
+.btn{
+  display:inline-block; background:var(--text); color:white; padding:.9rem 1.2rem; border-radius:999px; text-decoration:none; font-weight:800; border:0;
+  box-shadow:0 8px 24px rgba(58,54,47,.25);
+}
+.btn.grad{
+  background: linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%);
+  color:#2b211b;
+  box-shadow:0 10px 26px rgba(202,165,91,.32);
+}
+.btn.outline{background:white;color:var(--rose-deep);border:2px solid var(--rose-deep); box-shadow:none}
+
+.section{margin: 1rem auto 3rem; max-width:var(--maxw); padding:0 1rem}
+.section h2{font-family: Georgia, serif; font-size:1.8rem; margin:0 0 1rem}
+
+.grid{
+  display:grid; gap:1.2rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 1100px){ .grid{grid-template-columns: repeat(3, 1fr);} .hero{grid-template-columns:1fr;} }
+@media (max-width: 720px){ .grid{grid-template-columns: repeat(2, 1fr);} }
+@media (max-width: 460px){ .grid{grid-template-columns: 1fr;} }
+
+.card{
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card:hover{ transform: translateY(-4px); box-shadow: 0 14px 28px rgba(0,0,0,.08)}
+.card .media{aspect-ratio:1/1; background:white; display:grid; place-items:center; overflow:hidden}
+.card img{width:100%; height:100%; object-fit:cover}
+.card .body{padding: .9rem}
+.card .title{font-weight:800; margin-bottom:.2rem}
+.card .muted{color:var(--muted); font-size:.95rem}
+.card .price{font-weight:800; color:#2b211b}
+.card .actions{display:flex; gap:.6rem; margin-top:.7rem}
+.card button{
+  flex:1; padding:.6rem .8rem; border-radius:10px; border:1px solid var(--border); background:white; cursor:pointer; font-weight:800; color:var(--text)
+}
+.card button.primary{
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%); color:white; border-color:var(--gold-deep);
+}
+
+.filters{
+  display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin-bottom:1rem;
+}
+.filters label{font-weight:800}
+.filters select, .filters input{padding:.55rem .7rem; border-radius:10px; border:1px solid var(--border); background:#fff}
+
+.footer{background:#0f0d0b; color:#fff; margin-top:3rem;}
+.footer-inner{max-width:var(--maxw); margin:0 auto; padding:2rem 1rem; display:grid; gap:2rem; grid-template-columns: 1.2fr .8fr;}
+.footer a{color:#f0e7d6; text-decoration:none}
+.footer small{color:#c9c0b0}
+@media (max-width: 780px){ .footer-inner{grid-template-columns:1fr;} }
+
+/* tiny cart anim */
+#cartCount{transition:.2s ease;}

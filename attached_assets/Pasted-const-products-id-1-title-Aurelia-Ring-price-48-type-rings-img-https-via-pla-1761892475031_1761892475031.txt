@@ -1,0 +1,76 @@
+const products = [
+  { id: 1, title: "Aurelia Ring", price: 48, type: "rings", img: "https://via.placeholder.com/800x800/FFFFFF/333333?text=Aurelia+Ring" },
+  { id: 2, title: "Luna Hoops", price: 36, type: "earrings", img: "https://via.placeholder.com/800x800/FFFFFF/333333?text=Luna+Hoops" },
+  { id: 3, title: "Pearl Charm", price: 42, type: "necklaces", img: "https://via.placeholder.com/800x800/FFFFFF/333333?text=Pearl+Charm" },
+  { id: 4, title: "Twist Bangle", price: 60, type: "bracelets", img: "https://via.placeholder.com/800x800/FFFFFF/333333?text=Twist+Bangle" },
+  { id: 5, title: "Sky Studs", price: 22, type: "earrings", img: "https://via.placeholder.com/800x800/FFFFFF/333333?text=Sky+Studs" },
+  { id: 6, title: "Sunburst Pendant", price: 58, type: "necklaces", img: "https://via.placeholder.com/800x800/FFFFFF/333333?text=Sunburst+Pendant" }
+];
+
+const $ = (sel) => document.querySelector(sel);
+
+function renderCards(container, items) {
+  container.innerHTML = items.map(p => `
+    <article class="card">
+      <div class="media"><img src="${p.img}" alt="${p.title}"></div>
+      <div class="body">
+        <div class="title">${p.title}</div>
+        <div class="muted">${p.type.charAt(0).toUpperCase()+p.type.slice(1)}</div>
+        <div class="price">$${p.price.toFixed(2)}</div>
+        <div class="actions">
+          <button onclick="window.location.href='collection.html#${p.id}'">Details</button>
+          <button class="primary" onclick="addToCart(${p.id})">Add to Cart</button>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+function addToCart() {
+  let n = parseInt(localStorage.getItem("cart") || "0") + 1;
+  localStorage.setItem("cart", n);
+  const el = $("#cartCount");
+  el.textContent = n;
+  el.style.transform = "scale(1.2)";
+  setTimeout(()=> el.style.transform = "scale(1)", 120);
+}
+
+function setupCart() {
+  $("#cartCount").textContent = localStorage.getItem("cart") || 0;
+}
+
+function setupHome() {
+  const c = $("#bestsellers");
+  if (c) renderCards(c, products.slice(0, 4));
+}
+
+function filterAndRender() {
+  let type = $("#filterType")?.value || "all";
+  let sort = $("#sortBy")?.value || "featured";
+  let maxPrice = Number($("#maxPrice")?.value || 0);
+
+  let items = [...products];
+  if (type !== "all") items = items.filter(p => p.type === type);
+  if (maxPrice) items = items.filter(p => p.price <= maxPrice);
+
+  if (sort === "price-asc") items.sort((a,b)=>a.price-b.price);
+  if (sort === "price-desc") items.sort((a,b)=>b.price-a.price);
+  if (sort === "alpha") items.sort((a,b)=>a.title.localeCompare(b.title));
+
+  const grid = $("#grid");
+  if (grid) renderCards(grid, items);
+}
+
+function setupCollection() {
+  const grid = $("#grid");
+  if (!grid) return;
+  $("#applyFilters").addEventListener("click", filterAndRender);
+  filterAndRender();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupCart();
+  setupHome();
+  setupCollection();
+  const yr = $("#yr"); if (yr) yr.textContent = new Date().getFullYear();
+});

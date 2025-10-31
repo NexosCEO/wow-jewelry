@@ -127,9 +127,21 @@ export class MemStorage implements IStorage {
       },
     ];
 
-    sampleProducts.forEach((product) => {
+    sampleProducts.forEach((insertProduct) => {
       const id = randomUUID();
-      this.products.set(id, { ...product, id });
+      const product: Product = {
+        id,
+        name: insertProduct.name,
+        description: insertProduct.description,
+        price: insertProduct.price,
+        regularPrice: insertProduct.regularPrice ?? null,
+        imageUrl: insertProduct.imageUrl,
+        imageUrl2: insertProduct.imageUrl2 ?? null,
+        category: insertProduct.category,
+        inStock: insertProduct.inStock ?? true,
+        stockQuantity: insertProduct.stockQuantity ?? 0,
+      };
+      this.products.set(id, product);
     });
   }
 
@@ -143,7 +155,18 @@ export class MemStorage implements IStorage {
 
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
     const id = randomUUID();
-    const product: Product = { ...insertProduct, id };
+    const product: Product = { 
+      id,
+      name: insertProduct.name,
+      description: insertProduct.description,
+      price: insertProduct.price,
+      regularPrice: insertProduct.regularPrice ?? null,
+      imageUrl: insertProduct.imageUrl,
+      imageUrl2: insertProduct.imageUrl2 ?? null,
+      category: insertProduct.category,
+      inStock: insertProduct.inStock ?? true,
+      stockQuantity: insertProduct.stockQuantity ?? 0,
+    };
     this.products.set(id, product);
     return product;
   }
@@ -152,7 +175,14 @@ export class MemStorage implements IStorage {
     const product = this.products.get(id);
     if (!product) return undefined;
     
-    const updatedProduct = { ...product, ...updates };
+    const updatedProduct: Product = { 
+      ...product,
+      ...updates,
+      regularPrice: updates.regularPrice !== undefined ? updates.regularPrice : product.regularPrice,
+      imageUrl2: updates.imageUrl2 !== undefined ? updates.imageUrl2 : product.imageUrl2,
+      inStock: updates.inStock !== undefined ? updates.inStock : product.inStock,
+      stockQuantity: updates.stockQuantity !== undefined ? updates.stockQuantity : product.stockQuantity,
+    };
     this.products.set(id, updatedProduct);
     return updatedProduct;
   }
@@ -174,9 +204,18 @@ export class MemStorage implements IStorage {
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
     const id = randomUUID();
     const order: Order = {
-      ...insertOrder,
       id,
-      createdAt: new Date().toISOString(),
+      customerName: insertOrder.customerName,
+      customerEmail: insertOrder.customerEmail,
+      shippingAddress: insertOrder.shippingAddress,
+      city: insertOrder.city,
+      state: insertOrder.state,
+      zipCode: insertOrder.zipCode,
+      items: insertOrder.items,
+      totalAmount: insertOrder.totalAmount,
+      status: insertOrder.status ?? "pending",
+      stripePaymentIntentId: insertOrder.stripePaymentIntentId ?? null,
+      createdAt: new Date(),
     };
     this.orders.set(id, order);
     return order;
