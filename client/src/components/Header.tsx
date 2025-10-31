@@ -2,6 +2,7 @@ import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
+import logoUrl from "@assets/IMG_3548_1761882761403.jpeg";
 
 interface HeaderProps {
   cartItemCount: number;
@@ -21,9 +22,12 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/">
-              <h1 className="font-serif text-3xl font-bold cursor-pointer hover:text-primary transition-colors" data-testid="link-home">
-                WOW
-              </h1>
+              <img 
+                src={logoUrl} 
+                alt="WOW Jewelry" 
+                className="h-12 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                data-testid="link-home"
+              />
             </Link>
 
             <nav className="hidden md:flex items-center gap-8">
