@@ -15,9 +15,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const images = [product.imageUrl, product.imageUrl2].filter((img): img is string => !!img);
 
   return (
-    <div className="group relative" data-testid={`card-product-${product.id}`}>
+    <div className="group relative bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300" data-testid={`card-product-${product.id}`}>
       <Link href={`/product/${product.id}`}>
-        <div className="aspect-square bg-card rounded-md overflow-hidden mb-4 relative hover-elevate">
+        <div className="aspect-square bg-muted overflow-hidden relative">
           <img
             src={images[imageIndex]}
             alt={product.name}
@@ -36,9 +36,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         </div>
       </Link>
       
-      <div className="space-y-2">
+      <div className="p-4 space-y-3">
         <Link href={`/product/${product.id}`}>
-          <h3 className="font-serif text-lg font-medium hover:text-primary transition-colors" data-testid={`text-name-${product.id}`}>
+          <h3 className="font-serif text-lg font-semibold hover:text-primary transition-colors leading-snug" data-testid={`text-name-${product.id}`}>
             {product.name}
           </h3>
         </Link>
@@ -49,7 +49,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               ${parseFloat(product.regularPrice).toFixed(2)}
             </span>
           )}
-          <span className="text-xl font-bold" data-testid={`text-price-${product.id}`}>
+          <span className="text-xl font-bold text-foreground" data-testid={`text-price-${product.id}`}>
             ${parseFloat(product.price).toFixed(2)}
           </span>
         </div>

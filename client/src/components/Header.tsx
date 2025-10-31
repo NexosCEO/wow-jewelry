@@ -16,13 +16,13 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
   return (
     <>
-      <div className="bg-primary text-primary-foreground py-2 text-center text-sm font-medium tracking-wide">
-        FREE SHIPPING ON ALL ORDERS
+      <div className="bg-primary text-primary-foreground py-2.5 text-center text-xs uppercase tracking-[0.15em] font-semibold">
+        Free Shipping on All Orders
       </div>
       
-      <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
+      <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm backdrop-blur-sm bg-card/95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-20 md:h-24">
+          <div className="flex items-center justify-between h-16 md:h-20">
             <button 
               className="md:hidden p-2 hover-elevate active-elevate-2 rounded-md"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
