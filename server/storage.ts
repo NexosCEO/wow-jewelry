@@ -27,6 +27,17 @@ export class MemStorage implements IStorage {
   private initializeProducts() {
     const sampleProducts: InsertProduct[] = [
       {
+        name: "Test Item",
+        description: "Test product for payment testing - only $1!",
+        price: "1.00",
+        regularPrice: null,
+        imageUrl: "/attached_assets/IMG_3453_1761882788256.jpeg",
+        imageUrl2: null,
+        category: "Test",
+        inStock: true,
+        stockQuantity: 999,
+      },
+      {
         name: "Product 1",
         description: "Beautiful handmade jewelry piece. Details coming soon.",
         price: "49.99",

@@ -86,6 +86,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid amount" });
       }
 
+      console.log(`Creating payment intent for amount: $${amount}`);
+      
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(parseFloat(amount) * 100),
         currency: "usd",
@@ -94,9 +96,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
       });
 
+      console.log(`Payment intent created: ${paymentIntent.id}`);
       res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error: any) {
-      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+      console.error("Stripe payment intent error:", error);
+      res.status(500).json({ 
+        message: "Error creating payment intent: " + error.message,
+        details: error.type || "unknown_error"
+      });
     }
   });
 
