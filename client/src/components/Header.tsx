@@ -14,8 +14,8 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
   
   return (
     <>
-      <div className="bg-primary text-primary-foreground py-3 text-center text-sm font-medium tracking-wide">
-        ✨ FREE SHIPPING ON ALL ORDERS ✨
+      <div className="bg-primary text-primary-foreground py-2 text-center text-sm font-medium tracking-wide">
+        FREE SHIPPING ON ALL ORDERS
       </div>
       
       <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
