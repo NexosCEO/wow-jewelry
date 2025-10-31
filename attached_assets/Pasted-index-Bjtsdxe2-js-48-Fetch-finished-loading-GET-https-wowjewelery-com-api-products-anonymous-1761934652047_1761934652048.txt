@@ -1,0 +1,363 @@
+index-Bjtsdxe2.js:48 Fetch finished loading: GET "https://wowjewelery.com/api/products".
+(anonymous) @ index-Bjtsdxe2.js:48
+i @ index-Bjtsdxe2.js:48
+S @ index-Bjtsdxe2.js:48
+start @ index-Bjtsdxe2.js:48
+fetch @ index-Bjtsdxe2.js:48
+ii @ index-Bjtsdxe2.js:48
+onSubscribe @ index-Bjtsdxe2.js:48
+subscribe @ index-Bjtsdxe2.js:48
+(anonymous) @ index-Bjtsdxe2.js:48
+Km @ index-Bjtsdxe2.js:38
+Da @ index-Bjtsdxe2.js:40
+Xr @ index-Bjtsdxe2.js:40
+sp @ index-Bjtsdxe2.js:40
+Jn @ index-Bjtsdxe2.js:38
+x1 @ index-Bjtsdxe2.js:40
+nr @ index-Bjtsdxe2.js:40
+kv @ index-Bjtsdxe2.js:40
+E @ index-Bjtsdxe2.js:25
+M @ index-Bjtsdxe2.js:25
+shared-9893484ee47530afb616f07026454428.js:1 Fetch finished loading: GET "https://js.stripe.com/v3/.deploy_status_henson.json".
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+c @ shared-9893484ee47530afb616f07026454428.js:1
+S @ shared-9893484ee47530afb616f07026454428.js:1
+value @ shared-9893484ee47530afb616f07026454428.js:1
+value @ shared-9893484ee47530afb616f07026454428.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+e @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+e @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+29638 @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+e @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+e.O @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+shared-9893484ee47530afb616f07026454428.js:1 Fetch finished loading: GET "https://js.stripe.com/v3/.deploy_status_henson.json".
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+c @ shared-9893484ee47530afb616f07026454428.js:1
+S @ shared-9893484ee47530afb616f07026454428.js:1
+value @ shared-9893484ee47530afb616f07026454428.js:1
+value @ shared-9893484ee47530afb616f07026454428.js:1
+log @ shared-9893484ee47530afb616f07026454428.js:1
+log @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+e @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+29638 @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+e @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+e.O @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+out-4.5.45.js:1 XHR finished loading: POST "https://m.stripe.com/6".
+(anonymous) @ out-4.5.45.js:1
+i @ out-4.5.45.js:1
+s @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+Promise.then
+S @ out-4.5.45.js:1
+y @ out-4.5.45.js:1
+E @ out-4.5.45.js:1
+e.onload @ inner.html:1
+script
+(anonymous) @ inner.html:1
+(anonymous) @ inner.html:1
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+index-Bjtsdxe2.js:48 Fetch finished loading: POST "https://wowjewelery.com/api/create-payment-intent".
+ag @ index-Bjtsdxe2.js:48
+(anonymous) @ index-Bjtsdxe2.js:189
+Da @ index-Bjtsdxe2.js:40
+Xr @ index-Bjtsdxe2.js:40
+x1 @ index-Bjtsdxe2.js:40
+nr @ index-Bjtsdxe2.js:40
+sp @ index-Bjtsdxe2.js:40
+Jn @ index-Bjtsdxe2.js:38
+(anonymous) @ index-Bjtsdxe2.js:40
+shared-9893484ee47530afb616f07026454428.js:1   GET https://api.stripe.com/v1/elements/sessions?client_secret=pi_3SOMsRHn7XxSINsj0l4aOMgv_secret_uW2iGNVIGqHAAnVKh3b5pf9Lq&key=pk_live_51506gqHn7XxSINsj8ZmgrMr4DGeztT+eV6JMG10Gdklt2RHMMNxbNnpkELMv3WM1YilBtc+0ExiCCNRQZYNpWr2S3c003wd18dVv&_stripe_version=2025-09-30.clover&elements_init_source=stripe.elements&referrer_host=wowjewelery.com&stripe_js_id=7e45f564-66a9-45e0-8296-6d119d8b788a&locale=en-US&expand[0]=payment_method_preference.payment_intent.payment_method&type=payment_intent 401 (Unauthorized)
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+c @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+s @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+_ @ shared-9893484ee47530afb616f07026454428.js:1
+d @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+t.requestParams @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+ny @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+ry.singleFlightCreateAndParse @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+sessions?client_secret=pi_3SOMsRHn7XxSINsj0l4aOMgv_secret_uW2iGNVIGqHAAnVKh3b5pf9Lq&key=pk_live_515…:1   Failed to load resource: the server responded with a status of 401 ()
+sessions?client_secret=pi_3SOMsRHn7XxSINsj0l4aOMgv_secret_uW2iGNVIGqHAAnVKh3b5pf9Lq&key=pk_live_515…:1   Failed to load resource: the server responded with a status of 401 ()
+sessions?client_secret=pi_3SOMsRHn7XxSINsj0l4aOMgv_secret_uW2iGNVIGqHAAnVKh3b5pf9Lq&key=pk_live_515…:1   Failed to load resource: the server responded with a status of 401 ()
+sessions?client_secret=pi_3SOMsRHn7XxSINsj0l4aOMgv_secret_uW2iGNVIGqHAAnVKh3b5pf9Lq&key=pk_live_515…:1   Failed to load resource: the server responded with a status of 401 ()
+shared-9893484ee47530afb616f07026454428.js:1 Fetch failed loading: GET "https://api.stripe.com/v1/elements/sessions?client_secret=pi_3SOMsRHn7XxSINsj0l4aOMgv_secret_uW2iGNVIGqHAAnVKh3b5pf9Lq&key=pk_live_51506gqHn7XxSINsj8ZmgrMr4DGeztT+eV6JMG10Gdklt2RHMMNxbNnpkELMv3WM1YilBtc+0ExiCCNRQZYNpWr2S3c003wd18dVv&_stripe_version=2025-09-30.clover&elements_init_source=stripe.elements&referrer_host=wowjewelery.com&stripe_js_id=7e45f564-66a9-45e0-8296-6d119d8b788a&locale=en-US&expand[0]=payment_method_preference.payment_intent.payment_method&type=payment_intent".
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+c @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+s @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+_ @ shared-9893484ee47530afb616f07026454428.js:1
+d @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+t.requestParams @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+ny @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+ry.singleFlightCreateAndParse @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+out-4.5.45.js:1 XHR finished loading: POST "https://m.stripe.com/6".
+(anonymous) @ out-4.5.45.js:1
+i @ out-4.5.45.js:1
+s @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+Promise.then
+S @ out-4.5.45.js:1
+y @ out-4.5.45.js:1
+E @ out-4.5.45.js:1
+e @ inner.html:1
+out-4.5.45.js:1 XHR finished loading: POST "https://m.stripe.com/6".
+(anonymous) @ out-4.5.45.js:1
+i @ out-4.5.45.js:1
+s @ out-4.5.45.js:1
+h @ out-4.5.45.js:1
+e @ inner.html:1
+shared-9893484ee47530afb616f07026454428.js:1 Fetch finished loading: GET "https://merchant-ui-api.stripe.com/link/get-cookie".
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+c @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+P @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+C @ shared-9893484ee47530afb616f07026454428.js:1
+N @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+Promise.then
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+out-4.5.45.js:1 XHR finished loading: POST "https://m.stripe.com/6".
+(anonymous) @ out-4.5.45.js:1
+i @ out-4.5.45.js:1
+s @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+(anonymous) @ out-4.5.45.js:1
+Promise.then
+S @ out-4.5.45.js:1
+y @ out-4.5.45.js:1
+E @ out-4.5.45.js:1
+e @ inner.html:1
+index-Bjtsdxe2.js:48 Fetch finished loading: POST "https://wowjewelery.com/api/create-payment-intent".
+ag @ index-Bjtsdxe2.js:48
+(anonymous) @ index-Bjtsdxe2.js:189
+Da @ index-Bjtsdxe2.js:40
+Xr @ index-Bjtsdxe2.js:40
+sp @ index-Bjtsdxe2.js:40
+Jn @ index-Bjtsdxe2.js:38
+x1 @ index-Bjtsdxe2.js:40
+nr @ index-Bjtsdxe2.js:40
+kv @ index-Bjtsdxe2.js:40
+E @ index-Bjtsdxe2.js:25
+M @ index-Bjtsdxe2.js:25
+shared-9893484ee47530afb616f07026454428.js:1   GET https://api.stripe.com/v1/elements/sessions?client_secret=pi_3SOMszHn7XxSINsj1yz7gLA2_secret_FTsCMpod5HDbT651s7sE8CxHy&key=pk_live_51506gqHn7XxSINsj8ZmgrMr4DGeztT+eV6JMG10Gdklt2RHMMNxbNnpkELMv3WM1YilBtc+0ExiCCNRQZYNpWr2S3c003wd18dVv&_stripe_version=2025-09-30.clover&elements_init_source=stripe.elements&referrer_host=wowjewelery.com&stripe_js_id=7e45f564-66a9-45e0-8296-6d119d8b788a&locale=en-US&expand[0]=payment_method_preference.payment_intent.payment_method&type=payment_intent 401 (Unauthorized)
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+c @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+s @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+_ @ shared-9893484ee47530afb616f07026454428.js:1
+d @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+t.requestParams @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+ny @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+ry.singleFlightCreateAndParse @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+api.stripe.com/v1/elements/sessions?client_secret=pi_3SOMszHn7XxSINsj1yz7gLA2_secret_FTsCMpod5HDbT651s7sE8CxHy&key=pk_live_51506gqHn7XxSINsj8ZmgrMr4DGeztT+eV6JMG10Gdklt2RHMMNxbNnpkELMv3WM1YilBtc+0ExiCCNRQZYNpWr2S3c003wd18dVv&_stripe_version=2025-09-30.clover&elements_init_source=stripe.elements&referrer_host=wowjewelery.com&stripe_js_id=7e45f564-66a9-45e0-8296-6d119d8b788a&locale=en-US&expand[0]=payment_method_preference.payment_intent.payment_method&type=payment_intent:1   Failed to load resource: the server responded with a status of 401 ()
+shared-9893484ee47530afb616f07026454428.js:1 Fetch failed loading: GET "https://api.stripe.com/v1/elements/sessions?client_secret=pi_3SOMszHn7XxSINsj1yz7gLA2_secret_FTsCMpod5HDbT651s7sE8CxHy&key=pk_live_51506gqHn7XxSINsj8ZmgrMr4DGeztT+eV6JMG10Gdklt2RHMMNxbNnpkELMv3WM1YilBtc+0ExiCCNRQZYNpWr2S3c003wd18dVv&_stripe_version=2025-09-30.clover&elements_init_source=stripe.elements&referrer_host=wowjewelery.com&stripe_js_id=7e45f564-66a9-45e0-8296-6d119d8b788a&locale=en-US&expand[0]=payment_method_preference.payment_intent.payment_method&type=payment_intent".
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+c @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+s @ shared-9893484ee47530afb616f07026454428.js:1
+e @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+_ @ shared-9893484ee47530afb616f07026454428.js:1
+d @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+t.requestParams @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+ny @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+ry.singleFlightCreateAndParse @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+n @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+a @ shared-9893484ee47530afb616f07026454428.js:1
+i @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ shared-9893484ee47530afb616f07026454428.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+value @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
+(anonymous) @ controller-with-preconnect-bf28d9b250e741d9eff76bd69c0d6ba6.js:1
