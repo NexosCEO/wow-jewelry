@@ -1,0 +1,317 @@
+import { useState, useEffect } from "react";
+import { useStripe, useElements, PaymentElement, Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { CartItem } from "@shared/schema";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { Loader2 } from "lucide-react";
+import { useLocation } from "wouter";
+
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+  : null;
+
+function CheckoutForm({ cart, onSuccess }: { cart: CartItem[]; onSuccess: () => void }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const { toast } = useToast();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [customerInfo, setCustomerInfo] = useState({
+    name: "",
+    email: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  });
+
+  const total = cart.reduce((sum, item) => 
+    sum + parseFloat(item.product.price) * item.quantity, 0
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!stripe || !elements) return;
+
+    if (!customerInfo.name || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.state || !customerInfo.zipCode) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all shipping details",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: window.location.origin + "/checkout",
+          receipt_email: customerInfo.email,
+        },
+        redirect: "if_required",
+      });
+
+      if (error) {
+        toast({
+          title: "Payment Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        const orderData = {
+          customerName: customerInfo.name,
+          customerEmail: customerInfo.email,
+          shippingAddress: customerInfo.address,
+          city: customerInfo.city,
+          state: customerInfo.state,
+          zipCode: customerInfo.zipCode,
+          items: JSON.stringify(cart),
+          totalAmount: total.toString(),
+          status: "completed",
+          stripePaymentIntentId: paymentIntent.id,
+        };
+
+        try {
+          await apiRequest("POST", "/api/orders", orderData);
+          toast({
+            title: "Order Placed Successfully!",
+            description: "Thank you for your purchase. You'll receive a confirmation email shortly.",
+          });
+          onSuccess();
+        } catch (orderError) {
+          toast({
+            title: "Payment Successful but Order Failed",
+            description: "Your payment was processed, but we couldn't save your order. Please contact support with your payment ID.",
+            variant: "destructive",
+          });
+        }
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "An error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <h2 className="font-serif text-2xl font-semibold mb-4">Shipping Information</h2>
+        <div className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="name">Full Name *</Label>
+              <Input
+                id="name"
+                value={customerInfo.name}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                required
+                data-testid="input-name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={customerInfo.email}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
+                required
+                data-testid="input-email"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="address">Street Address *</Label>
+            <Input
+              id="address"
+              value={customerInfo.address}
+              onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
+              required
+              data-testid="input-address"
+            />
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="city">City *</Label>
+              <Input
+                id="city"
+                value={customerInfo.city}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, city: e.target.value })}
+                required
+                data-testid="input-city"
+              />
+            </div>
+            <div>
+              <Label htmlFor="state">State *</Label>
+              <Input
+                id="state"
+                value={customerInfo.state}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, state: e.target.value })}
+                required
+                data-testid="input-state"
+              />
+            </div>
+            <div>
+              <Label htmlFor="zipCode">ZIP Code *</Label>
+              <Input
+                id="zipCode"
+                value={customerInfo.zipCode}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, zipCode: e.target.value })}
+                required
+                data-testid="input-zipcode"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="font-serif text-2xl font-semibold mb-4">Payment Details</h2>
+        <div className="p-4 border border-border rounded-md">
+          <PaymentElement />
+        </div>
+      </div>
+
+      <div className="pt-4 border-t border-border">
+        <div className="flex items-center justify-between text-xl mb-4">
+          <span className="font-semibold">Total</span>
+          <span className="font-bold" data-testid="text-total-checkout">
+            ${total.toFixed(2)}
+          </span>
+        </div>
+
+        <Button
+          type="submit"
+          disabled={!stripe || isProcessing}
+          className="w-full"
+          size="lg"
+          data-testid="button-place-order"
+        >
+          {isProcessing ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            `Place Order - $${total.toFixed(2)}`
+          )}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+interface CheckoutProps {
+  cart: CartItem[];
+  onClearCart: () => void;
+}
+
+export default function Checkout({ cart, onClearCart }: CheckoutProps) {
+  const [, setLocation] = useLocation();
+  const [clientSecret, setClientSecret] = useState("");
+  const { toast } = useToast();
+
+  const total = cart.reduce((sum, item) => 
+    sum + parseFloat(item.product.price) * item.quantity, 0
+  );
+
+  useEffect(() => {
+    if (cart.length === 0) {
+      setLocation("/");
+      return;
+    }
+
+    if (!stripePromise) {
+      toast({
+        title: "Payment Not Available",
+        description: "Stripe payment processing is not configured. Please contact support.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    apiRequest("POST", "/api/create-payment-intent", { amount: total })
+      .then((res) => res.json())
+      .then((data) => {
+        setClientSecret(data.clientSecret);
+      })
+      .catch((error) => {
+        console.error("Payment intent creation failed:", error);
+        toast({
+          title: "Payment Not Available",
+          description: "Stripe is not configured. Browsing is available, but checkout is disabled.",
+          variant: "destructive",
+        });
+        setTimeout(() => setLocation("/"), 3000);
+      });
+  }, [cart, total]);
+
+  const handleSuccess = () => {
+    onClearCart();
+    setTimeout(() => {
+      setLocation("/");
+    }, 2000);
+  };
+
+  if (!stripePromise) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <h2 className="font-serif text-2xl mb-4">Payment Not Available</h2>
+        <p className="text-muted-foreground text-center mb-6">
+          Stripe payment processing is not configured yet. You can browse products, but checkout is temporarily disabled.
+        </p>
+        <Button onClick={() => setLocation("/")}>Back to Shop</Button>
+      </div>
+    );
+  }
+
+  if (!clientSecret) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" data-testid="loader-checkout" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background py-12">
+      <div className="max-w-3xl mx-auto px-4">
+        <h1 className="font-serif text-4xl font-bold mb-8 text-center" data-testid="text-checkout-title">Checkout</h1>
+
+        <div className="mb-8 p-4 bg-card rounded-md border border-card-border">
+          <h3 className="font-semibold mb-4">Order Summary</h3>
+          <div className="space-y-2">
+            {cart.map((item) => (
+              <div key={item.product.id} className="flex justify-between text-sm" data-testid={`summary-item-${item.product.id}`}>
+                <span>
+                  {item.product.name} x {item.quantity}
+                </span>
+                <span className="font-medium">
+                  ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Elements stripe={stripePromise} options={{ clientSecret }}>
+          <CheckoutForm cart={cart} onSuccess={handleSuccess} />
+        </Elements>
+      </div>
+    </div>
+  );
+}
