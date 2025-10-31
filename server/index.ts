@@ -1,8 +1,47 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 const app = express();
+
+// Security headers middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com", "https://m.stripe.com"],
+      frameSrc: ["'self'", "https://js.stripe.com", "https://hooks.stripe.com", "https://m.stripe.com"],
+      connectSrc: ["'self'", "https://api.stripe.com", "https://m.stripe.com", "https://m.stripe.network"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// Rate limiting for API endpoints
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: "Too many requests from this IP, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit payment attempts
+  message: "Too many payment attempts, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply stricter payment limiter first, then general API limiter
+app.use("/api/create-payment-intent", paymentLimiter);
+app.use("/api/", apiLimiter);
 
 declare module 'http' {
   interface IncomingMessage {

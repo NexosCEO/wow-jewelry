@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock, Shield, CreditCard } from "lucide-react";
 import { useLocation } from "wouter";
 
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
@@ -180,9 +180,25 @@ function CheckoutForm({ cart, onSuccess }: { cart: CartItem[]; onSuccess: () => 
       </div>
 
       <div>
-        <h2 className="font-serif text-2xl font-semibold mb-4">Payment Details</h2>
-        <div className="p-4 border border-border rounded-md">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-serif text-2xl font-semibold">Payment Details</h2>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Lock className="w-4 h-4" />
+            <span>Secure Checkout</span>
+          </div>
+        </div>
+        <div className="p-4 border border-border rounded-md bg-card">
           <PaymentElement />
+        </div>
+        <div className="flex items-center justify-center gap-6 mt-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Shield className="w-4 h-4" />
+            <span>256-bit SSL Encrypted</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <CreditCard className="w-4 h-4" />
+            <span>Powered by Stripe</span>
+          </div>
         </div>
       </div>
 
@@ -290,7 +306,11 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-3xl mx-auto px-4">
-        <h1 className="font-serif text-4xl font-bold mb-8 text-center" data-testid="text-checkout-title">Checkout</h1>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Lock className="w-5 h-5 text-primary" />
+          <h1 className="font-serif text-4xl font-bold text-center" data-testid="text-checkout-title">Secure Checkout</h1>
+        </div>
+        <p className="text-center text-sm text-muted-foreground mb-8">Your information is protected with industry-standard encryption</p>
 
         <div className="mb-8 p-4 bg-card rounded-md border border-card-border">
           <h3 className="font-semibold mb-4">Order Summary</h3>

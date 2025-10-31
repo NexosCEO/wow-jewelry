@@ -63,6 +63,17 @@ Preferred communication style: Simple, everyday language.
 - Sample product data initialization with realistic jewelry items
 - UUID generation for entity identifiers
 
+**Security Implementation** (Added October 2025)
+- Helmet middleware for security headers protecting against common web vulnerabilities
+- Content Security Policy (CSP) configured to allow Stripe domains while blocking unauthorized resources
+  - Stripe domains whitelisted: js.stripe.com, m.stripe.com, m.stripe.network, hooks.stripe.com
+  - Google Fonts, local resources, and data URIs permitted for styling
+- Rate limiting with two-tier approach:
+  - General API endpoints: 100 requests per 15 minutes per IP
+  - Payment endpoints: 10 requests per 15 minutes per IP (stricter protection)
+- Visual security indicators on checkout page (lock icons, SSL badges, Stripe branding)
+- Security headers include XSS protection, clickjacking prevention, and MIME-type sniffing protection
+
 ### Database & ORM
 
 **ORM Configuration**
@@ -86,7 +97,7 @@ Preferred communication style: Simple, everyday language.
 ### External Dependencies
 
 **Payment Processing**
-- Stripe integration for payment processing (API version 2024-11-20.acacia)
+- Stripe integration for payment processing (API version 2025-10-29.clover)
 - Client-side: @stripe/stripe-js and @stripe/react-stripe-js for payment UI
 - Server-side: Stripe Node.js SDK for payment intent creation and webhook handling
 - Environment-based initialization (graceful degradation if STRIPE_SECRET_KEY not provided)
