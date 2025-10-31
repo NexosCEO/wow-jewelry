@@ -1,8 +1,8 @@
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link, useLocation } from "wouter";
-import logoUrl from "@assets/IMG_3548_1761882761403.jpeg";
+import { Link } from "wouter";
+import logoUrl from "@assets/IMG_6918_1761884520979.png";
 
 interface HeaderProps {
   cartItemCount: number;
@@ -10,44 +10,28 @@ interface HeaderProps {
 }
 
 export function Header({ cartItemCount, onCartClick }: HeaderProps) {
-  const [location] = useLocation();
-  
   return (
     <>
       <div className="bg-primary text-primary-foreground py-2 text-center text-sm font-medium tracking-wide">
         FREE SHIPPING ON ALL ORDERS
       </div>
       
-      <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/">
-              <img 
-                src={logoUrl} 
-                alt="WOW Jewelry" 
-                className="h-16 md:h-20 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                data-testid="link-home"
-              />
-            </Link>
-
-            <nav className="hidden md:flex items-center gap-8">
-              <Link href="/">
-                <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/" ? "text-primary font-semibold" : ""}`} data-testid="link-shop">
-                  Shop
-                </span>
-              </Link>
-              <Link href="/orders">
-                <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/orders" ? "text-primary font-semibold" : ""}`} data-testid="link-orders">
-                  Orders
-                </span>
-              </Link>
-            </nav>
-
+      <header className="sticky top-0 z-50 bg-white border-b border-border">
+        <Link href="/">
+          <div className="relative w-full h-24 md:h-32 cursor-pointer" data-testid="link-home">
+            <img 
+              src={logoUrl} 
+              alt="WOW Jewelry" 
+              className="w-full h-full object-contain"
+            />
             <Button
               variant="ghost"
               size="icon"
-              onClick={onCartClick}
-              className="relative"
+              onClick={(e) => {
+                e.preventDefault();
+                onCartClick();
+              }}
+              className="absolute top-1/2 -translate-y-1/2 right-4 md:right-8"
               data-testid="button-cart"
             >
               <ShoppingCart className="w-5 h-5" />
@@ -62,7 +46,7 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
               )}
             </Button>
           </div>
-        </div>
+        </Link>
       </header>
     </>
   );
