@@ -243,21 +243,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const transaction = await transactionResponse.json();
       
       // Debug: Log the full Shippo transaction response
-      console.log("Shippo Transaction Response:", JSON.stringify(transaction, null, 2));
-      console.log("Label URL:", transaction.label_url);
-      console.log("Tracking Number:", transaction.tracking_number);
+      console.log("=== SHIPPO TRANSACTION RESPONSE ===");
+      console.log(JSON.stringify(transaction, null, 2));
+      console.log("=== END SHIPPO RESPONSE ===");
+      
+      // Check transaction status
+      if (transaction.status !== "SUCCESS") {
+        throw new Error(`Shippo transaction failed with status: ${transaction.status}. Messages: ${JSON.stringify(transaction.messages)}`);
+      }
+      
+      // Shippo uses label_url for the PDF URL
+      const labelUrl = transaction.label_url;
+      const trackingNumber = transaction.tracking_number;
+      
+      if (!labelUrl) {
+        throw new Error("Shippo did not return a label URL. Response: " + JSON.stringify(transaction));
+      }
+      
+      if (!trackingNumber) {
+        throw new Error("Shippo did not return a tracking number. Response: " + JSON.stringify(transaction));
+      }
 
       const updatedOrder = await storage.updateShippingLabel(
         order.id,
-        transaction.tracking_number,
-        transaction.label_url,
+        trackingNumber,
+        labelUrl,
         cheapestRate.provider
       );
 
       res.json({
         success: true,
-        labelUrl: transaction.label_url,
-        trackingNumber: transaction.tracking_number,
+        labelUrl: labelUrl,
+        trackingNumber: trackingNumber,
         carrier: cheapestRate.provider,
         order: updatedOrder,
       });
