@@ -72,11 +72,13 @@ Preferred communication style: Simple, everyday language.
 - Stripe webhook endpoint for payment confirmation with raw body verification
 - Validation using Zod schemas derived from Drizzle ORM table definitions
 
-**Data Storage Strategy**
-- In-memory storage implementation (MemStorage class) for development/demo purposes
-- Interface-based storage abstraction (IStorage) allowing future database implementation
-- Sample product data initialization with realistic jewelry items
-- UUID generation for entity identifiers
+**Data Storage Strategy** (Updated November 2025)
+- **PostgreSQL Database**: Switched from in-memory (MemStorage) to persistent database storage (DatabaseStorage)
+- Production database via Neon serverless PostgreSQL for permanent order/product persistence
+- Interface-based storage abstraction (IStorage) maintains code flexibility
+- Sample product data seeded via `server/seed.ts` script
+- UUID generation for entity identifiers using PostgreSQL's `gen_random_uuid()`
+- Orders now persist across deployments and server restarts
 
 **Security Implementation** (Added October 2025)
 - Helmet middleware for security headers protecting against common web vulnerabilities
@@ -153,6 +155,7 @@ Preferred communication style: Simple, everyday language.
   - Tracking number generation and storage
   - API key required: SHIPPO_API_KEY (stored in secrets)
   - Ship-from address configurable via environment variables (SHIP_FROM_ADDRESS, SHIP_FROM_CITY, SHIP_FROM_STATE, SHIP_FROM_ZIP)
+  - **KNOWN ISSUE (Nov 1, 2025)**: Shippo account currently suspended - tracking numbers generate but PDF labels not available until suspension resolved. User contacted Shippo support. Once unsuspended, the "View Label" button will work and PDFs will auto-open in new tab.
 - **SendGrid Email Integration**: Transactional email notifications
   - Customer order confirmation and shipping notification emails
   - Admin notification system (to be implemented)
