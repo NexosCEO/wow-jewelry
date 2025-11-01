@@ -12,6 +12,12 @@ export interface IStorage {
   getOrder(id: string): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
+  updateShippingLabel(
+    id: string,
+    trackingNumber: string,
+    shippingLabelUrl: string,
+    shippingCarrier: string
+  ): Promise<Order | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -204,6 +210,9 @@ export class MemStorage implements IStorage {
       totalAmount: insertOrder.totalAmount,
       status: insertOrder.status ?? "pending",
       stripePaymentIntentId: insertOrder.stripePaymentIntentId ?? null,
+      trackingNumber: null,
+      shippingLabelUrl: null,
+      shippingCarrier: null,
       createdAt: new Date(),
     };
     this.orders.set(id, order);
@@ -215,6 +224,26 @@ export class MemStorage implements IStorage {
     if (!order) return undefined;
     
     const updatedOrder = { ...order, status };
+    this.orders.set(id, updatedOrder);
+    return updatedOrder;
+  }
+
+  async updateShippingLabel(
+    id: string,
+    trackingNumber: string,
+    shippingLabelUrl: string,
+    shippingCarrier: string
+  ): Promise<Order | undefined> {
+    const order = this.orders.get(id);
+    if (!order) return undefined;
+    
+    const updatedOrder = {
+      ...order,
+      trackingNumber,
+      shippingLabelUrl,
+      shippingCarrier,
+      status: "shipped",
+    };
     this.orders.set(id, updatedOrder);
     return updatedOrder;
   }

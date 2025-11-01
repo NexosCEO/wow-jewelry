@@ -99,7 +99,7 @@ Preferred communication style: Simple, everyday language.
 
 **Schema Design**
 - **Products Table**: Core product information with pricing (regular and sale), images (primary and secondary), category, inventory tracking
-- **Orders Table**: Customer information, shipping address, order items (stored as JSON), payment tracking (Stripe payment intent ID), order status, timestamps
+- **Orders Table**: Customer information, shipping address, order items (stored as JSON), payment tracking (Stripe payment intent ID), order status, shipping label data (tracking number, label URL, carrier), timestamps
 - Decimal precision for monetary values (10 digits, 2 decimal places)
 - UUID primary keys using PostgreSQL's `gen_random_uuid()`
 - Default values for boolean flags and timestamps
@@ -145,6 +145,35 @@ Preferred communication style: Simple, everyday language.
 - @replit/vite-plugin-dev-banner for development environment indicator
 - tsx for running TypeScript directly in development
 - esbuild for production server bundling
+
+**Shipping & Email Services** (Added November 2025)
+- **Shippo API Integration**: Shipping label generation for USPS, UPS, FedEx, DHL
+  - Automatic rate comparison and selection of cheapest carrier
+  - PDF shipping labels printable on regular or thermal printers
+  - Tracking number generation and storage
+  - API key required: SHIPPO_API_KEY (stored in secrets)
+  - Ship-from address configurable via environment variables (SHIP_FROM_ADDRESS, SHIP_FROM_CITY, SHIP_FROM_STATE, SHIP_FROM_ZIP)
+- **SendGrid Email Integration**: Transactional email notifications
+  - Customer order confirmation and shipping notification emails
+  - Admin notification system (to be implemented)
+  - Professional HTML email templates with order details and tracking
+  - API key required: SENDGRID_API_KEY (stored in secrets)
+  - From email configurable via SENDGRID_FROM_EMAIL environment variable
+- **NOTE**: User declined to use Replit's SendGrid connector integration, preferring manual API key management
+
+**Admin Dashboard** (Added November 2025)
+- Accessible at `/admin` route for order management
+- **Authentication**: Protected by ADMIN_ACCESS_KEY secret (Bearer token authentication)
+  - Admin must enter access key to view dashboard
+  - All privileged endpoints require valid admin token
+  - Prevents unauthorized access to order data and shipping/email operations
+- Features:
+  - View all orders with customer information and shipping details
+  - One-click shipping label generation via Shippo API
+  - Download and print labels as PDF (works with regular printers or thermal label printers like DYMO LabelWriter 4XL)
+  - Send customer notifications with tracking information
+  - Order status tracking (pending → shipped)
+  - Tracking number and carrier information display
 
 **Design Assets**
 - Google Fonts CDN for Inter, Montserrat, and Playfair Display

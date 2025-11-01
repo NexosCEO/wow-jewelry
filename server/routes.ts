@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
 import { insertProductSchema, insertOrderSchema } from "@shared/schema";
+import { requireAdmin } from "./auth-middleware";
 
 let stripe: Stripe | null = null;
 
@@ -117,7 +118,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/orders", async (req, res) => {
+  app.get("/api/orders", requireAdmin, async (req, res) => {
     try {
       const orders = await storage.getAllOrders();
       res.json(orders);
@@ -126,7 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/orders/:id", async (req, res) => {
+  app.get("/api/orders/:id", requireAdmin, async (req, res) => {
     try {
       const order = await storage.getOrder(req.params.id);
       if (!order) {
@@ -138,7 +139,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/orders/:id/status", async (req, res) => {
+  app.patch("/api/orders/:id/status", requireAdmin, async (req, res) => {
     try {
       const { status } = req.body;
       const order = await storage.updateOrderStatus(req.params.id, status);
@@ -148,6 +149,213 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(order);
     } catch (error: any) {
       res.status(500).json({ message: "Error updating order: " + error.message });
+    }
+  });
+
+  app.post("/api/orders/:id/shipping-label", requireAdmin, async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      if (!process.env.SHIPPO_API_KEY) {
+        return res.status(503).json({
+          message: "Shipping label service not configured. Please add SHIPPO_API_KEY to secrets.",
+        });
+      }
+
+      const shippoApiKey = process.env.SHIPPO_API_KEY;
+      const shippoUrl = "https://api.goshippo.com/shipments/";
+
+      const shipmentData = {
+        address_from: {
+          name: "WOW by Dany",
+          street1: process.env.SHIP_FROM_ADDRESS || "123 Main St",
+          city: process.env.SHIP_FROM_CITY || "Los Angeles",
+          state: process.env.SHIP_FROM_STATE || "CA",
+          zip: process.env.SHIP_FROM_ZIP || "90001",
+          country: "US",
+        },
+        address_to: {
+          name: order.customerName,
+          street1: order.shippingAddress,
+          city: order.city,
+          state: order.state,
+          zip: order.zipCode,
+          country: "US",
+        },
+        parcels: [
+          {
+            length: "5",
+            width: "5",
+            height: "2",
+            distance_unit: "in",
+            weight: "8",
+            mass_unit: "oz",
+          },
+        ],
+        async: false,
+      };
+
+      const shipmentResponse = await fetch(shippoUrl, {
+        method: "POST",
+        headers: {
+          "Authorization": `ShippoToken ${shippoApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(shipmentData),
+      });
+
+      if (!shipmentResponse.ok) {
+        const errorText = await shipmentResponse.text();
+        throw new Error(`Shippo API error: ${errorText}`);
+      }
+
+      const shipment = await shipmentResponse.json();
+
+      if (!shipment.rates || shipment.rates.length === 0) {
+        throw new Error("No shipping rates available");
+      }
+
+      const cheapestRate = shipment.rates.reduce((prev: any, curr: any) =>
+        parseFloat(prev.amount) < parseFloat(curr.amount) ? prev : curr
+      );
+
+      const transactionResponse = await fetch("https://api.goshippo.com/transactions/", {
+        method: "POST",
+        headers: {
+          "Authorization": `ShippoToken ${shippoApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rate: cheapestRate.object_id,
+          label_file_type: "PDF",
+          async: false,
+        }),
+      });
+
+      if (!transactionResponse.ok) {
+        const errorText = await transactionResponse.text();
+        throw new Error(`Shippo transaction error: ${errorText}`);
+      }
+
+      const transaction = await transactionResponse.json();
+
+      const updatedOrder = await storage.updateShippingLabel(
+        order.id,
+        transaction.tracking_number,
+        transaction.label_url,
+        cheapestRate.provider
+      );
+
+      res.json({
+        success: true,
+        labelUrl: transaction.label_url,
+        trackingNumber: transaction.tracking_number,
+        carrier: cheapestRate.provider,
+        order: updatedOrder,
+      });
+    } catch (error: any) {
+      console.error("Shipping label error:", error);
+      res.status(500).json({ message: "Error generating shipping label: " + error.message });
+    }
+  });
+
+  app.post("/api/orders/:id/notify", requireAdmin, async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      if (!process.env.SENDGRID_API_KEY) {
+        return res.status(503).json({
+          message: "Email service not configured. Please add SENDGRID_API_KEY to secrets.",
+        });
+      }
+
+      const sendgridApiKey = process.env.SENDGRID_API_KEY;
+      const items = JSON.parse(order.items);
+      
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #3a362f;">Order Shipped - Tracking Available</h2>
+          <p>Dear ${order.customerName},</p>
+          <p>Great news! Your order has been shipped and is on its way to you.</p>
+          
+          ${order.trackingNumber ? `
+            <div style="background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 8px;">
+              <p style="margin: 0;"><strong>Tracking Number:</strong></p>
+              <p style="font-size: 18px; font-family: monospace; margin: 5px 0;">${order.trackingNumber}</p>
+              ${order.shippingCarrier ? `<p style="margin: 0;"><strong>Carrier:</strong> ${order.shippingCarrier.toUpperCase()}</p>` : ''}
+            </div>
+          ` : ''}
+
+          <h3>Order Details:</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            ${items.map((item: any) => `
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                  ${item.product.name} x ${item.quantity}
+                </td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                  $${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
+                </td>
+              </tr>
+            `).join('')}
+            <tr>
+              <td style="padding: 8px 0; font-weight: bold;">Total</td>
+              <td style="padding: 8px 0; text-align: right; font-weight: bold;">
+                $${parseFloat(order.totalAmount).toFixed(2)}
+              </td>
+            </tr>
+          </table>
+
+          <p style="margin-top: 20px;">Thank you for shopping with WOW Jewelry!</p>
+          <p style="color: #666; font-size: 12px;">
+            If you have any questions, please contact us at jewelryboutiquewow@gmail.com
+          </p>
+        </div>
+      `;
+
+      const emailResponse = await fetch("https://api.sendgrid.com/v3/mail/send", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${sendgridApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          personalizations: [
+            {
+              to: [{ email: order.customerEmail, name: order.customerName }],
+              subject: order.trackingNumber
+                ? `Your WOW Jewelry Order Has Shipped! 📦`
+                : `Order Confirmation - WOW Jewelry`,
+            },
+          ],
+          from: {
+            email: process.env.SENDGRID_FROM_EMAIL || "orders@wowjewelry.com",
+            name: "WOW by Dany",
+          },
+          content: [
+            {
+              type: "text/html",
+              value: emailHtml,
+            },
+          ],
+        }),
+      });
+
+      if (!emailResponse.ok) {
+        const errorText = await emailResponse.text();
+        throw new Error(`SendGrid API error: ${errorText}`);
+      }
+
+      res.json({ success: true, message: "Email sent successfully" });
+    } catch (error: any) {
+      console.error("Email notification error:", error);
+      res.status(500).json({ message: "Error sending email: " + error.message });
     }
   });
 
