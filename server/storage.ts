@@ -1,4 +1,11 @@
-import { type Product, type InsertProduct, type Order, type InsertOrder, products, orders } from "@shared/schema";
+import { 
+  type Product, type InsertProduct, 
+  type Order, type InsertOrder,
+  type Charm, type InsertCharm,
+  type BraceletTemplate, type InsertBraceletTemplate,
+  type CustomBraceletConfiguration, type InsertCustomBraceletConfiguration,
+  products, orders, charms, braceletTemplates, customBraceletConfigurations
+} from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -20,6 +27,17 @@ export interface IStorage {
     shippingLabelUrl: string,
     shippingCarrier: string
   ): Promise<Order | undefined>;
+
+  getAllCharms(): Promise<Charm[]>;
+  getCharm(id: string): Promise<Charm | undefined>;
+  createCharm(charm: InsertCharm): Promise<Charm>;
+  
+  getAllBraceletTemplates(): Promise<BraceletTemplate[]>;
+  getBraceletTemplate(id: string): Promise<BraceletTemplate | undefined>;
+  createBraceletTemplate(template: InsertBraceletTemplate): Promise<BraceletTemplate>;
+  
+  createCustomBraceletConfiguration(config: InsertCustomBraceletConfiguration): Promise<CustomBraceletConfiguration>;
+  getCustomBraceletConfiguration(id: string): Promise<CustomBraceletConfiguration | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -338,6 +356,53 @@ export class DatabaseStorage implements IStorage {
       .where(eq(orders.id, id))
       .returning();
     return order || undefined;
+  }
+
+  async getAllCharms(): Promise<Charm[]> {
+    return await db.select().from(charms);
+  }
+
+  async getCharm(id: string): Promise<Charm | undefined> {
+    const [charm] = await db.select().from(charms).where(eq(charms.id, id));
+    return charm || undefined;
+  }
+
+  async createCharm(insertCharm: InsertCharm): Promise<Charm> {
+    const [charm] = await db
+      .insert(charms)
+      .values(insertCharm)
+      .returning();
+    return charm;
+  }
+
+  async getAllBraceletTemplates(): Promise<BraceletTemplate[]> {
+    return await db.select().from(braceletTemplates);
+  }
+
+  async getBraceletTemplate(id: string): Promise<BraceletTemplate | undefined> {
+    const [template] = await db.select().from(braceletTemplates).where(eq(braceletTemplates.id, id));
+    return template || undefined;
+  }
+
+  async createBraceletTemplate(insertTemplate: InsertBraceletTemplate): Promise<BraceletTemplate> {
+    const [template] = await db
+      .insert(braceletTemplates)
+      .values(insertTemplate)
+      .returning();
+    return template;
+  }
+
+  async createCustomBraceletConfiguration(insertConfig: InsertCustomBraceletConfiguration): Promise<CustomBraceletConfiguration> {
+    const [config] = await db
+      .insert(customBraceletConfigurations)
+      .values(insertConfig)
+      .returning();
+    return config;
+  }
+
+  async getCustomBraceletConfiguration(id: string): Promise<CustomBraceletConfiguration | undefined> {
+    const [config] = await db.select().from(customBraceletConfigurations).where(eq(customBraceletConfigurations.id, id));
+    return config || undefined;
   }
 }
 

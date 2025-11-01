@@ -34,6 +34,36 @@ export const orders = pgTable("orders", {
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
+export const charms = pgTable("charms", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  imageUrl: text("image_url").notNull(),
+  category: text("category").notNull(),
+  inStock: boolean("in_stock").notNull().default(true),
+  stockQuantity: integer("stock_quantity").notNull().default(0),
+});
+
+export const braceletTemplates = pgTable("bracelet_templates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  basePrice: decimal("base_price", { precision: 10, scale: 2 }).notNull(),
+  maxSlots: integer("max_slots").notNull().default(11),
+  imageUrl: text("image_url").notNull(),
+  category: text("category").notNull(),
+  inStock: boolean("in_stock").notNull().default(true),
+});
+
+export const customBraceletConfigurations = pgTable("custom_bracelet_configurations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  templateId: varchar("template_id").notNull(),
+  selectedCharms: text("selected_charms").notNull(),
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
 });
@@ -43,12 +73,40 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   createdAt: true,
 });
 
+export const insertCharmSchema = createInsertSchema(charms).omit({
+  id: true,
+});
+
+export const insertBraceletTemplateSchema = createInsertSchema(braceletTemplates).omit({
+  id: true,
+});
+
+export const insertCustomBraceletConfigurationSchema = createInsertSchema(customBraceletConfigurations).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type Charm = typeof charms.$inferSelect;
+export type InsertCharm = z.infer<typeof insertCharmSchema>;
+export type BraceletTemplate = typeof braceletTemplates.$inferSelect;
+export type InsertBraceletTemplate = z.infer<typeof insertBraceletTemplateSchema>;
+export type CustomBraceletConfiguration = typeof customBraceletConfigurations.$inferSelect;
+export type InsertCustomBraceletConfiguration = z.infer<typeof insertCustomBraceletConfigurationSchema>;
 
 export interface CartItem {
   product: Product;
+  quantity: number;
+}
+
+export interface CustomBraceletCartItem {
+  type: "custom-bracelet";
+  configId: string;
+  templateName: string;
+  charmNames: string[];
+  price: string;
   quantity: number;
 }
