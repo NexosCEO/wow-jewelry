@@ -1,5 +1,7 @@
-import { type Product, type InsertProduct, type Order, type InsertOrder } from "@shared/schema";
+import { type Product, type InsertProduct, type Order, type InsertOrder, products, orders } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getAllProducts(): Promise<Product[]>;
@@ -260,4 +262,83 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database-backed storage implementation
+export class DatabaseStorage implements IStorage {
+  async getAllProducts(): Promise<Product[]> {
+    return await db.select().from(products);
+  }
+
+  async getProduct(id: string): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product || undefined;
+  }
+
+  async createProduct(insertProduct: InsertProduct): Promise<Product> {
+    const [product] = await db
+      .insert(products)
+      .values(insertProduct)
+      .returning();
+    return product;
+  }
+
+  async updateProduct(id: string, updates: Partial<InsertProduct>): Promise<Product | undefined> {
+    const [product] = await db
+      .update(products)
+      .set(updates)
+      .where(eq(products.id, id))
+      .returning();
+    return product || undefined;
+  }
+
+  async deleteProduct(id: string): Promise<boolean> {
+    const result = await db.delete(products).where(eq(products.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async getAllOrders(): Promise<Order[]> {
+    return await db.select().from(orders).orderBy(desc(orders.createdAt));
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order || undefined;
+  }
+
+  async createOrder(insertOrder: InsertOrder): Promise<Order> {
+    const [order] = await db
+      .insert(orders)
+      .values(insertOrder)
+      .returning();
+    return order;
+  }
+
+  async updateOrderStatus(id: string, status: string): Promise<Order | undefined> {
+    const [order] = await db
+      .update(orders)
+      .set({ status })
+      .where(eq(orders.id, id))
+      .returning();
+    return order || undefined;
+  }
+
+  async updateShippingLabel(
+    id: string,
+    trackingNumber: string,
+    shippingLabelUrl: string,
+    shippingCarrier: string
+  ): Promise<Order | undefined> {
+    const [order] = await db
+      .update(orders)
+      .set({
+        trackingNumber,
+        shippingLabelUrl,
+        shippingCarrier,
+        status: "shipped",
+      })
+      .where(eq(orders.id, id))
+      .returning();
+    return order || undefined;
+  }
+}
+
+export const storage = new DatabaseStorage();

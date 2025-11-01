@@ -241,6 +241,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const transaction = await transactionResponse.json();
+      
+      // Debug: Log the full Shippo transaction response
+      console.log("Shippo Transaction Response:", JSON.stringify(transaction, null, 2));
+      console.log("Label URL:", transaction.label_url);
+      console.log("Tracking Number:", transaction.tracking_number);
 
       const updatedOrder = await storage.updateShippingLabel(
         order.id,
