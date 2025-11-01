@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
-import { insertProductSchema, insertOrderSchema } from "@shared/schema";
+import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema } from "@shared/schema";
 import { requireAdmin } from "./auth-middleware";
 
 let stripe: Stripe | null = null;
@@ -70,6 +70,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error: any) {
       res.status(500).json({ message: "Error deleting product: " + error.message });
+    }
+  });
+
+  app.get("/api/bracelet-templates", async (req, res) => {
+    try {
+      const templates = await storage.getAllBraceletTemplates();
+      res.json(templates);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching bracelet templates: " + error.message });
+    }
+  });
+
+  app.get("/api/bracelet-templates/:id", async (req, res) => {
+    try {
+      const template = await storage.getBraceletTemplate(req.params.id);
+      if (!template) {
+        return res.status(404).json({ message: "Bracelet template not found" });
+      }
+      res.json(template);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching bracelet template: " + error.message });
+    }
+  });
+
+  app.get("/api/charms", async (req, res) => {
+    try {
+      const charms = await storage.getAllCharms();
+      res.json(charms);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching charms: " + error.message });
+    }
+  });
+
+  app.get("/api/charms/:id", async (req, res) => {
+    try {
+      const charm = await storage.getCharm(req.params.id);
+      if (!charm) {
+        return res.status(404).json({ message: "Charm not found" });
+      }
+      res.json(charm);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching charm: " + error.message });
+    }
+  });
+
+  app.post("/api/custom-bracelet", async (req, res) => {
+    try {
+      const validatedData = insertCustomBraceletConfigurationSchema.parse(req.body);
+      const config = await storage.createCustomBraceletConfiguration(validatedData);
+      res.status(201).json(config);
+    } catch (error: any) {
+      res.status(400).json({ message: "Error creating custom bracelet: " + error.message });
+    }
+  });
+
+  app.get("/api/custom-bracelet/:id", async (req, res) => {
+    try {
+      const config = await storage.getCustomBraceletConfiguration(req.params.id);
+      if (!config) {
+        return res.status(404).json({ message: "Custom bracelet configuration not found" });
+      }
+      res.json(config);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching custom bracelet: " + error.message });
     }
   });
 
