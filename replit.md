@@ -2,7 +2,7 @@
 
 ## Overview
 
-WOW Jewelry is a handmade artisan jewelry e-commerce platform built as a full-stack web application. The platform enables customers to browse a curated collection of handcrafted jewelry pieces including necklaces, earrings, bracelets, and rings, add items to a shopping cart, and complete purchases through integrated payment processing. The application features a clean, elegant design inspired by modern e-commerce aesthetics, with a focus on showcasing product photography and providing a smooth checkout experience.
+WOW Jewelry (WOW by Dany) is a handmade artisan jewelry e-commerce platform built as a full-stack web application. Live site: https://wowbydany.com The platform enables customers to browse a curated collection of handcrafted jewelry pieces including necklaces, earrings, bracelets, and rings, add items to a shopping cart, and complete purchases through integrated payment processing. The application features a clean, elegant design inspired by modern e-commerce aesthetics, with a focus on showcasing product photography and providing a smooth checkout experience.
 
 ## User Preferences
 
