@@ -9,6 +9,7 @@ import { Header } from "@/components/Header";
 import { CartDrawer } from "@/components/CartDrawer";
 import Home from "@/pages/Home";
 import ProductDetail from "@/pages/ProductDetail";
+import BraceletBuilder from "@/pages/BraceletBuilder";
 import Checkout from "@/pages/Checkout";
 import Orders from "@/pages/Orders";
 import Admin from "@/pages/Admin";
@@ -87,6 +88,7 @@ function Router() {
       <Switch>
         <Route path="/" component={() => <Home onAddToCart={handleAddToCart} />} />
         <Route path="/product/:id" component={() => <ProductDetail onAddToCart={handleAddToCart} />} />
+        <Route path="/bracelet-builder" component={() => <BraceletBuilder onAddToCart={handleAddToCart} />} />
         <Route path="/checkout" component={() => <Checkout cart={cart} onClearCart={handleClearCart} />} />
         <Route path="/orders" component={Orders} />
         <Route path="/admin" component={Admin} />
