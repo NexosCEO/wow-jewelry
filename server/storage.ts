@@ -120,6 +120,17 @@ export class MemStorage implements IStorage {
         inStock: true,
         stockQuantity: 5,
       },
+      {
+        name: "Test Item - $1",
+        description: "Test product for payment and shipping verification. Purchase this to test the complete checkout, payment, and admin shipping label process.",
+        price: "1.00",
+        regularPrice: null,
+        imageUrl: "/attached_assets/IMG_3453_1761882788256.jpeg",
+        imageUrl2: null,
+        category: "Jewelry",
+        inStock: true,
+        stockQuantity: 999,
+      },
     ];
 
     sampleProducts.forEach((insertProduct) => {
