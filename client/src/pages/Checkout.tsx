@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useStripe, useElements, PaymentElement, Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { CartItem } from "@shared/schema";
+import { CartItem, CustomBraceletCartItem } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,11 +10,13 @@ import { apiRequest } from "@/lib/queryClient";
 import { Loader2, Lock, Shield, CreditCard } from "lucide-react";
 import { useLocation } from "wouter";
 
+type UnifiedCartItem = CartItem | CustomBraceletCartItem;
+
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
   : null;
 
-function CheckoutForm({ cart, onSuccess }: { cart: CartItem[]; onSuccess: () => void }) {
+function CheckoutForm({ cart, onSuccess }: { cart: UnifiedCartItem[]; onSuccess: () => void }) {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -28,9 +30,14 @@ function CheckoutForm({ cart, onSuccess }: { cart: CartItem[]; onSuccess: () => 
     zipCode: "",
   });
 
-  const total = cart.reduce((sum, item) => 
-    sum + parseFloat(item.product.price) * item.quantity, 0
-  );
+  const total = cart.reduce((sum, item) => {
+    if ("product" in item) {
+      return sum + parseFloat(item.product.price) * item.quantity;
+    } else if ("price" in item) {
+      return sum + parseFloat(item.price) * item.quantity;
+    }
+    return sum;
+  }, 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -233,7 +240,7 @@ function CheckoutForm({ cart, onSuccess }: { cart: CartItem[]; onSuccess: () => 
 }
 
 interface CheckoutProps {
-  cart: CartItem[];
+  cart: UnifiedCartItem[];
   onClearCart: () => void;
 }
 
@@ -242,9 +249,14 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const [clientSecret, setClientSecret] = useState("");
   const { toast } = useToast();
 
-  const total = cart.reduce((sum, item) => 
-    sum + parseFloat(item.product.price) * item.quantity, 0
-  );
+  const total = cart.reduce((sum, item) => {
+    if ("product" in item) {
+      return sum + parseFloat(item.product.price) * item.quantity;
+    } else if ("price" in item) {
+      return sum + parseFloat(item.price) * item.quantity;
+    }
+    return sum;
+  }, 0);
 
   useEffect(() => {
     if (cart.length === 0) {
@@ -317,16 +329,23 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
         <div className="mb-8 p-4 bg-card rounded-md border border-card-border">
           <h3 className="font-semibold mb-4">Order Summary</h3>
           <div className="space-y-2">
-            {cart.map((item) => (
-              <div key={item.product.id} className="flex justify-between text-sm" data-testid={`summary-item-${item.product.id}`}>
-                <span>
-                  {item.product.name} x {item.quantity}
-                </span>
-                <span className="font-medium">
-                  ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
-                </span>
-              </div>
-            ))}
+            {cart.map((item) => {
+              const isProduct = "product" in item;
+              const itemId = isProduct ? item.product.id : item.configId;
+              const itemName = isProduct ? item.product.name : item.templateName;
+              const itemPrice = isProduct ? item.product.price : item.price;
+              
+              return (
+                <div key={itemId} className="flex justify-between text-sm" data-testid={`summary-item-${itemId}`}>
+                  <span>
+                    {itemName} x {item.quantity}
+                  </span>
+                  <span className="font-medium">
+                    ${(parseFloat(itemPrice) * item.quantity).toFixed(2)}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 

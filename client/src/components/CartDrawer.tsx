@@ -1,24 +1,31 @@
-import { CartItem } from "@shared/schema";
+import { CartItem, CustomBraceletCartItem } from "@shared/schema";
 import { X, Plus, Minus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useLocation } from "wouter";
 
+type UnifiedCartItem = CartItem | CustomBraceletCartItem;
+
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  cart: CartItem[];
-  onUpdateQuantity: (productId: string, quantity: number) => void;
-  onRemoveItem: (productId: string) => void;
+  cart: UnifiedCartItem[];
+  onUpdateQuantity: (itemId: string, quantity: number) => void;
+  onRemoveItem: (itemId: string) => void;
 }
 
 export function CartDrawer({ isOpen, onClose, cart, onUpdateQuantity, onRemoveItem }: CartDrawerProps) {
   const [, setLocation] = useLocation();
   
-  const subtotal = cart.reduce((sum, item) => 
-    sum + parseFloat(item.product.price) * item.quantity, 0
-  );
+  const subtotal = cart.reduce((sum, item) => {
+    if ("product" in item) {
+      return sum + parseFloat(item.product.price) * item.quantity;
+    } else if ("price" in item) {
+      return sum + parseFloat(item.price) * item.quantity;
+    }
+    return sum;
+  }, 0);
 
   const handleCheckout = () => {
     onClose();
@@ -55,60 +62,73 @@ export function CartDrawer({ isOpen, onClose, cart, onUpdateQuantity, onRemoveIt
             <>
               <ScrollArea className="flex-1 p-6">
                 <div className="space-y-4">
-                  {cart.map((item) => (
-                    <div key={item.product.id} className="flex gap-4" data-testid={`cart-item-${item.product.id}`}>
-                      <img
-                        src={item.product.imageUrl}
-                        alt={item.product.name}
-                        className="w-20 h-20 object-cover rounded-md border border-card-border"
-                        data-testid={`img-cart-${item.product.id}`}
-                      />
-                      
-                      <div className="flex-1 space-y-2">
-                        <h3 className="font-medium" data-testid={`text-cart-name-${item.product.id}`}>{item.product.name}</h3>
-                        <p className="text-sm font-semibold" data-testid={`text-cart-price-${item.product.id}`}>
-                          ${parseFloat(item.product.price).toFixed(2)}
-                        </p>
+                  {cart.map((item) => {
+                    const isProduct = "product" in item;
+                    const itemId = isProduct ? item.product.id : item.configId;
+                    const itemName = isProduct ? item.product.name : item.templateName;
+                    const itemPrice = isProduct ? item.product.price : item.price;
+                    const itemImage = isProduct ? item.product.imageUrl : "/attached_assets/IMG_3453_1761882788256.jpeg";
+                    
+                    return (
+                      <div key={itemId} className="flex gap-4" data-testid={`cart-item-${itemId}`}>
+                        <img
+                          src={itemImage}
+                          alt={itemName}
+                          className="w-20 h-20 object-cover rounded-md border border-card-border"
+                          data-testid={`img-cart-${itemId}`}
+                        />
                         
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
-                            disabled={item.quantity <= 1}
-                            data-testid={`button-decrease-${item.product.id}`}
-                          >
-                            <Minus className="w-3 h-3" />
-                          </Button>
+                        <div className="flex-1 space-y-2">
+                          <h3 className="font-medium" data-testid={`text-cart-name-${itemId}`}>{itemName}</h3>
+                          {!isProduct && "charmNames" in item && (
+                            <p className="text-xs text-muted-foreground">
+                              {item.charmNames.join(", ")}
+                            </p>
+                          )}
+                          <p className="text-sm font-semibold" data-testid={`text-cart-price-${itemId}`}>
+                            ${parseFloat(itemPrice).toFixed(2)}
+                          </p>
                           
-                          <span className="w-8 text-center" data-testid={`text-quantity-${item.product.id}`}>
-                            {item.quantity}
-                          </span>
-                          
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
-                            data-testid={`button-increase-${item.product.id}`}
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
-                          
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 ml-auto"
-                            onClick={() => onRemoveItem(item.product.id)}
-                            data-testid={`button-remove-${item.product.id}`}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => onUpdateQuantity(itemId, item.quantity - 1)}
+                              disabled={item.quantity <= 1}
+                              data-testid={`button-decrease-${itemId}`}
+                            >
+                              <Minus className="w-3 h-3" />
+                            </Button>
+                            
+                            <span className="w-8 text-center" data-testid={`text-quantity-${itemId}`}>
+                              {item.quantity}
+                            </span>
+                            
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => onUpdateQuantity(itemId, item.quantity + 1)}
+                              data-testid={`button-increase-${itemId}`}
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                            
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 ml-auto"
+                              onClick={() => onRemoveItem(itemId)}
+                              data-testid={`button-remove-${itemId}`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </ScrollArea>
 

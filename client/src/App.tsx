@@ -4,9 +4,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState, useEffect } from "react";
-import { CartItem, Product } from "@shared/schema";
+import { CartItem, Product, CustomBraceletCartItem } from "@shared/schema";
 import { Header } from "@/components/Header";
 import { CartDrawer } from "@/components/CartDrawer";
+
+type UnifiedCartItem = CartItem | CustomBraceletCartItem;
 import Home from "@/pages/Home";
 import ProductDetail from "@/pages/ProductDetail";
 import BraceletBuilder from "@/pages/BraceletBuilder";
@@ -17,7 +19,7 @@ import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 
 function Router() {
-  const [cart, setCart] = useState<CartItem[]>(() => {
+  const [cart, setCart] = useState<UnifiedCartItem[]>(() => {
     const saved = localStorage.getItem("wow-cart");
     return saved ? JSON.parse(saved) : [];
   });
@@ -28,39 +30,60 @@ function Router() {
     localStorage.setItem("wow-cart", JSON.stringify(cart));
   }, [cart]);
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (item: Product | CustomBraceletCartItem) => {
     setCart((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id);
-      if (existing) {
+      if ("type" in item && item.type === "custom-bracelet") {
+        const customItem = item as CustomBraceletCartItem;
         toast({
-          title: "Cart Updated",
-          description: `${product.name} quantity increased`,
+          title: "Added to Cart",
+          description: "Your custom bracelet has been added to cart!",
         });
-        return prev.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+        return [...prev, { ...customItem, quantity: 1 }];
+      } else {
+        const product = item as Product;
+        const existing = prev.find((cartItem) => 
+          "product" in cartItem && cartItem.product.id === product.id
         );
+        if (existing && "product" in existing) {
+          toast({
+            title: "Cart Updated",
+            description: `${product.name} quantity increased`,
+          });
+          return prev.map((cartItem) =>
+            "product" in cartItem && cartItem.product.id === product.id
+              ? { ...cartItem, quantity: cartItem.quantity + 1 }
+              : cartItem
+          );
+        }
+        toast({
+          title: "Added to Cart",
+          description: `${product.name} has been added to your cart`,
+        });
+        return [...prev, { product, quantity: 1 } as CartItem];
       }
-      toast({
-        title: "Added to Cart",
-        description: `${product.name} has been added to your cart`,
-      });
-      return [...prev, { product, quantity: 1 }];
     });
   };
 
-  const handleUpdateQuantity = (productId: string, quantity: number) => {
+  const handleUpdateQuantity = (itemId: string, quantity: number) => {
     if (quantity < 1) return;
     setCart((prev) =>
-      prev.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
-      )
+      prev.map((item) => {
+        if ("product" in item && item.product.id === itemId) {
+          return { ...item, quantity };
+        } else if ("configId" in item && item.configId === itemId) {
+          return { ...item, quantity };
+        }
+        return item;
+      })
     );
   };
 
-  const handleRemoveItem = (productId: string) => {
-    setCart((prev) => prev.filter((item) => item.product.id !== productId));
+  const handleRemoveItem = (itemId: string) => {
+    setCart((prev) => prev.filter((item) => {
+      if ("product" in item) return item.product.id !== itemId;
+      if ("configId" in item) return item.configId !== itemId;
+      return true;
+    }));
     toast({
       title: "Item Removed",
       description: "Item has been removed from your cart",
