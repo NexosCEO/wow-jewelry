@@ -1,11 +1,11 @@
-import { CartItem, CustomBraceletCartItem } from "@shared/schema";
+import { CartItem, CustomBraceletCartItem, CustomNecklaceCartItem } from "@shared/schema";
 import { X, Plus, Minus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useLocation } from "wouter";
 
-type UnifiedCartItem = CartItem | CustomBraceletCartItem;
+type UnifiedCartItem = CartItem | CustomBraceletCartItem | CustomNecklaceCartItem;
 
 interface CartDrawerProps {
   isOpen: boolean;

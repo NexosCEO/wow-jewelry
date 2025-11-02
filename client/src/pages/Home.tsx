@@ -132,6 +132,7 @@ export default function Home({ onAddToCart }: HomeProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="sets">Sets</SelectItem>
                     <SelectItem value="rings">Rings</SelectItem>
                     <SelectItem value="earrings">Earrings</SelectItem>
                     <SelectItem value="necklaces">Necklaces</SelectItem>

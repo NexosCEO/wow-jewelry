@@ -64,6 +64,25 @@ export const customBraceletConfigurations = pgTable("custom_bracelet_configurati
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
+export const necklaceTemplates = pgTable("necklace_templates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  basePrice: decimal("base_price", { precision: 10, scale: 2 }).notNull(),
+  maxSlots: integer("max_slots").notNull().default(11),
+  imageUrl: text("image_url").notNull(),
+  color: text("color").notNull(),
+  inStock: boolean("in_stock").notNull().default(true),
+});
+
+export const customNecklaceConfigurations = pgTable("custom_necklace_configurations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  templateId: varchar("template_id").notNull(),
+  selectedCharms: text("selected_charms").notNull(),
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
 });
@@ -86,6 +105,15 @@ export const insertCustomBraceletConfigurationSchema = createInsertSchema(custom
   createdAt: true,
 });
 
+export const insertNecklaceTemplateSchema = createInsertSchema(necklaceTemplates).omit({
+  id: true,
+});
+
+export const insertCustomNecklaceConfigurationSchema = createInsertSchema(customNecklaceConfigurations).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Order = typeof orders.$inferSelect;
@@ -96,6 +124,10 @@ export type BraceletTemplate = typeof braceletTemplates.$inferSelect;
 export type InsertBraceletTemplate = z.infer<typeof insertBraceletTemplateSchema>;
 export type CustomBraceletConfiguration = typeof customBraceletConfigurations.$inferSelect;
 export type InsertCustomBraceletConfiguration = z.infer<typeof insertCustomBraceletConfigurationSchema>;
+export type NecklaceTemplate = typeof necklaceTemplates.$inferSelect;
+export type InsertNecklaceTemplate = z.infer<typeof insertNecklaceTemplateSchema>;
+export type CustomNecklaceConfiguration = typeof customNecklaceConfigurations.$inferSelect;
+export type InsertCustomNecklaceConfiguration = z.infer<typeof insertCustomNecklaceConfigurationSchema>;
 
 export interface CartItem {
   product: Product;
@@ -104,6 +136,15 @@ export interface CartItem {
 
 export interface CustomBraceletCartItem {
   type: "custom-bracelet";
+  configId: string;
+  templateName: string;
+  charmNames: string[];
+  price: string;
+  quantity: number;
+}
+
+export interface CustomNecklaceCartItem {
+  type: "custom-necklace";
   configId: string;
   templateName: string;
   charmNames: string[];

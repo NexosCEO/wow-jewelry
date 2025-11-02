@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
-import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema } from "@shared/schema";
+import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema, insertCustomNecklaceConfigurationSchema } from "@shared/schema";
 import { requireAdmin } from "./auth-middleware";
 
 let stripe: Stripe | null = null;
@@ -134,6 +134,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(config);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching custom bracelet: " + error.message });
+    }
+  });
+
+  app.get("/api/necklace-templates", async (req, res) => {
+    try {
+      const templates = await storage.getAllNecklaceTemplates();
+      res.json(templates);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching necklace templates: " + error.message });
+    }
+  });
+
+  app.get("/api/necklace-templates/:id", async (req, res) => {
+    try {
+      const template = await storage.getNecklaceTemplate(req.params.id);
+      if (!template) {
+        return res.status(404).json({ message: "Necklace template not found" });
+      }
+      res.json(template);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching necklace template: " + error.message });
+    }
+  });
+
+  app.post("/api/custom-necklace", async (req, res) => {
+    try {
+      const validatedData = insertCustomNecklaceConfigurationSchema.parse(req.body);
+      const config = await storage.createCustomNecklaceConfiguration(validatedData);
+      res.status(201).json(config);
+    } catch (error: any) {
+      res.status(400).json({ message: "Error creating custom necklace: " + error.message });
+    }
+  });
+
+  app.get("/api/custom-necklace/:id", async (req, res) => {
+    try {
+      const config = await storage.getCustomNecklaceConfiguration(req.params.id);
+      if (!config) {
+        return res.status(404).json({ message: "Custom necklace configuration not found" });
+      }
+      res.json(config);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching custom necklace: " + error.message });
     }
   });
 

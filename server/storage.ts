@@ -4,7 +4,10 @@ import {
   type Charm, type InsertCharm,
   type BraceletTemplate, type InsertBraceletTemplate,
   type CustomBraceletConfiguration, type InsertCustomBraceletConfiguration,
-  products, orders, charms, braceletTemplates, customBraceletConfigurations
+  type NecklaceTemplate, type InsertNecklaceTemplate,
+  type CustomNecklaceConfiguration, type InsertCustomNecklaceConfiguration,
+  products, orders, charms, braceletTemplates, customBraceletConfigurations,
+  necklaceTemplates, customNecklaceConfigurations
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -38,6 +41,13 @@ export interface IStorage {
   
   createCustomBraceletConfiguration(config: InsertCustomBraceletConfiguration): Promise<CustomBraceletConfiguration>;
   getCustomBraceletConfiguration(id: string): Promise<CustomBraceletConfiguration | undefined>;
+  
+  getAllNecklaceTemplates(): Promise<NecklaceTemplate[]>;
+  getNecklaceTemplate(id: string): Promise<NecklaceTemplate | undefined>;
+  createNecklaceTemplate(template: InsertNecklaceTemplate): Promise<NecklaceTemplate>;
+  
+  createCustomNecklaceConfiguration(config: InsertCustomNecklaceConfiguration): Promise<CustomNecklaceConfiguration>;
+  getCustomNecklaceConfiguration(id: string): Promise<CustomNecklaceConfiguration | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -278,6 +288,58 @@ export class MemStorage implements IStorage {
     this.orders.set(id, updatedOrder);
     return updatedOrder;
   }
+
+  async getAllCharms(): Promise<Charm[]> {
+    return [];
+  }
+
+  async getCharm(id: string): Promise<Charm | undefined> {
+    return undefined;
+  }
+
+  async createCharm(charm: InsertCharm): Promise<Charm> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async getAllBraceletTemplates(): Promise<BraceletTemplate[]> {
+    return [];
+  }
+
+  async getBraceletTemplate(id: string): Promise<BraceletTemplate | undefined> {
+    return undefined;
+  }
+
+  async createBraceletTemplate(template: InsertBraceletTemplate): Promise<BraceletTemplate> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async createCustomBraceletConfiguration(config: InsertCustomBraceletConfiguration): Promise<CustomBraceletConfiguration> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async getCustomBraceletConfiguration(id: string): Promise<CustomBraceletConfiguration | undefined> {
+    return undefined;
+  }
+
+  async getAllNecklaceTemplates(): Promise<NecklaceTemplate[]> {
+    return [];
+  }
+
+  async getNecklaceTemplate(id: string): Promise<NecklaceTemplate | undefined> {
+    return undefined;
+  }
+
+  async createNecklaceTemplate(template: InsertNecklaceTemplate): Promise<NecklaceTemplate> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async createCustomNecklaceConfiguration(config: InsertCustomNecklaceConfiguration): Promise<CustomNecklaceConfiguration> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async getCustomNecklaceConfiguration(id: string): Promise<CustomNecklaceConfiguration | undefined> {
+    return undefined;
+  }
 }
 
 // Database-backed storage implementation
@@ -402,6 +464,36 @@ export class DatabaseStorage implements IStorage {
 
   async getCustomBraceletConfiguration(id: string): Promise<CustomBraceletConfiguration | undefined> {
     const [config] = await db.select().from(customBraceletConfigurations).where(eq(customBraceletConfigurations.id, id));
+    return config || undefined;
+  }
+
+  async getAllNecklaceTemplates(): Promise<NecklaceTemplate[]> {
+    return await db.select().from(necklaceTemplates);
+  }
+
+  async getNecklaceTemplate(id: string): Promise<NecklaceTemplate | undefined> {
+    const [template] = await db.select().from(necklaceTemplates).where(eq(necklaceTemplates.id, id));
+    return template || undefined;
+  }
+
+  async createNecklaceTemplate(insertTemplate: InsertNecklaceTemplate): Promise<NecklaceTemplate> {
+    const [template] = await db
+      .insert(necklaceTemplates)
+      .values(insertTemplate)
+      .returning();
+    return template;
+  }
+
+  async createCustomNecklaceConfiguration(insertConfig: InsertCustomNecklaceConfiguration): Promise<CustomNecklaceConfiguration> {
+    const [config] = await db
+      .insert(customNecklaceConfigurations)
+      .values(insertConfig)
+      .returning();
+    return config;
+  }
+
+  async getCustomNecklaceConfiguration(id: string): Promise<CustomNecklaceConfiguration | undefined> {
+    const [config] = await db.select().from(customNecklaceConfigurations).where(eq(customNecklaceConfigurations.id, id));
     return config || undefined;
   }
 }

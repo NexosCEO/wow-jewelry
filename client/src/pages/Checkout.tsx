@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useStripe, useElements, PaymentElement, Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { CartItem, CustomBraceletCartItem } from "@shared/schema";
+import { CartItem, CustomBraceletCartItem, CustomNecklaceCartItem } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Loader2, Lock, Shield, CreditCard } from "lucide-react";
 import { useLocation } from "wouter";
 
-type UnifiedCartItem = CartItem | CustomBraceletCartItem;
+type UnifiedCartItem = CartItem | CustomBraceletCartItem | CustomNecklaceCartItem;
 
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)

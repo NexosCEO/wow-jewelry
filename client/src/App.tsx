@@ -4,14 +4,15 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState, useEffect } from "react";
-import { CartItem, Product, CustomBraceletCartItem } from "@shared/schema";
+import { CartItem, Product, CustomBraceletCartItem, CustomNecklaceCartItem } from "@shared/schema";
 import { Header } from "@/components/Header";
 import { CartDrawer } from "@/components/CartDrawer";
 
-type UnifiedCartItem = CartItem | CustomBraceletCartItem;
+type UnifiedCartItem = CartItem | CustomBraceletCartItem | CustomNecklaceCartItem;
 import Home from "@/pages/Home";
 import ProductDetail from "@/pages/ProductDetail";
 import BraceletBuilder from "@/pages/BraceletBuilder";
+import NecklaceBuilder from "@/pages/NecklaceBuilder";
 import Checkout from "@/pages/Checkout";
 import Orders from "@/pages/Orders";
 import Admin from "@/pages/Admin";
@@ -30,13 +31,20 @@ function Router() {
     localStorage.setItem("wow-cart", JSON.stringify(cart));
   }, [cart]);
 
-  const handleAddToCart = (item: Product | CustomBraceletCartItem) => {
+  const handleAddToCart = (item: Product | CustomBraceletCartItem | CustomNecklaceCartItem) => {
     setCart((prev) => {
       if ("type" in item && item.type === "custom-bracelet") {
         const customItem = item as CustomBraceletCartItem;
         toast({
           title: "Added to Cart",
           description: "Your custom bracelet has been added to cart!",
+        });
+        return [...prev, { ...customItem, quantity: 1 }];
+      } else if ("type" in item && item.type === "custom-necklace") {
+        const customItem = item as CustomNecklaceCartItem;
+        toast({
+          title: "Added to Cart",
+          description: "Your custom necklace has been added to cart!",
         });
         return [...prev, { ...customItem, quantity: 1 }];
       } else {
@@ -112,6 +120,7 @@ function Router() {
         <Route path="/" component={() => <Home onAddToCart={handleAddToCart} />} />
         <Route path="/product/:id" component={() => <ProductDetail onAddToCart={handleAddToCart} />} />
         <Route path="/bracelet-builder" component={() => <BraceletBuilder onAddToCart={handleAddToCart} />} />
+        <Route path="/necklace-builder" component={() => <NecklaceBuilder onAddToCart={handleAddToCart} />} />
         <Route path="/checkout" component={() => <Checkout cart={cart} onClearCart={handleClearCart} />} />
         <Route path="/orders" component={Orders} />
         <Route path="/admin" component={Admin} />

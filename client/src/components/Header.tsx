@@ -47,8 +47,13 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
                 </span>
               </Link>
               <Link href="/bracelet-builder">
-                <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/bracelet-builder" ? "text-primary font-semibold" : ""}`} data-testid="link-builder">
-                  Build Your Own
+                <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/bracelet-builder" ? "text-primary font-semibold" : ""}`} data-testid="link-bracelet-builder">
+                  Build Bracelet
+                </span>
+              </Link>
+              <Link href="/necklace-builder">
+                <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/necklace-builder" ? "text-primary font-semibold" : ""}`} data-testid="link-necklace-builder">
+                  Build Necklace
                 </span>
               </Link>
               <a href="#about">
@@ -113,9 +118,18 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
                 <span 
                   className={`block py-2 text-base cursor-pointer transition-colors hover:text-primary ${location === "/bracelet-builder" ? "text-primary font-semibold" : ""}`}
                   onClick={() => setMobileMenuOpen(false)}
-                  data-testid="link-builder-mobile"
+                  data-testid="link-bracelet-builder-mobile"
                 >
-                  Build Your Own
+                  Build Bracelet
+                </span>
+              </Link>
+              <Link href="/necklace-builder">
+                <span 
+                  className={`block py-2 text-base cursor-pointer transition-colors hover:text-primary ${location === "/necklace-builder" ? "text-primary font-semibold" : ""}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  data-testid="link-necklace-builder-mobile"
+                >
+                  Build Necklace
                 </span>
               </Link>
               <a 
