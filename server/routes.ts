@@ -311,9 +311,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(JSON.stringify(transaction, null, 2));
       console.log("=== END SHIPPO RESPONSE ===");
       
-      // Check transaction status
+      // Check transaction status and messages
+      console.log(`Transaction status: ${transaction.status}`);
+      console.log(`Transaction messages:`, transaction.messages);
+      
+      if (transaction.status === "ERROR" || transaction.status === "INVALID") {
+        const errorMessages = transaction.messages?.map((m: any) => m.text || m).join(", ") || "Unknown error";
+        throw new Error(`Shippo transaction failed: ${errorMessages}`);
+      }
+      
+      if (transaction.status === "QUEUED" || transaction.status === "PENDING") {
+        throw new Error(`Shippo transaction is still processing (status: ${transaction.status}). Please try again in a few moments.`);
+      }
+      
       if (transaction.status !== "SUCCESS") {
-        throw new Error(`Shippo transaction failed with status: ${transaction.status}. Messages: ${JSON.stringify(transaction.messages)}`);
+        const messages = transaction.messages?.map((m: any) => m.text || m).join(", ") || "No details provided";
+        throw new Error(`Shippo transaction has status '${transaction.status}'. Details: ${messages}`);
       }
       
       // Shippo uses label_url for the PDF URL
@@ -321,11 +334,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const trackingNumber = transaction.tracking_number;
       
       if (!labelUrl) {
-        throw new Error("Shippo did not return a label URL. Response: " + JSON.stringify(transaction));
+        // Provide detailed error with what we got from Shippo
+        const availableFields = Object.keys(transaction).join(", ");
+        const statusInfo = `Status: ${transaction.status}, Available fields: ${availableFields}`;
+        throw new Error(`Shippo did not return a label URL. ${statusInfo}. Full response logged to server console.`);
       }
       
       if (!trackingNumber) {
-        throw new Error("Shippo did not return a tracking number. Response: " + JSON.stringify(transaction));
+        throw new Error("Shippo did not return a tracking number. Full response logged to server console.");
       }
 
       const updatedOrder = await storage.updateShippingLabel(
