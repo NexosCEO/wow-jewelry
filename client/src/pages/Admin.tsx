@@ -51,9 +51,11 @@ export default function Admin() {
     setAccessKey("");
   };
 
+  const [processingOrderId, setProcessingOrderId] = useState<string | null>(null);
+
   const generateLabelMutation = useMutation({
-    mutationKey: ["generate-shipping-label"],
     mutationFn: async (orderId: string) => {
+      setProcessingOrderId(orderId);
       const token = getAdminToken();
       const response = await fetch(`/api/orders/${orderId}/shipping-label`, {
         method: "POST",
@@ -68,6 +70,7 @@ export default function Admin() {
       return await response.json();
     },
     onSuccess: (data: any) => {
+      setProcessingOrderId(null);
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       toast({
         title: "Label Generated!",
@@ -78,6 +81,7 @@ export default function Admin() {
       }
     },
     onError: (error: any) => {
+      setProcessingOrderId(null);
       toast({
         title: "Error",
         description: error.message || "Failed to generate shipping label",
@@ -87,8 +91,8 @@ export default function Admin() {
   });
 
   const sendNotificationMutation = useMutation({
-    mutationKey: ["send-notification"],
     mutationFn: async (orderId: string) => {
+      setProcessingOrderId(orderId);
       const token = getAdminToken();
       const response = await fetch(`/api/orders/${orderId}/notify`, {
         method: "POST",
@@ -103,12 +107,14 @@ export default function Admin() {
       return await response.json();
     },
     onSuccess: () => {
+      setProcessingOrderId(null);
       toast({
         title: "Notification Sent!",
         description: "Customer has been notified",
       });
     },
     onError: (error: any) => {
+      setProcessingOrderId(null);
       toast({
         title: "Error",
         description: error.message || "Failed to send notification",
@@ -299,16 +305,12 @@ export default function Admin() {
                   <div className="flex gap-2 flex-wrap">
                     <Button
                       type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        generateLabelMutation.mutate(order.id);
-                      }}
-                      disabled={generateLabelMutation.isPending || sendNotificationMutation.isPending}
+                      onClick={() => generateLabelMutation.mutate(order.id)}
+                      disabled={processingOrderId === order.id}
                       className="flex-1 sm:flex-none"
                       data-testid={`button-generate-label-${order.id}`}
                     >
-                      {generateLabelMutation.isPending ? (
+                      {processingOrderId === order.id && generateLabelMutation.isPending ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           Generating...
@@ -324,16 +326,12 @@ export default function Admin() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        sendNotificationMutation.mutate(order.id);
-                      }}
-                      disabled={generateLabelMutation.isPending || sendNotificationMutation.isPending}
+                      onClick={() => sendNotificationMutation.mutate(order.id)}
+                      disabled={processingOrderId === order.id}
                       className="flex-1 sm:flex-none"
                       data-testid={`button-notify-customer-${order.id}`}
                     >
-                      {sendNotificationMutation.isPending ? (
+                      {processingOrderId === order.id && sendNotificationMutation.isPending ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           Sending...

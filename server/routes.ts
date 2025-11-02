@@ -329,23 +329,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new Error(`Shippo transaction has status '${transaction.status}'. Details: ${messages}`);
       }
       
-      // Shippo uses label_uri (not label_url) for the PDF URL
-      const labelUrl = transaction.label_url;
+      // Shippo test mode returns label_url as null - use label_uri instead
+      const labelUrl = transaction.label_url || transaction.label_uri;
       const trackingNumber = transaction.tracking_number;
       
       console.log(`Label URL value: "${labelUrl}" (type: ${typeof labelUrl})`);
+      console.log(`Label URI value: "${transaction.label_uri}"`);
       console.log(`Tracking number: "${trackingNumber}"`);
       
       if (!labelUrl || labelUrl === null || labelUrl === "") {
-        // Provide detailed error with what we got from Shippo
-        const availableFields = Object.keys(transaction).join(", ");
-        const statusInfo = `Status: ${transaction.status}, Available fields: ${availableFields}`;
-        const labelUrlValue = `label_url value: "${labelUrl}"`;
-        throw new Error(`Shippo label URL is missing or empty. ${labelUrlValue}. ${statusInfo}. Full response logged to server console.`);
+        throw new Error(`Shippo returned null for both label_url and label_uri. This may be a test mode limitation. Check your Shippo account settings or contact Shippo support.`);
       }
       
       if (!trackingNumber) {
-        throw new Error("Shippo did not return a tracking number. Full response logged to server console.");
+        throw new Error("Shippo did not return a tracking number.");
       }
 
       const updatedOrder = await storage.updateShippingLabel(
