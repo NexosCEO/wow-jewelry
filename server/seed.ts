@@ -135,6 +135,17 @@ const realProducts: InsertProduct[] = [
     inStock: false,
     stockQuantity: 0,
   },
+  {
+    name: "Festiva Cuff Earrings",
+    description: "Modern cuff earrings with a festive twist. Stylish and comfortable for everyday wear.",
+    price: "25.00",
+    regularPrice: null,
+    imageUrl: "/attached_assets/2-FESTIVA CUFF EARRINGS $25_1762109581793.jpg",
+    imageUrl2: null,
+    category: "Earrings",
+    inStock: true,
+    stockQuantity: 10,
+  },
 ];
 
 const realCharms: InsertCharm[] = [
