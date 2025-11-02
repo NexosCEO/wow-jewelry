@@ -8,7 +8,7 @@ import { Check, Plus, Minus, ShoppingCart, ArrowRight, ArrowLeft } from "lucide-
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 
-type BuilderStep = "select-base" | "add-charms" | "review";
+type BuilderStep = "select-string" | "add-charms" | "review";
 
 interface SelectedCharm {
   charm: Charm;
@@ -22,7 +22,7 @@ interface BraceletBuilderProps {
 export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<BuilderStep>("select-base");
+  const [currentStep, setCurrentStep] = useState<BuilderStep>("select-string");
   const [selectedTemplate, setSelectedTemplate] = useState<BraceletTemplate | null>(null);
   const [selectedCharms, setSelectedCharms] = useState<SelectedCharm[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>("All");
@@ -153,11 +153,11 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
 
       <div className="flex justify-center mb-12">
         <div className="flex items-center gap-4">
-          <div className={`flex items-center gap-2 ${currentStep === "select-base" ? "text-primary font-semibold" : "text-muted-foreground"}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "select-base" ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>
+          <div className={`flex items-center gap-2 ${currentStep === "select-string" ? "text-primary font-semibold" : "text-muted-foreground"}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "select-string" ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>
               1
             </div>
-            <span className="hidden sm:inline">Choose Base</span>
+            <span className="hidden sm:inline">Choose String</span>
           </div>
           <ArrowRight className="w-4 h-4 text-muted-foreground" />
           <div className={`flex items-center gap-2 ${currentStep === "add-charms" ? "text-primary font-semibold" : "text-muted-foreground"}`}>
@@ -176,9 +176,9 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
         </div>
       </div>
 
-      {currentStep === "select-base" && (
+      {currentStep === "select-string" && (
         <div>
-          <h2 className="text-2xl font-serif font-bold mb-6 text-center">Select Your Base Bracelet</h2>
+          <h2 className="text-2xl font-serif font-bold mb-6 text-center">Select Your Bracelet String Color</h2>
           
           <div className="flex justify-center mb-8">
             <div className="flex flex-wrap gap-3 justify-center">
@@ -200,27 +200,40 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
             {filteredTemplates.map((template) => (
               <Card 
                 key={template.id} 
-                className="hover-elevate cursor-pointer" 
+                className="hover-elevate cursor-pointer group overflow-hidden"
                 onClick={() => handleTemplateSelect(template)}
-                data-testid={`card-template-${template.id}`}
+                data-testid={`card-bracelet-template-${template.id}`}
               >
-                <CardHeader>
-                  <img
-                    src={template.imageUrl}
-                    alt={template.name}
-                    className="w-full h-48 object-cover rounded-md mb-4"
-                  />
-                  <CardTitle className="font-serif">{template.name}</CardTitle>
+                <CardHeader className="relative">
+                  <div className="aspect-square overflow-hidden rounded-lg mb-4">
+                    <img
+                      src={template.imageUrl}
+                      alt={template.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      data-testid={`img-template-${template.id}`}
+                    />
+                  </div>
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="font-serif">{template.name}</span>
+                    {selectedTemplate?.id === template.id && (
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary">
+                        <Check className="w-4 h-4 text-primary-foreground" />
+                      </div>
+                    )}
+                  </CardTitle>
                   <CardDescription>{template.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-2xl font-bold">${template.basePrice}</span>
-                    <Badge variant="secondary">Up to {template.maxSlots} charms</Badge>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xl font-semibold">${parseFloat(template.basePrice).toFixed(2)}</p>
+                    <Badge variant="secondary">+ {template.maxSlots} charm slots</Badge>
                   </div>
-                  <Button className="w-full" data-testid={`button-select-template-${template.id}`}>
-                    Select Base
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                  <Button 
+                    className="w-full mt-4 bg-gradient-to-r from-rose-gold via-gold-primary to-gold-secondary text-charcoal-dark font-semibold hover-elevate active-elevate-2" 
+                    onClick={() => handleTemplateSelect(template)}
+                    data-testid={`button-select-template-${template.id}`}
+                  >
+                    Select This String
                   </Button>
                 </CardContent>
               </Card>
@@ -231,91 +244,106 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
 
       {currentStep === "add-charms" && selectedTemplate && (
         <div>
-          <div className="mb-8 bg-card border border-border rounded-xl p-6">
-            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
-              <div className="flex gap-4 items-center">
-                <img
-                  src={selectedTemplate.imageUrl}
-                  alt={selectedTemplate.name}
-                  className="w-24 h-24 object-cover rounded-md"
-                />
-                <div>
-                  <h3 className="font-serif text-xl font-bold">{selectedTemplate.name}</h3>
-                  <p className="text-sm text-muted-foreground">${selectedTemplate.basePrice} base price</p>
-                  <div className="mt-2">
-                    <Badge variant={remainingSlots > 0 ? "default" : "destructive"}>
-                      {usedSlots} / {totalCharmSlots} slots used
-                    </Badge>
+          <div className="mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setCurrentStep("select-string");
+                setSelectedCharms([]);
+              }}
+              className="mb-4"
+              data-testid="button-back-to-strings"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Change String
+            </Button>
+            
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="font-serif">Selected String: {selectedTemplate.name}</CardTitle>
+                <CardDescription>Base Price: ${parseFloat(selectedTemplate.basePrice).toFixed(2)}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Charm Slots Used</span>
+                      <span className="font-semibold">{usedSlots} / {totalCharmSlots}</span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-rose-gold to-gold-primary transition-all duration-300"
+                        style={{ width: `${(usedSlots / totalCharmSlots) * 100}%` }}
+                      />
+                    </div>
                   </div>
+                  <Badge variant="secondary">
+                    {remainingSlots} slots left
+                  </Badge>
                 </div>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setCurrentStep("select-base");
-                  setSelectedCharms([]);
-                }}
-                data-testid="button-change-base"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Change Base
-              </Button>
-            </div>
+              </CardContent>
+            </Card>
           </div>
 
-          <h2 className="text-2xl font-serif font-bold mb-6 text-center">Add Your Charms</h2>
+          <h2 className="text-2xl font-serif font-bold mb-6 text-center">Add Charms to Your Bracelet</h2>
           
           {selectedCharms.length > 0 && (
-            <div className="mb-8 bg-card border border-border rounded-xl p-6">
-              <h3 className="font-semibold mb-4">Selected Charms</h3>
-              <div className="space-y-3">
-                {selectedCharms.map((sc) => (
-                  <div key={sc.charm.id} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={sc.charm.imageUrl}
-                        alt={sc.charm.name}
-                        className="w-12 h-12 object-cover rounded"
-                      />
-                      <div>
-                        <p className="font-medium">{sc.charm.name}</p>
-                        <p className="text-sm text-muted-foreground">${sc.charm.price} each</p>
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="font-serif">Selected Charms</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {selectedCharms.map((sc) => (
+                    <div key={sc.charm.id} className="flex items-center justify-between p-4 rounded-lg bg-muted">
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={sc.charm.imageUrl}
+                          alt={sc.charm.name}
+                          className="w-16 h-16 object-cover rounded-md"
+                        />
+                        <div>
+                          <p className="font-semibold">{sc.charm.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            ${parseFloat(sc.charm.price).toFixed(2)} each
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => handleRemoveCharm(sc.charm.id)}
+                          data-testid={`button-remove-charm-${sc.charm.id}`}
+                        >
+                          <Minus className="w-4 h-4" />
+                        </Button>
+                        <span className="w-8 text-center font-semibold">{sc.quantity}</span>
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => handleAddCharm(sc.charm)}
+                          disabled={remainingSlots === 0}
+                          data-testid={`button-add-charm-${sc.charm.id}`}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => handleRemoveCharm(sc.charm.id)}
-                        data-testid={`button-remove-charm-${sc.charm.id}`}
-                      >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                      <span className="w-8 text-center font-semibold">{sc.quantity}</span>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => handleAddCharm(sc.charm)}
-                        disabled={remainingSlots === 0}
-                        data-testid={`button-add-charm-${sc.charm.id}`}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 pt-6 border-t border-border flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-muted-foreground">Current Total</p>
-                  <p className="text-3xl font-bold">${calculateTotalPrice().toFixed(2)}</p>
+                  ))}
                 </div>
-                <Button onClick={handleContinueToReview} size="lg" data-testid="button-continue-review">
-                  Continue to Review
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </div>
+                <div className="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Current Total</p>
+                    <p className="text-3xl font-bold">${calculateTotalPrice().toFixed(2)}</p>
+                  </div>
+                  <Button onClick={handleContinueToReview} size="lg" data-testid="button-continue-review">
+                    Continue to Review
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
