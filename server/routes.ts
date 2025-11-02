@@ -329,15 +329,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new Error(`Shippo transaction has status '${transaction.status}'. Details: ${messages}`);
       }
       
-      // Shippo uses label_url for the PDF URL
-      const labelUrl = transaction.label_url;
+      // Shippo uses label_uri (not label_url) for the PDF URL
+      const labelUrl = transaction.label_uri;
       const trackingNumber = transaction.tracking_number;
       
       if (!labelUrl) {
         // Provide detailed error with what we got from Shippo
         const availableFields = Object.keys(transaction).join(", ");
         const statusInfo = `Status: ${transaction.status}, Available fields: ${availableFields}`;
-        throw new Error(`Shippo did not return a label URL. ${statusInfo}. Full response logged to server console.`);
+        throw new Error(`Shippo did not return a label URI. ${statusInfo}. Full response logged to server console.`);
       }
       
       if (!trackingNumber) {

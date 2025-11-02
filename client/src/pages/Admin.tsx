@@ -298,8 +298,13 @@ export default function Admin() {
 
                   <div className="flex gap-2 flex-wrap">
                     <Button
-                      onClick={() => generateLabelMutation.mutate(order.id)}
-                      disabled={generateLabelMutation.isPending}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        generateLabelMutation.mutate(order.id);
+                      }}
+                      disabled={generateLabelMutation.isPending || sendNotificationMutation.isPending}
                       className="flex-1 sm:flex-none"
                       data-testid={`button-generate-label-${order.id}`}
                     >
@@ -317,9 +322,14 @@ export default function Admin() {
                     </Button>
 
                     <Button
+                      type="button"
                       variant="outline"
-                      onClick={() => sendNotificationMutation.mutate(order.id)}
-                      disabled={sendNotificationMutation.isPending}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        sendNotificationMutation.mutate(order.id);
+                      }}
+                      disabled={generateLabelMutation.isPending || sendNotificationMutation.isPending}
                       className="flex-1 sm:flex-none"
                       data-testid={`button-notify-customer-${order.id}`}
                     >
