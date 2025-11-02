@@ -3,7 +3,10 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // Trust proxy for rate limiting (required for Replit environment)
@@ -58,8 +61,9 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: false }));
 
-// Serve attached assets as static files
-app.use("/attached_assets", express.static("attached_assets"));
+// Serve attached assets as static files with absolute path for production
+const assetsPath = path.resolve(__dirname, "..", "attached_assets");
+app.use("/attached_assets", express.static(assetsPath));
 
 app.use((req, res, next) => {
   const start = Date.now();
