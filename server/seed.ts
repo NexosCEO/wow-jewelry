@@ -275,6 +275,15 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     category: "Beads",
     inStock: true,
   },
+  {
+    name: "Red Neopreno with Ring 6mm",
+    description: "Bold red neoprene bead base with gold ring accent. Size: 6mm",
+    basePrice: "1.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/50- RED NEOPRENO WITH RING size 6mm price 1_1762109687279.jpg",
+    category: "Beads",
+    inStock: true,
+  },
 ];
 
 const realNecklaceTemplates: InsertNecklaceTemplate[] = [
