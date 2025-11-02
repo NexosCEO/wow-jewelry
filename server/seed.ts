@@ -302,6 +302,15 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     category: "Beads",
     inStock: true,
   },
+  {
+    name: "Red Basic Neopreno 6mm",
+    description: "Classic red neoprene bead base. Bold and vibrant. Size: 6mm",
+    basePrice: "1.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/200- RED BASIC NEOPRENO size 6mm price $1_1762109762799.jpg",
+    category: "Beads",
+    inStock: true,
+  },
 ];
 
 const realNecklaceTemplates: InsertNecklaceTemplate[] = [
