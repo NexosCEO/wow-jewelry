@@ -213,6 +213,15 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     category: "Beads",
     inStock: true,
   },
+  {
+    name: "Diamantados Style 6mm",
+    description: "Stunning faceted gold bead base with diamond-cut design. Size: 6mm",
+    basePrice: "5.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/6- DIAMANTADOS STYLE size_ 6mm  price $5_1762109500427.jpg",
+    category: "Beads",
+    inStock: true,
+  },
 ];
 
 const realNecklaceTemplates: InsertNecklaceTemplate[] = [
