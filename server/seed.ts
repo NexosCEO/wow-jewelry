@@ -157,6 +157,28 @@ const realProducts: InsertProduct[] = [
     inStock: true,
     stockQuantity: 10,
   },
+  {
+    name: "Lilian Rose Earrings Set",
+    description: "Versatile earrings set featuring four stunning pairs. Gold hoops, teardrops, and crystal studs in pink and clear.",
+    price: "30.00",
+    regularPrice: null,
+    imageUrl: "/attached_assets/2-LILIAN ROSE EARRINGS SET $30_1762109637389.jpg",
+    imageUrl2: null,
+    category: "Earrings",
+    inStock: true,
+    stockQuantity: 10,
+  },
+  {
+    name: "Vital Crystal Earrings",
+    description: "Elegant drop earrings with crystals and pearl accents. Perfect for adding sophistication to any outfit.",
+    price: "25.00",
+    regularPrice: null,
+    imageUrl: "/attached_assets/1-VITAL CRYSTAL EARRINGS $25_1762109660243.jpg",
+    imageUrl2: null,
+    category: "Earrings",
+    inStock: true,
+    stockQuantity: 10,
+  },
 ];
 
 const realCharms: InsertCharm[] = [
