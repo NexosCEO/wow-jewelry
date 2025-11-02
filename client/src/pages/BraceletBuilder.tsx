@@ -25,6 +25,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const [currentStep, setCurrentStep] = useState<BuilderStep>("select-base");
   const [selectedTemplate, setSelectedTemplate] = useState<BraceletTemplate | null>(null);
   const [selectedCharms, setSelectedCharms] = useState<SelectedCharm[]>([]);
+  const [selectedColor, setSelectedColor] = useState<string>("All");
 
   const { data: templates = [], isLoading: loadingTemplates } = useQuery<BraceletTemplate[]>({
     queryKey: ["/api/bracelet-templates"],
@@ -33,6 +34,12 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const { data: charms = [], isLoading: loadingCharms } = useQuery<Charm[]>({
     queryKey: ["/api/charms"],
   });
+
+  const availableColors = ["All", ...Array.from(new Set(templates.map(t => t.color)))];
+  
+  const filteredTemplates = selectedColor === "All" 
+    ? templates 
+    : templates.filter(t => t.color === selectedColor);
 
   const totalCharmSlots = selectedTemplate?.maxSlots || 0;
   const usedSlots = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0);
@@ -172,8 +179,25 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
       {currentStep === "select-base" && (
         <div>
           <h2 className="text-2xl font-serif font-bold mb-6 text-center">Select Your Base Bracelet</h2>
+          
+          <div className="flex justify-center mb-8">
+            <div className="flex flex-wrap gap-3 justify-center">
+              {availableColors.map((color) => (
+                <Badge
+                  key={color}
+                  variant={selectedColor === color ? "default" : "outline"}
+                  className="cursor-pointer px-4 py-2 text-sm font-semibold hover-elevate active-elevate-2"
+                  onClick={() => setSelectedColor(color)}
+                  data-testid={`badge-color-${color.toLowerCase()}`}
+                >
+                  {color}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {templates.map((template) => (
+            {filteredTemplates.map((template) => (
               <Card 
                 key={template.id} 
                 className="hover-elevate cursor-pointer" 
