@@ -330,14 +330,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Shippo uses label_uri (not label_url) for the PDF URL
-      const labelUrl = transaction.label_uri;
+      const labelUrl = transaction.label_url;
       const trackingNumber = transaction.tracking_number;
       
-      if (!labelUrl) {
+      console.log(`Label URL value: "${labelUrl}" (type: ${typeof labelUrl})`);
+      console.log(`Tracking number: "${trackingNumber}"`);
+      
+      if (!labelUrl || labelUrl === null || labelUrl === "") {
         // Provide detailed error with what we got from Shippo
         const availableFields = Object.keys(transaction).join(", ");
         const statusInfo = `Status: ${transaction.status}, Available fields: ${availableFields}`;
-        throw new Error(`Shippo did not return a label URI. ${statusInfo}. Full response logged to server console.`);
+        const labelUrlValue = `label_url value: "${labelUrl}"`;
+        throw new Error(`Shippo label URL is missing or empty. ${labelUrlValue}. ${statusInfo}. Full response logged to server console.`);
       }
       
       if (!trackingNumber) {
