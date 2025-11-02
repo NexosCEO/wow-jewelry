@@ -146,6 +146,17 @@ const realProducts: InsertProduct[] = [
     inStock: true,
     stockQuantity: 10,
   },
+  {
+    name: "Rose Sky Set",
+    description: "Enchanting rose-toned necklace and earrings set. Delicate pink crystals create a dreamy, romantic look.",
+    price: "40.00",
+    regularPrice: null,
+    imageUrl: "/attached_assets/2-ROSE SKY SET $40_1762109609309.jpg",
+    imageUrl2: null,
+    category: "Sets",
+    inStock: true,
+    stockQuantity: 10,
+  },
 ];
 
 const realCharms: InsertCharm[] = [
