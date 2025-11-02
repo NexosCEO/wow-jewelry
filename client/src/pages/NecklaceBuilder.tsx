@@ -311,6 +311,23 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
                     </div>
                   ))}
                 </div>
+                <div className="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Current Total</p>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-rose-gold to-gold-primary bg-clip-text text-transparent">
+                      ${calculateTotalPrice().toFixed(2)}
+                    </p>
+                  </div>
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-rose-gold via-gold-primary to-gold-secondary text-charcoal-dark font-semibold hover-elevate active-elevate-2 px-8"
+                    onClick={handleContinueToReview}
+                    data-testid="button-continue-to-review"
+                  >
+                    Continue to Review
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -358,18 +375,6 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
                 </Card>
               );
             })}
-          </div>
-
-          <div className="flex justify-center mt-12">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-rose-gold via-gold-primary to-gold-secondary text-charcoal-dark font-semibold hover-elevate active-elevate-2 px-8"
-              onClick={handleContinueToReview}
-              data-testid="button-continue-to-review"
-            >
-              Continue to Review
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
           </div>
         </div>
       )}
