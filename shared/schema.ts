@@ -53,6 +53,7 @@ export const braceletTemplates = pgTable("bracelet_templates", {
   maxSlots: integer("max_slots").notNull().default(11),
   imageUrl: text("image_url").notNull(),
   category: text("category").notNull(),
+  color: text("color").notNull(),
   inStock: boolean("in_stock").notNull().default(true),
 });
 

@@ -237,6 +237,7 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     maxSlots: 11,
     imageUrl: "/attached_assets/50- BASIC STYLE  size_ 4mm  price $3_1762109293239.jpg",
     category: "Beads",
+    color: "Gold",
     inStock: true,
   },
   {
@@ -246,6 +247,7 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     maxSlots: 11,
     imageUrl: "/attached_assets/50- ITALIAN STYLE  size_ 5mm  price $4,50_1762109346569.jpg",
     category: "Beads",
+    color: "Gold",
     inStock: true,
   },
   {
@@ -255,6 +257,7 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     maxSlots: 11,
     imageUrl: "/attached_assets/50- BASIC STYLE  size_ 5mm  price_$4_1762109372136.jpg",
     category: "Beads",
+    color: "Gold",
     inStock: true,
   },
   {
@@ -264,6 +267,7 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     maxSlots: 11,
     imageUrl: "/attached_assets/6- DIAMANTADOS STYLE size_ 6mm  price $5_1762109500427.jpg",
     category: "Beads",
+    color: "Gold",
     inStock: true,
   },
   {
@@ -273,6 +277,7 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     maxSlots: 11,
     imageUrl: "/attached_assets/50- SILVER STYLE  size_ 4mm  price $3_1762109545347.jpg",
     category: "Beads",
+    color: "Silver",
     inStock: true,
   },
   {
@@ -282,6 +287,7 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     maxSlots: 11,
     imageUrl: "/attached_assets/50- RED NEOPRENO WITH RING size 6mm price 1_1762109687279.jpg",
     category: "Beads",
+    color: "Red",
     inStock: true,
   },
   {
@@ -291,6 +297,7 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     maxSlots: 11,
     imageUrl: "/attached_assets/50- BLACK NEOPRENO WITH RING  size $6mm  price_ $1 _1762109712971.jpg",
     category: "Beads",
+    color: "Black",
     inStock: true,
   },
   {
@@ -300,6 +307,7 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     maxSlots: 11,
     imageUrl: "/attached_assets/200- BLACK BASIC NEOPRENO size 6mm price 1_1762109739137.jpg",
     category: "Beads",
+    color: "Black",
     inStock: true,
   },
   {
@@ -309,6 +317,7 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     maxSlots: 11,
     imageUrl: "/attached_assets/200- RED BASIC NEOPRENO size 6mm price $1_1762109762799.jpg",
     category: "Beads",
+    color: "Red",
     inStock: true,
   },
 ];
