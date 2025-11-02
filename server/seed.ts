@@ -320,6 +320,36 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     color: "Red",
     inStock: true,
   },
+  {
+    name: "Blue String",
+    description: "Stunning blue string base for your custom bracelet.",
+    basePrice: "2.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/BLUE_1762109156908.jpg",
+    category: "String",
+    color: "Blue",
+    inStock: true,
+  },
+  {
+    name: "Green String",
+    description: "Beautiful green string base for your custom bracelet.",
+    basePrice: "2.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/GREEN_1762109124128.jpg",
+    category: "String",
+    color: "Green",
+    inStock: true,
+  },
+  {
+    name: "Pink String",
+    description: "Lovely pink string base for your custom bracelet.",
+    basePrice: "2.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/PINK_1762109221035.jpg",
+    category: "String",
+    color: "Pink",
+    inStock: true,
+  },
 ];
 
 const realNecklaceTemplates: InsertNecklaceTemplate[] = [
