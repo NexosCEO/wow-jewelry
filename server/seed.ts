@@ -284,6 +284,15 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     category: "Beads",
     inStock: true,
   },
+  {
+    name: "Black Neopreno with Ring 6mm",
+    description: "Sleek black neoprene bead base with gold ring accent. Size: 6mm",
+    basePrice: "1.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/50- BLACK NEOPRENO WITH RING  size $6mm  price_ $1 _1762109712971.jpg",
+    category: "Beads",
+    inStock: true,
+  },
 ];
 
 const realNecklaceTemplates: InsertNecklaceTemplate[] = [
