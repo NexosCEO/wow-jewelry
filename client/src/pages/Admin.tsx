@@ -52,6 +52,7 @@ export default function Admin() {
   };
 
   const generateLabelMutation = useMutation({
+    mutationKey: ["generate-shipping-label"],
     mutationFn: async (orderId: string) => {
       const token = getAdminToken();
       const response = await fetch(`/api/orders/${orderId}/shipping-label`, {
@@ -86,6 +87,7 @@ export default function Admin() {
   });
 
   const sendNotificationMutation = useMutation({
+    mutationKey: ["send-notification"],
     mutationFn: async (orderId: string) => {
       const token = getAdminToken();
       const response = await fetch(`/api/orders/${orderId}/notify`, {
