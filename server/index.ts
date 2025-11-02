@@ -61,8 +61,14 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: false }));
 
-// Serve attached assets as static files with absolute path for production
-const assetsPath = path.resolve(__dirname, "..", "attached_assets");
+// Serve attached assets as static files with absolute path for both dev and production
+// In production (dist/index.js), assets are at ./attached_assets (copied by deploy.sh)
+// In development (server/index.ts), assets are at ../attached_assets  
+const assetsPath = process.env.NODE_ENV === "production"
+  ? path.resolve(__dirname, "attached_assets")  // From dist/ to dist/attached_assets
+  : path.resolve(__dirname, "..", "attached_assets");  // From server/ to root/attached_assets
+
+console.log(`[ENV: ${process.env.NODE_ENV}] Serving assets from: ${assetsPath}`);
 app.use("/attached_assets", express.static(assetsPath));
 
 app.use((req, res, next) => {
