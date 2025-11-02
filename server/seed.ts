@@ -270,6 +270,24 @@ const realNecklaceTemplates: InsertNecklaceTemplate[] = [
     color: "Silver",
     inStock: true,
   },
+  {
+    name: "Red String",
+    description: "Bold red string base for your custom necklace.",
+    basePrice: "2.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/RED AND BLACK _1762109524467.jpg",
+    color: "Red",
+    inStock: true,
+  },
+  {
+    name: "Black String",
+    description: "Classic black string base for your custom necklace.",
+    basePrice: "2.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/RED AND BLACK _1762109524467.jpg",
+    color: "Black",
+    inStock: true,
+  },
 ];
 
 async function seed() {
