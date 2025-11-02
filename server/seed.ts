@@ -222,6 +222,15 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     category: "Beads",
     inStock: true,
   },
+  {
+    name: "Silver Style 4mm",
+    description: "Elegant silver bead base for your custom bracelet. Size: 4mm",
+    basePrice: "3.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/50- SILVER STYLE  size_ 4mm  price $3_1762109545347.jpg",
+    category: "Beads",
+    inStock: true,
+  },
 ];
 
 const realNecklaceTemplates: InsertNecklaceTemplate[] = [
