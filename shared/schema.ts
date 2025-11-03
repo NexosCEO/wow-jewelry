@@ -61,6 +61,7 @@ export const customBraceletConfigurations = pgTable("custom_bracelet_configurati
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   templateId: varchar("template_id").notNull(),
   selectedCharms: text("selected_charms").notNull(),
+  selectedBeads: text("selected_beads").notNull().default("[]"),
   totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
@@ -82,6 +83,17 @@ export const customNecklaceConfigurations = pgTable("custom_necklace_configurati
   selectedCharms: text("selected_charms").notNull(),
   totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+export const braceletBeads = pgTable("bracelet_beads", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  imageUrl: text("image_url").notNull(),
+  color: text("color").notNull(),
+  inStock: boolean("in_stock").notNull().default(true),
+  stockQuantity: integer("stock_quantity").notNull().default(0),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({
@@ -115,6 +127,10 @@ export const insertCustomNecklaceConfigurationSchema = createInsertSchema(custom
   createdAt: true,
 });
 
+export const insertBraceletBeadSchema = createInsertSchema(braceletBeads).omit({
+  id: true,
+});
+
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Order = typeof orders.$inferSelect;
@@ -129,6 +145,8 @@ export type NecklaceTemplate = typeof necklaceTemplates.$inferSelect;
 export type InsertNecklaceTemplate = z.infer<typeof insertNecklaceTemplateSchema>;
 export type CustomNecklaceConfiguration = typeof customNecklaceConfigurations.$inferSelect;
 export type InsertCustomNecklaceConfiguration = z.infer<typeof insertCustomNecklaceConfigurationSchema>;
+export type BraceletBead = typeof braceletBeads.$inferSelect;
+export type InsertBraceletBead = z.infer<typeof insertBraceletBeadSchema>;
 
 export interface CartItem {
   product: Product;
@@ -140,6 +158,7 @@ export interface CustomBraceletCartItem {
   configId: string;
   templateName: string;
   charmNames: string[];
+  beadNames: string[];
   price: string;
   quantity: number;
 }
