@@ -20,6 +20,7 @@ export interface IStorage {
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product | undefined>;
   deleteProduct(id: string): Promise<boolean>;
+  updateProductInventory(id: string, quantityChange: number): Promise<Product | undefined>;
   
   getAllOrders(): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
@@ -231,6 +232,21 @@ export class MemStorage implements IStorage {
     return this.products.delete(id);
   }
 
+  async updateProductInventory(id: string, quantityChange: number): Promise<Product | undefined> {
+    const product = this.products.get(id);
+    if (!product) return undefined;
+
+    const newQuantity = Math.max(0, product.stockQuantity + quantityChange);
+    const updatedProduct = {
+      ...product,
+      stockQuantity: newQuantity,
+      inStock: newQuantity > 0,
+    };
+    
+    this.products.set(id, updatedProduct);
+    return updatedProduct;
+  }
+
   async getAllOrders(): Promise<Order[]> {
     return Array.from(this.orders.values()).sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -385,6 +401,23 @@ export class DatabaseStorage implements IStorage {
   async deleteProduct(id: string): Promise<boolean> {
     const result = await db.delete(products).where(eq(products.id, id));
     return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async updateProductInventory(id: string, quantityChange: number): Promise<Product | undefined> {
+    const product = await this.getProduct(id);
+    if (!product) return undefined;
+
+    const newQuantity = Math.max(0, product.stockQuantity + quantityChange);
+    const [updatedProduct] = await db
+      .update(products)
+      .set({
+        stockQuantity: newQuantity,
+        inStock: newQuantity > 0,
+      })
+      .where(eq(products.id, id))
+      .returning();
+    
+    return updatedProduct || undefined;
   }
 
   async getAllOrders(): Promise<Order[]> {
