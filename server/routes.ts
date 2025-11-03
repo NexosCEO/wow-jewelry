@@ -73,6 +73,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/products/:id/inventory", requireAdmin, async (req, res) => {
+    try {
+      const { quantityChange } = req.body;
+      
+      if (typeof quantityChange !== 'number') {
+        return res.status(400).json({ message: "quantityChange must be a number" });
+      }
+
+      const product = await storage.updateProductInventory(req.params.id, quantityChange);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating inventory: " + error.message });
+    }
+  });
+
   app.get("/api/bracelet-templates", async (req, res) => {
     try {
       const templates = await storage.getAllBraceletTemplates();
@@ -227,6 +245,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/orders", async (req, res) => {
     try {
       const validatedData = insertOrderSchema.parse(req.body);
+      
+      // Parse order items to subtract inventory
+      const items = JSON.parse(validatedData.items);
+      
+      // Subtract inventory for each product in the order
+      for (const item of items) {
+        if (item.product && item.product.id) {
+          // Only subtract inventory for regular products (not custom bracelets/necklaces)
+          const quantityToSubtract = -item.quantity; // Negative to subtract
+          await storage.updateProductInventory(item.product.id, quantityToSubtract);
+        }
+      }
+      
       const order = await storage.createOrder(validatedData);
       res.status(201).json(order);
     } catch (error: any) {
