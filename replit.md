@@ -166,7 +166,7 @@ Preferred communication style: Simple, everyday language.
   - Tracking number generation and storage
   - API key required: SHIPPO_API_KEY (stored in secrets)
   - Ship-from address configurable via environment variables (SHIP_FROM_ADDRESS, SHIP_FROM_CITY, SHIP_FROM_STATE, SHIP_FROM_ZIP)
-  - **STATUS (Nov 2, 2025)**: Shippo account activated - shipping label PDFs now generate successfully. The "View Label" button opens PDFs in new tab for printing.
+  - **STATUS (Nov 3, 2025)**: Shippo account fully operational - account hold removed by support. Shipping label PDFs now generate successfully. The "View Label" button opens PDFs in new tab for printing.
 - **SendGrid Email Integration**: Transactional email notifications
   - Customer order confirmation and shipping notification emails
   - Admin notification system (to be implemented)
