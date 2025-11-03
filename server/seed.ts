@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { products, charms, braceletTemplates, necklaceTemplates } from "@shared/schema";
-import type { InsertProduct, InsertCharm, InsertBraceletTemplate, InsertNecklaceTemplate } from "@shared/schema";
+import { products, charms, braceletTemplates, necklaceTemplates, braceletBeads } from "@shared/schema";
+import type { InsertProduct, InsertCharm, InsertBraceletTemplate, InsertNecklaceTemplate, InsertBraceletBead } from "@shared/schema";
 
 const realProducts: InsertProduct[] = [
   {
@@ -300,6 +300,94 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     color: "Pink",
     inStock: true,
   },
+  {
+    name: "Platise Beaded Bracelet",
+    description: "Pre-made beaded bracelet with refined details. Add charms to personalize it!",
+    basePrice: "35.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/1-PLATISE BRACELET $35 _1762108451901.jpg",
+    category: "Beaded",
+    color: "Multi",
+    inStock: true,
+  },
+  {
+    name: "Bartolome Beaded Bracelet",
+    description: "Pre-made beaded bracelet combining style and craftsmanship. Add charms to customize!",
+    basePrice: "35.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/1-BARTOLOME BRACELET $35 _1762108479918.jpg",
+    category: "Beaded",
+    color: "Multi",
+    inStock: true,
+  },
+  {
+    name: "Cristobal Beaded Bracelet",
+    description: "Pre-made beaded bracelet with unique design elements. Personalize with charms!",
+    basePrice: "35.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/1-CRISTOBAL BRACELET $35_1762108505912.jpg",
+    category: "Beaded",
+    color: "Multi",
+    inStock: true,
+  },
+  {
+    name: "Black Clover Beaded Bracelet",
+    description: "Pre-made black clover design bracelet. Add your favorite charms!",
+    basePrice: "10.00",
+    maxSlots: 11,
+    imageUrl: "/attached_assets/2-BLACK CLOVER $10_1762108708434.webp",
+    category: "Beaded",
+    color: "Black",
+    inStock: true,
+  },
+];
+
+const realBraceletBeads: InsertBraceletBead[] = [
+  {
+    name: "Gold Round Bead",
+    description: "Classic round gold bead to add elegance to your bracelet.",
+    price: "3.00",
+    imageUrl: "/attached_assets/GOLD_1762108975508.jpeg",
+    color: "Gold",
+    inStock: true,
+    stockQuantity: 100,
+  },
+  {
+    name: "Silver Round Bead",
+    description: "Sleek silver round bead for a modern touch.",
+    price: "3.00",
+    imageUrl: "/attached_assets/SILVER_1762109314679.webp",
+    color: "Silver",
+    inStock: true,
+    stockQuantity: 100,
+  },
+  {
+    name: "Pearl White Bead",
+    description: "Elegant pearl white bead for a classic look.",
+    price: "4.00",
+    imageUrl: "/attached_assets/SILVER_1762109314679.webp",
+    color: "White",
+    inStock: true,
+    stockQuantity: 100,
+  },
+  {
+    name: "Black Onyx Bead",
+    description: "Bold black onyx bead for dramatic style.",
+    price: "4.00",
+    imageUrl: "/attached_assets/BLACK_1762109259849.jpg",
+    color: "Black",
+    inStock: true,
+    stockQuantity: 100,
+  },
+  {
+    name: "Rose Gold Bead",
+    description: "Beautiful rose gold bead with warm tones.",
+    price: "4.00",
+    imageUrl: "/attached_assets/PINK_1762109221035.jpg",
+    color: "Rose Gold",
+    inStock: true,
+    stockQuantity: 100,
+  },
 ];
 
 const realNecklaceTemplates: InsertNecklaceTemplate[] = [
@@ -376,6 +464,7 @@ async function seed() {
   const existingCharms = await db.select().from(charms);
   const existingBraceletTemplates = await db.select().from(braceletTemplates);
   const existingNecklaceTemplates = await db.select().from(necklaceTemplates);
+  const existingBraceletBeads = await db.select().from(braceletBeads);
   
   // Clear existing data to reseed with real products
   if (existingProducts.length > 0) {
@@ -396,6 +485,11 @@ async function seed() {
   if (existingNecklaceTemplates.length > 0) {
     console.log("Clearing existing necklace templates...");
     await db.delete(necklaceTemplates);
+  }
+  
+  if (existingBraceletBeads.length > 0) {
+    console.log("Clearing existing bracelet beads...");
+    await db.delete(braceletBeads);
   }
   
   // Insert real products
@@ -422,11 +516,18 @@ async function seed() {
     await db.insert(necklaceTemplates).values(template);
   }
   
+  // Insert bracelet beads
+  console.log(`Inserting ${realBraceletBeads.length} bracelet beads...`);
+  for (const bead of realBraceletBeads) {
+    await db.insert(braceletBeads).values(bead);
+  }
+  
   console.log("Database seed completed successfully!");
   console.log(`- ${realProducts.length} products`);
   console.log(`- ${realCharms.length} charms`);
   console.log(`- ${realBraceletTemplates.length} bracelet templates`);
   console.log(`- ${realNecklaceTemplates.length} necklace templates`);
+  console.log(`- ${realBraceletBeads.length} bracelet beads`);
   
   process.exit(0);
 }
