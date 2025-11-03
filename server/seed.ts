@@ -4,6 +4,17 @@ import type { InsertProduct, InsertCharm, InsertBraceletTemplate, InsertNecklace
 
 const realProducts: InsertProduct[] = [
   {
+    name: "Test Item - $1",
+    description: "Test product for checkout and shipping functionality. This is a test item for $1.",
+    price: "1.00",
+    regularPrice: null,
+    imageUrl: "/attached_assets/1-BLUE LOVE SET $35_1762108080228.jpg",
+    imageUrl2: null,
+    category: "Test",
+    inStock: true,
+    stockQuantity: 100,
+  },
+  {
     name: "Blue Love Set",
     description: "Elegant set featuring stunning blue accents. Perfect for adding a touch of sophistication to any outfit.",
     price: "35.00",
