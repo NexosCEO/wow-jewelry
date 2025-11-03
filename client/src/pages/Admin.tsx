@@ -1,10 +1,11 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Order } from "@shared/schema";
+import { Order, Product } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Package, Printer, Mail, ExternalLink, Lock, LogOut } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, Package, Printer, Mail, ExternalLink, Lock, LogOut, PackageOpen, Plus, Minus } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -36,6 +37,11 @@ export default function Admin() {
       }
       return response.json();
     },
+  });
+
+  const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+    enabled: isAuthenticated,
   });
 
   const handleLogin = (e: React.FormEvent) => {
@@ -113,11 +119,44 @@ export default function Admin() {
         description: "Customer has been notified",
       });
     },
-    onError: (error: any) => {
+    onError: (error: any) {
       setProcessingOrderId(null);
       toast({
         title: "Error",
         description: error.message || "Failed to send notification",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateInventoryMutation = useMutation({
+    mutationFn: async ({ productId, quantityChange }: { productId: string; quantityChange: number }) => {
+      const token = getAdminToken();
+      const response = await fetch(`/api/products/${productId}/inventory`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ quantityChange }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update inventory");
+      }
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({
+        title: "Inventory Updated!",
+        description: "Product inventory has been updated",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update inventory",
         variant: "destructive",
       });
     },
