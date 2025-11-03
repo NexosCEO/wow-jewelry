@@ -177,18 +177,29 @@ Preferred communication style: Simple, everyday language.
 - **NOTE**: User declined to use Replit's SendGrid connector integration, preferring manual API key management
 
 **Admin Dashboard** (Added November 2025)
-- Accessible at `/admin` route for order management
+- Accessible at `/admin` route for order and inventory management
 - **Authentication**: Protected by ADMIN_ACCESS_KEY secret (Bearer token authentication)
   - Admin must enter access key to view dashboard
   - All privileged endpoints require valid admin token
-  - Prevents unauthorized access to order data and shipping/email operations
-- Features:
-  - View all orders with customer information and shipping details
-  - One-click shipping label generation via Shippo API
-  - Download and print labels as PDF (works with regular printers or thermal label printers like DYMO LabelWriter 4XL)
-  - Send customer notifications with tracking information
-  - Order status tracking (pending → shipped)
-  - Tracking number and carrier information display
+  - Prevents unauthorized access to order data, inventory, and shipping/email operations
+- **Tabbed Interface** (Updated November 3, 2025):
+  - **Orders Tab**: Order management and shipping operations
+    - View all orders with customer information and shipping details
+    - One-click shipping label generation via Shippo API
+    - Download and print labels as PDF (works with regular printers or thermal label printers like DYMO LabelWriter 4XL)
+    - Send customer notifications with tracking information
+    - Order status tracking (pending → shipped)
+    - Tracking number and carrier information display
+  - **Inventory Tab**: Real-time product stock management
+    - View all products sorted alphabetically with current stock levels
+    - +/- buttons to adjust inventory quantities for each product
+    - Visual indicators: red text and "Out of Stock" badge when stock reaches zero
+    - Automatic disabling of decrement button when stock is zero (prevents negative inventory)
+    - Concurrent mutation handling: multiple products can be updated simultaneously without state conflicts
+    - Real-time updates with optimistic UI feedback
+    - Inventory changes persist immediately to database
+    - **Backend Integration**: PATCH `/api/products/:id/inventory` endpoint with admin authentication
+    - **Automatic Inventory Deduction**: Stock automatically decreases when customers place orders
 
 **Design Assets**
 - Google Fonts CDN for Inter, Montserrat, and Playfair Display
