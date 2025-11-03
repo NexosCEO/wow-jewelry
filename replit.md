@@ -8,6 +8,17 @@ WOW Jewelry (WOW by Dany) is a handmade artisan jewelry e-commerce platform buil
 
 Preferred communication style: Simple, everyday language.
 
+## Features in Cold Storage
+
+**Necklace Builder (Disabled November 2025)**
+- Custom "Build Your Own Necklace" feature temporarily disabled per client request
+- Complete implementation preserved in codebase for potential future reactivation
+- Files maintained: `client/src/pages/NecklaceBuilder.tsx`, database tables, API endpoints
+- Route commented out in `App.tsx` (line 127)
+- Navigation links removed from `Header.tsx` (desktop and mobile menus)
+- To re-enable: Uncomment route in App.tsx and restore navigation links in Header.tsx
+- All backend logic (necklace templates, charms, cart handling) remains fully functional
+
 ## System Architecture
 
 ### Frontend Architecture

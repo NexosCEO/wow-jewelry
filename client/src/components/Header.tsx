@@ -51,11 +51,6 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
                   Build Bracelet
                 </span>
               </Link>
-              <Link href="/necklace-builder">
-                <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/necklace-builder" ? "text-primary font-semibold" : ""}`} data-testid="link-necklace-builder">
-                  Build Necklace
-                </span>
-              </Link>
               <a href="#about">
                 <span className="text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary" data-testid="link-about">
                   About
@@ -121,15 +116,6 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
                   data-testid="link-bracelet-builder-mobile"
                 >
                   Build Bracelet
-                </span>
-              </Link>
-              <Link href="/necklace-builder">
-                <span 
-                  className={`block py-2 text-base cursor-pointer transition-colors hover:text-primary ${location === "/necklace-builder" ? "text-primary font-semibold" : ""}`}
-                  onClick={() => setMobileMenuOpen(false)}
-                  data-testid="link-necklace-builder-mobile"
-                >
-                  Build Necklace
                 </span>
               </Link>
               <a 

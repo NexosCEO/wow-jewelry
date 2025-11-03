@@ -120,7 +120,8 @@ function Router() {
         <Route path="/" component={() => <Home onAddToCart={handleAddToCart} />} />
         <Route path="/product/:id" component={() => <ProductDetail onAddToCart={handleAddToCart} />} />
         <Route path="/bracelet-builder" component={() => <BraceletBuilder onAddToCart={handleAddToCart} />} />
-        <Route path="/necklace-builder" component={() => <NecklaceBuilder onAddToCart={handleAddToCart} />} />
+        {/* COLD STORAGE: Necklace builder disabled per client request - can be re-enabled in future */}
+        {/* <Route path="/necklace-builder" component={() => <NecklaceBuilder onAddToCart={handleAddToCart} />} /> */}
         <Route path="/checkout" component={() => <Checkout cart={cart} onClearCart={handleClearCart} />} />
         <Route path="/orders" component={Orders} />
         <Route path="/admin" component={Admin} />
