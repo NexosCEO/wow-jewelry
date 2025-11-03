@@ -25,7 +25,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const [currentStep, setCurrentStep] = useState<BuilderStep>("select-string");
   const [selectedTemplate, setSelectedTemplate] = useState<BraceletTemplate | null>(null);
   const [selectedCharms, setSelectedCharms] = useState<SelectedCharm[]>([]);
-  const [selectedColor, setSelectedColor] = useState<string>("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   const { data: templates = [], isLoading: loadingTemplates } = useQuery<BraceletTemplate[]>({
     queryKey: ["/api/bracelet-templates"],
@@ -35,11 +35,11 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     queryKey: ["/api/charms"],
   });
 
-  const availableColors = ["All", ...Array.from(new Set(templates.map(t => t.color)))];
+  const availableCategories = ["All", "String", "Beaded"];
   
-  const filteredTemplates = selectedColor === "All" 
+  const filteredTemplates = selectedCategory === "All" 
     ? templates 
-    : templates.filter(t => t.color === selectedColor);
+    : templates.filter(t => t.category === selectedCategory);
 
   const totalCharmSlots = selectedTemplate?.maxSlots || 0;
   const usedSlots = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0);
@@ -157,14 +157,14 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
             <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "select-string" ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>
               1
             </div>
-            <span className="hidden sm:inline">Choose String</span>
+            <span className="hidden sm:inline">Choose Base</span>
           </div>
           <ArrowRight className="w-4 h-4 text-muted-foreground" />
           <div className={`flex items-center gap-2 ${currentStep === "add-charms" ? "text-primary font-semibold" : "text-muted-foreground"}`}>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === "add-charms" ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>
               2
             </div>
-            <span className="hidden sm:inline">Add Charms</span>
+            <span className="hidden sm:inline">Customize</span>
           </div>
           <ArrowRight className="w-4 h-4 text-muted-foreground" />
           <div className={`flex items-center gap-2 ${currentStep === "review" ? "text-primary font-semibold" : "text-muted-foreground"}`}>
@@ -178,19 +178,19 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
 
       {currentStep === "select-string" && (
         <div>
-          <h2 className="text-2xl font-serif font-bold mb-6 text-center">Select Your Bracelet String Color</h2>
+          <h2 className="text-2xl font-serif font-bold mb-6 text-center">Choose Your Bracelet Base</h2>
           
           <div className="flex justify-center mb-8">
             <div className="flex flex-wrap gap-3 justify-center">
-              {availableColors.map((color) => (
+              {availableCategories.map((category) => (
                 <Badge
-                  key={color}
-                  variant={selectedColor === color ? "default" : "outline"}
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
                   className="cursor-pointer px-4 py-2 text-sm font-semibold hover-elevate active-elevate-2"
-                  onClick={() => setSelectedColor(color)}
-                  data-testid={`badge-color-${color.toLowerCase()}`}
+                  onClick={() => setSelectedCategory(category)}
+                  data-testid={`badge-category-${category.toLowerCase()}`}
                 >
-                  {color}
+                  {category === "All" ? "All Bases" : category === "String" ? "Plain Strings" : "Beaded Bracelets"}
                 </Badge>
               ))}
             </div>
@@ -224,16 +224,16 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                   <CardDescription>{template.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-4">
                     <p className="text-xl font-semibold">${parseFloat(template.basePrice).toFixed(2)}</p>
-                    <Badge variant="secondary">+ {template.maxSlots} charm slots</Badge>
+                    <Badge variant="secondary">{template.category}</Badge>
                   </div>
                   <Button 
-                    className="w-full mt-4 bg-gradient-to-r from-rose-gold via-gold-primary to-gold-secondary text-charcoal-dark font-semibold hover-elevate active-elevate-2" 
+                    className="w-full bg-gradient-to-r from-rose-gold via-gold-primary to-gold-secondary text-charcoal-dark font-semibold hover-elevate active-elevate-2" 
                     onClick={() => handleTemplateSelect(template)}
                     data-testid={`button-select-template-${template.id}`}
                   >
-                    Select This String
+                    Select This Base
                   </Button>
                 </CardContent>
               </Card>
@@ -255,13 +255,13 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
               data-testid="button-back-to-strings"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Change String
+              Change Base
             </Button>
             
             <Card className="mb-6">
               <CardHeader>
-                <CardTitle className="font-serif">Selected String: {selectedTemplate.name}</CardTitle>
-                <CardDescription>Base Price: ${parseFloat(selectedTemplate.basePrice).toFixed(2)}</CardDescription>
+                <CardTitle className="font-serif">Selected Base: {selectedTemplate.name}</CardTitle>
+                <CardDescription>Base Price: ${parseFloat(selectedTemplate.basePrice).toFixed(2)} • {selectedTemplate.category}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4">
