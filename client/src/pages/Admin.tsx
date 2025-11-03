@@ -86,7 +86,7 @@ export default function Admin() {
         window.open(data.labelUrl, "_blank");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       setProcessingOrderId(null);
       toast({
         title: "Error",
@@ -119,7 +119,7 @@ export default function Admin() {
         description: "Customer has been notified",
       });
     },
-    onError: (error: any) {
+    onError: (error) => {
       setProcessingOrderId(null);
       toast({
         title: "Error",
@@ -153,7 +153,7 @@ export default function Admin() {
         description: "Product inventory has been updated",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast({
         title: "Error",
         description: error.message || "Failed to update inventory",
@@ -219,7 +219,7 @@ export default function Admin() {
               Admin Dashboard
             </h1>
             <p className="text-muted-foreground" data-testid="text-admin-subtitle">
-              Manage orders and generate shipping labels
+              Manage orders, shipping labels, and product inventory
             </p>
           </div>
           <Button
@@ -233,19 +233,32 @@ export default function Admin() {
           </Button>
         </div>
 
-        {orders && orders.length === 0 && (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-16">
-              <Package className="w-16 h-16 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground" data-testid="text-no-orders">
-                No orders yet
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        <Tabs defaultValue="orders" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+            <TabsTrigger value="orders" data-testid="tab-orders">
+              <Package className="w-4 h-4 mr-2" />
+              Orders
+            </TabsTrigger>
+            <TabsTrigger value="inventory" data-testid="tab-inventory">
+              <PackageOpen className="w-4 h-4 mr-2" />
+              Inventory
+            </TabsTrigger>
+          </TabsList>
 
-        <div className="space-y-4">
-          {orders?.map((order) => {
+          <TabsContent value="orders" className="mt-0">
+            {orders && orders.length === 0 && (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <Package className="w-16 h-16 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground" data-testid="text-no-orders">
+                    No orders yet
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="space-y-4">
+              {orders?.map((order) => {
             const items = JSON.parse(order.items);
             const hasLabel = !!order.shippingLabelUrl;
             
@@ -387,7 +400,83 @@ export default function Admin() {
               </Card>
             );
           })}
-        </div>
+          </div>
+          </TabsContent>
+
+          <TabsContent value="inventory" className="mt-0">
+            {productsLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : !products || products.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <PackageOpen className="w-16 h-16 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No products found</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4">
+                {products.map((product) => (
+                  <Card key={product.id} data-testid={`card-product-${product.id}`}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
+                        <img
+                          src={product.imageUrl}
+                          alt={product.name}
+                          className="w-20 h-20 object-cover rounded-md border border-card-border"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-lg mb-1" data-testid={`text-product-name-${product.id}`}>
+                            {product.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
+                          <p className="text-lg font-bold">${parseFloat(product.price).toFixed(2)}</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-center">
+                            <p className="text-sm text-muted-foreground mb-2">Stock</p>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => updateInventoryMutation.mutate({ productId: product.id, quantityChange: -1 })}
+                                disabled={product.stockQuantity === 0 || updateInventoryMutation.isPending}
+                                data-testid={`button-decrease-stock-${product.id}`}
+                              >
+                                <Minus className="w-4 h-4" />
+                              </Button>
+                              <div className="min-w-[60px] text-center">
+                                <span 
+                                  className={`text-xl font-bold ${product.stockQuantity === 0 ? 'text-destructive' : ''}`}
+                                  data-testid={`text-stock-${product.id}`}
+                                >
+                                  {product.stockQuantity}
+                                </span>
+                                {!product.inStock && (
+                                  <Badge variant="destructive" className="mt-1 text-xs">Out of Stock</Badge>
+                                )}
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => updateInventoryMutation.mutate({ productId: product.id, quantityChange: 1 })}
+                                disabled={updateInventoryMutation.isPending}
+                                data-testid={`button-increase-stock-${product.id}`}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
