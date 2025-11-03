@@ -58,6 +58,7 @@ export default function Admin() {
   };
 
   const [processingOrderId, setProcessingOrderId] = useState<string | null>(null);
+  const [processingProductId, setProcessingProductId] = useState<string | null>(null);
 
   const generateLabelMutation = useMutation({
     mutationFn: async (orderId: string) => {
@@ -131,6 +132,7 @@ export default function Admin() {
 
   const updateInventoryMutation = useMutation({
     mutationFn: async ({ productId, quantityChange }: { productId: string; quantityChange: number }) => {
+      setProcessingProductId(productId);
       const token = getAdminToken();
       const response = await fetch(`/api/products/${productId}/inventory`, {
         method: "PATCH",
@@ -147,6 +149,7 @@ export default function Admin() {
       return await response.json();
     },
     onSuccess: () => {
+      setProcessingProductId(null);
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       toast({
         title: "Inventory Updated!",
@@ -154,6 +157,7 @@ export default function Admin() {
       });
     },
     onError: (error) => {
+      setProcessingProductId(null);
       toast({
         title: "Error",
         description: error.message || "Failed to update inventory",
@@ -441,7 +445,7 @@ export default function Admin() {
                                 variant="outline"
                                 size="icon"
                                 onClick={() => updateInventoryMutation.mutate({ productId: product.id, quantityChange: -1 })}
-                                disabled={product.stockQuantity === 0 || updateInventoryMutation.isPending}
+                                disabled={product.stockQuantity === 0 || processingProductId === product.id}
                                 data-testid={`button-decrease-stock-${product.id}`}
                               >
                                 <Minus className="w-4 h-4" />
@@ -461,7 +465,7 @@ export default function Admin() {
                                 variant="outline"
                                 size="icon"
                                 onClick={() => updateInventoryMutation.mutate({ productId: product.id, quantityChange: 1 })}
-                                disabled={updateInventoryMutation.isPending}
+                                disabled={processingProductId === product.id}
                                 data-testid={`button-increase-stock-${product.id}`}
                               >
                                 <Plus className="w-4 h-4" />
