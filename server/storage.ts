@@ -12,7 +12,7 @@ import {
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, asc } from "drizzle-orm";
 
 export interface IStorage {
   getAllProducts(): Promise<Product[]>;
@@ -373,7 +373,7 @@ export class MemStorage implements IStorage {
 // Database-backed storage implementation
 export class DatabaseStorage implements IStorage {
   async getAllProducts(): Promise<Product[]> {
-    return await db.select().from(products);
+    return await db.select().from(products).orderBy(asc(products.name));
   }
 
   async getProduct(id: string): Promise<Product | undefined> {
