@@ -80,9 +80,14 @@ export function CartDrawer({ isOpen, onClose, cart, onUpdateQuantity, onRemoveIt
                         
                         <div className="flex-1 space-y-2">
                           <h3 className="font-medium" data-testid={`text-cart-name-${itemId}`}>{itemName}</h3>
-                          {!isProduct && "charmNames" in item && (
+                          {!isProduct && "charmNames" in item && item.charmNames.length > 0 && (
                             <p className="text-xs text-muted-foreground">
-                              {item.charmNames.join(", ")}
+                              Charms: {item.charmNames.join(", ")}
+                            </p>
+                          )}
+                          {!isProduct && "beadNames" in item && item.beadNames.length > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                              Beads: {item.beadNames.join(", ")}
                             </p>
                           )}
                           <p className="text-sm font-semibold" data-testid={`text-cart-price-${itemId}`}>

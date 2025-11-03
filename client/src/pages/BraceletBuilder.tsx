@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { BraceletTemplate, Charm } from "@shared/schema";
+import type { BraceletTemplate, Charm, BraceletBead } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,11 @@ interface SelectedCharm {
   quantity: number;
 }
 
+interface SelectedBead {
+  bead: BraceletBead;
+  quantity: number;
+}
+
 interface BraceletBuilderProps {
   onAddToCart: (customBracelet: any) => void;
 }
@@ -25,6 +30,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const [currentStep, setCurrentStep] = useState<BuilderStep>("select-string");
   const [selectedTemplate, setSelectedTemplate] = useState<BraceletTemplate | null>(null);
   const [selectedCharms, setSelectedCharms] = useState<SelectedCharm[]>([]);
+  const [selectedBeads, setSelectedBeads] = useState<SelectedBead[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   const { data: templates = [], isLoading: loadingTemplates } = useQuery<BraceletTemplate[]>({
@@ -35,6 +41,10 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     queryKey: ["/api/charms"],
   });
 
+  const { data: beads = [], isLoading: loadingBeads } = useQuery<BraceletBead[]>({
+    queryKey: ["/api/bracelet-beads"],
+  });
+
   const availableCategories = ["All", "String", "Beaded"];
   
   const filteredTemplates = selectedCategory === "All" 
@@ -42,7 +52,8 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     : templates.filter(t => t.category === selectedCategory);
 
   const totalCharmSlots = selectedTemplate?.maxSlots || 0;
-  const usedSlots = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0);
+  const usedSlots = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0) + 
+                     selectedBeads.reduce((sum, sb) => sum + sb.quantity, 0);
   const remainingSlots = totalCharmSlots - usedSlots;
 
   const calculateTotalPrice = () => {
@@ -52,7 +63,11 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
       (sum, sc) => sum + parseFloat(sc.charm.price) * sc.quantity,
       0
     );
-    return basePrice + charmsPrice;
+    const beadsPrice = selectedBeads.reduce(
+      (sum, sb) => sum + parseFloat(sb.bead.price) * sb.quantity,
+      0
+    );
+    return basePrice + charmsPrice + beadsPrice;
   };
 
   const handleTemplateSelect = (template: BraceletTemplate) => {
@@ -96,11 +111,47 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     });
   };
 
-  const handleContinueToReview = () => {
-    if (selectedCharms.length === 0) {
+  const handleAddBead = (bead: BraceletBead) => {
+    if (remainingSlots <= 0) {
       toast({
-        title: "Add Some Charms",
-        description: "Please add at least one charm to your bracelet.",
+        title: "Maximum Slots Reached",
+        description: `This bracelet can only hold ${totalCharmSlots} items total.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedBeads((prev) => {
+      const existing = prev.find((sb) => sb.bead.id === bead.id);
+      if (existing) {
+        return prev.map((sb) =>
+          sb.bead.id === bead.id ? { ...sb, quantity: sb.quantity + 1 } : sb
+        );
+      }
+      return [...prev, { bead, quantity: 1 }];
+    });
+  };
+
+  const handleRemoveBead = (beadId: string) => {
+    setSelectedBeads((prev) => {
+      const existing = prev.find((sb) => sb.bead.id === beadId);
+      if (!existing) return prev;
+      
+      if (existing.quantity === 1) {
+        return prev.filter((sb) => sb.bead.id !== beadId);
+      }
+      
+      return prev.map((sb) =>
+        sb.bead.id === beadId ? { ...sb, quantity: sb.quantity - 1 } : sb
+      );
+    });
+  };
+
+  const handleContinueToReview = () => {
+    if (selectedCharms.length === 0 && selectedBeads.length === 0) {
+      toast({
+        title: "Add Customizations",
+        description: "Please add at least one charm or bead to your bracelet.",
         variant: "destructive",
       });
       return;
@@ -116,6 +167,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
       templateId: selectedTemplate.id,
       templateName: selectedTemplate.name,
       charmNames: selectedCharms.map((sc) => `${sc.charm.name} (${sc.quantity})`),
+      beadNames: selectedBeads.map((sb) => `${sb.bead.name} (${sb.quantity})`),
       price: calculateTotalPrice().toFixed(2),
       quantity: 1,
     };
@@ -130,7 +182,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     setLocation("/");
   };
 
-  if (loadingTemplates || loadingCharms) {
+  if (loadingTemplates || loadingCharms || loadingBeads) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center">
@@ -285,12 +337,13 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
             </Card>
           </div>
 
-          <h2 className="text-2xl font-serif font-bold mb-6 text-center">Add Charms to Your Bracelet</h2>
+          <h2 className="text-2xl font-serif font-bold mb-6 text-center">Customize Your Bracelet</h2>
+          <p className="text-center text-muted-foreground mb-8">Add charms and beads to personalize your bracelet</p>
           
-          {selectedCharms.length > 0 && (
+          {(selectedCharms.length > 0 || selectedBeads.length > 0) && (
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle className="font-serif">Selected Charms</CardTitle>
+                <CardTitle className="font-serif">Selected Items</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -305,7 +358,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                         <div>
                           <p className="font-semibold">{sc.charm.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            ${parseFloat(sc.charm.price).toFixed(2)} each
+                            ${parseFloat(sc.charm.price).toFixed(2)} each • Charm
                           </p>
                         </div>
                       </div>
@@ -331,13 +384,57 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                       </div>
                     </div>
                   ))}
+                  {selectedBeads.map((sb) => (
+                    <div key={sb.bead.id} className="flex items-center justify-between p-4 rounded-lg bg-muted">
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={sb.bead.imageUrl}
+                          alt={sb.bead.name}
+                          className="w-16 h-16 object-cover rounded-md"
+                        />
+                        <div>
+                          <p className="font-semibold">{sb.bead.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            ${parseFloat(sb.bead.price).toFixed(2)} each • Bead
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => handleRemoveBead(sb.bead.id)}
+                          data-testid={`button-remove-bead-${sb.bead.id}`}
+                        >
+                          <Minus className="w-4 h-4" />
+                        </Button>
+                        <span className="w-8 text-center font-semibold">{sb.quantity}</span>
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => handleAddBead(sb.bead)}
+                          disabled={remainingSlots === 0}
+                          data-testid={`button-add-bead-${sb.bead.id}`}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
                 <div className="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Current Total</p>
-                    <p className="text-3xl font-bold">${calculateTotalPrice().toFixed(2)}</p>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-rose-gold to-gold-primary bg-clip-text text-transparent">
+                      ${calculateTotalPrice().toFixed(2)}
+                    </p>
                   </div>
-                  <Button onClick={handleContinueToReview} size="lg" data-testid="button-continue-review">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-rose-gold via-gold-primary to-gold-secondary text-charcoal-dark font-semibold hover-elevate active-elevate-2 px-8"
+                    onClick={handleContinueToReview}
+                    data-testid="button-continue-review"
+                  >
                     Continue to Review
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -390,6 +487,53 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
               );
             })}
           </div>
+
+          <h3 className="text-xl font-serif font-bold mt-12 mb-6 text-center">Add Beads</h3>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {beads.filter(b => b.inStock).map((bead) => {
+              const selected = selectedBeads.find((sb) => sb.bead.id === bead.id);
+              return (
+                <Card 
+                  key={bead.id} 
+                  className={`hover-elevate ${selected ? "border-primary" : ""}`}
+                  data-testid={`card-bead-${bead.id}`}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="relative">
+                      <img
+                        src={bead.imageUrl}
+                        alt={bead.name}
+                        className="w-full h-32 object-cover rounded-md"
+                      />
+                      {selected && (
+                        <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center">
+                          <Check className="w-4 h-4" />
+                        </div>
+                      )}
+                    </div>
+                    <CardTitle className="text-sm mt-2">{bead.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-bold">${bead.price}</span>
+                      <Badge variant="outline" className="text-xs">{bead.color}</Badge>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      onClick={() => handleAddBead(bead)}
+                      disabled={remainingSlots === 0}
+                      data-testid={`button-select-bead-${bead.id}`}
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -418,40 +562,76 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                 </div>
               </div>
 
-              <div>
-                <h3 className="font-semibold mb-2">Selected Charms ({usedSlots})</h3>
-                <div className="space-y-2">
-                  {selectedCharms.map((sc) => (
-                    <div key={sc.charm.id} className="flex items-center gap-3 bg-muted/30 p-3 rounded-md">
-                      <img
-                        src={sc.charm.imageUrl}
-                        alt={sc.charm.name}
-                        className="w-12 h-12 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        <p className="font-medium">{sc.charm.name}</p>
-                        <p className="text-sm text-muted-foreground">Quantity: {sc.quantity}</p>
+              {selectedCharms.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2">Selected Charms ({selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0)})</h3>
+                  <div className="space-y-2">
+                    {selectedCharms.map((sc) => (
+                      <div key={sc.charm.id} className="flex items-center gap-3 bg-muted/30 p-3 rounded-md">
+                        <img
+                          src={sc.charm.imageUrl}
+                          alt={sc.charm.name}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <p className="font-medium">{sc.charm.name}</p>
+                          <p className="text-sm text-muted-foreground">Quantity: {sc.quantity}</p>
+                        </div>
+                        <span className="font-bold">${(parseFloat(sc.charm.price) * sc.quantity).toFixed(2)}</span>
                       </div>
-                      <span className="font-bold">${(parseFloat(sc.charm.price) * sc.quantity).toFixed(2)}</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {selectedBeads.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2">Selected Beads ({selectedBeads.reduce((sum, sb) => sum + sb.quantity, 0)})</h3>
+                  <div className="space-y-2">
+                    {selectedBeads.map((sb) => (
+                      <div key={sb.bead.id} className="flex items-center gap-3 bg-muted/30 p-3 rounded-md">
+                        <img
+                          src={sb.bead.imageUrl}
+                          alt={sb.bead.name}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <p className="font-medium">{sb.bead.name}</p>
+                          <p className="text-sm text-muted-foreground">Quantity: {sb.quantity}</p>
+                        </div>
+                        <span className="font-bold">${(parseFloat(sb.bead.price) * sb.quantity).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="border-t border-border pt-6">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-muted-foreground">Base Bracelet</span>
                   <span>${selectedTemplate.basePrice}</span>
                 </div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-muted-foreground">Charms ({usedSlots})</span>
-                  <span>
-                    ${selectedCharms.reduce((sum, sc) => sum + parseFloat(sc.charm.price) * sc.quantity, 0).toFixed(2)}
-                  </span>
-                </div>
+                {selectedCharms.length > 0 && (
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-muted-foreground">Charms ({selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0)})</span>
+                    <span>
+                      ${selectedCharms.reduce((sum, sc) => sum + parseFloat(sc.charm.price) * sc.quantity, 0).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {selectedBeads.length > 0 && (
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-muted-foreground">Beads ({selectedBeads.reduce((sum, sb) => sum + sb.quantity, 0)})</span>
+                    <span>
+                      ${selectedBeads.reduce((sum, sb) => sum + parseFloat(sb.bead.price) * sb.quantity, 0).toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between text-2xl font-bold pt-4 border-t border-border">
                   <span>Total</span>
-                  <span data-testid="text-total-price">${calculateTotalPrice().toFixed(2)}</span>
+                  <span className="bg-gradient-to-r from-rose-gold to-gold-primary bg-clip-text text-transparent" data-testid="text-total-price">
+                    ${calculateTotalPrice().toFixed(2)}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -465,10 +645,10 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
               data-testid="button-back-charms"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Charms
+              Back to Customize
             </Button>
             <Button
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-rose-gold via-gold-primary to-gold-secondary text-charcoal-dark font-semibold hover-elevate active-elevate-2"
               onClick={handleAddToCart}
               data-testid="button-add-to-cart"
             >

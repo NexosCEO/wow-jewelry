@@ -115,6 +115,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/bracelet-beads", async (req, res) => {
+    try {
+      const beads = await storage.getAllBraceletBeads();
+      res.json(beads);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching bracelet beads: " + error.message });
+    }
+  });
+
   app.post("/api/custom-bracelet", async (req, res) => {
     try {
       const validatedData = insertCustomBraceletConfigurationSchema.parse(req.body);

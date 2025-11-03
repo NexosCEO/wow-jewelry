@@ -2,11 +2,12 @@ import {
   type Product, type InsertProduct, 
   type Order, type InsertOrder,
   type Charm, type InsertCharm,
+  type BraceletBead, type InsertBraceletBead,
   type BraceletTemplate, type InsertBraceletTemplate,
   type CustomBraceletConfiguration, type InsertCustomBraceletConfiguration,
   type NecklaceTemplate, type InsertNecklaceTemplate,
   type CustomNecklaceConfiguration, type InsertCustomNecklaceConfiguration,
-  products, orders, charms, braceletTemplates, customBraceletConfigurations,
+  products, orders, charms, braceletBeads, braceletTemplates, customBraceletConfigurations,
   necklaceTemplates, customNecklaceConfigurations
 } from "@shared/schema";
 import { randomUUID } from "crypto";
@@ -34,6 +35,9 @@ export interface IStorage {
   getAllCharms(): Promise<Charm[]>;
   getCharm(id: string): Promise<Charm | undefined>;
   createCharm(charm: InsertCharm): Promise<Charm>;
+  
+  getAllBraceletBeads(): Promise<BraceletBead[]>;
+  getBraceletBead(id: string): Promise<BraceletBead | undefined>;
   
   getAllBraceletTemplates(): Promise<BraceletTemplate[]>;
   getBraceletTemplate(id: string): Promise<BraceletTemplate | undefined>;
@@ -301,6 +305,14 @@ export class MemStorage implements IStorage {
     throw new Error("Not implemented in MemStorage");
   }
 
+  async getAllBraceletBeads(): Promise<BraceletBead[]> {
+    return [];
+  }
+
+  async getBraceletBead(id: string): Promise<BraceletBead | undefined> {
+    return undefined;
+  }
+
   async getAllBraceletTemplates(): Promise<BraceletTemplate[]> {
     return [];
   }
@@ -435,6 +447,15 @@ export class DatabaseStorage implements IStorage {
       .values(insertCharm)
       .returning();
     return charm;
+  }
+
+  async getAllBraceletBeads(): Promise<BraceletBead[]> {
+    return await db.select().from(braceletBeads);
+  }
+
+  async getBraceletBead(id: string): Promise<BraceletBead | undefined> {
+    const [bead] = await db.select().from(braceletBeads).where(eq(braceletBeads.id, id));
+    return bead || undefined;
   }
 
   async getAllBraceletTemplates(): Promise<BraceletTemplate[]> {
