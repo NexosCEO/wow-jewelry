@@ -92,6 +92,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/products/:id/price", requireAdmin, async (req, res) => {
+    try {
+      const { price } = req.body;
+      
+      if (typeof price !== 'number' || price < 0) {
+        return res.status(400).json({ message: "price must be a non-negative number" });
+      }
+
+      const product = await storage.updateProduct(req.params.id, { price: price.toFixed(2) });
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating price: " + error.message });
+    }
+  });
+
   app.get("/api/bracelet-templates", async (req, res) => {
     try {
       const templates = await storage.getAllBraceletTemplates();

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Package, Printer, Mail, ExternalLink, Lock, LogOut, PackageOpen, Plus, Minus } from "lucide-react";
+import { Loader2, Package, Printer, Mail, ExternalLink, Lock, LogOut, PackageOpen, Plus, Minus, Edit, Check, X } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -59,6 +59,8 @@ export default function Admin() {
 
   const [processingOrderId, setProcessingOrderId] = useState<string | null>(null);
   const [processingProductIds, setProcessingProductIds] = useState<Set<string>>(new Set());
+  const [editingPriceId, setEditingPriceId] = useState<string | null>(null);
+  const [tempPrice, setTempPrice] = useState<string>("");
 
   const generateLabelMutation = useMutation({
     mutationFn: async (orderId: string) => {
@@ -169,6 +171,50 @@ export default function Admin() {
       toast({
         title: "Error",
         description: error.message || "Failed to update inventory",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updatePriceMutation = useMutation({
+    mutationFn: async ({ productId, price }: { productId: string; price: number }) => {
+      setProcessingProductIds(prev => new Set(prev).add(productId));
+      const token = getAdminToken();
+      const response = await fetch(`/api/products/${productId}/price`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ price }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update price");
+      }
+      return await response.json();
+    },
+    onSuccess: (data, variables) => {
+      setProcessingProductIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.productId);
+        return next;
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({
+        title: "Price Updated!",
+        description: "Product price has been updated",
+      });
+    },
+    onError: (error, variables) => {
+      setProcessingProductIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.productId);
+        return next;
+      });
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update price",
         variant: "destructive",
       });
     },
@@ -443,7 +489,72 @@ export default function Admin() {
                             {product.name}
                           </h3>
                           <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
-                          <p className="text-lg font-bold">${parseFloat(product.price).toFixed(2)}</p>
+                          <div className="flex items-center gap-2">
+                            {editingPriceId === product.id ? (
+                              <>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-lg font-bold">$</span>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={tempPrice}
+                                    onChange={(e) => setTempPrice(e.target.value)}
+                                    className="w-24 h-8 text-lg font-bold"
+                                    data-testid={`input-price-${product.id}`}
+                                    autoFocus
+                                  />
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => {
+                                    const price = parseFloat(tempPrice);
+                                    if (!isNaN(price) && price >= 0) {
+                                      updatePriceMutation.mutate({ productId: product.id, price });
+                                      setEditingPriceId(null);
+                                      setTempPrice("");
+                                    }
+                                  }}
+                                  disabled={processingProductIds.has(product.id)}
+                                  data-testid={`button-save-price-${product.id}`}
+                                >
+                                  <Check className="w-4 h-4 text-green-600" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => {
+                                    setEditingPriceId(null);
+                                    setTempPrice("");
+                                  }}
+                                  data-testid={`button-cancel-price-${product.id}`}
+                                >
+                                  <X className="w-4 h-4 text-destructive" />
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-lg font-bold" data-testid={`text-price-${product.id}`}>
+                                  ${parseFloat(product.price).toFixed(2)}
+                                </p>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => {
+                                    setEditingPriceId(product.id);
+                                    setTempPrice(parseFloat(product.price).toFixed(2));
+                                  }}
+                                  data-testid={`button-edit-price-${product.id}`}
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="text-center">

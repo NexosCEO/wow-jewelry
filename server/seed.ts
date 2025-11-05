@@ -115,8 +115,8 @@ const realProducts: InsertProduct[] = [
   },
   {
     name: "Astral Ring",
-    description: "Celestial-inspired ring in Size 9. Pricing coming soon - contact us for details.",
-    price: "0.00",
+    description: "Celestial-inspired ring in Size 9. Handcrafted with attention to detail.",
+    price: "25.00",
     regularPrice: null,
     imageUrl: "/attached_assets/1-ASTRAL RING- SIZE 9_1762108544578.jpg",
     imageUrl2: null,
@@ -126,8 +126,8 @@ const realProducts: InsertProduct[] = [
   },
   {
     name: "Pearl Ring",
-    description: "Elegant pearl ring in Size 9. Pricing coming soon - contact us for details.",
-    price: "0.00",
+    description: "Elegant pearl ring in Size 9. Classic and timeless design.",
+    price: "25.00",
     regularPrice: null,
     imageUrl: "/attached_assets/1-PEARL RING SIZE 9_1762108570535.jpg",
     imageUrl2: null,
@@ -137,8 +137,8 @@ const realProducts: InsertProduct[] = [
   },
   {
     name: "Aurora Ring",
-    description: "Stunning aurora-inspired ring in Size 9. Pricing coming soon - contact us for details.",
-    price: "0.00",
+    description: "Stunning aurora-inspired ring in Size 9. Unique and eye-catching.",
+    price: "25.00",
     regularPrice: null,
     imageUrl: "/attached_assets/1-AURORA RING SIZE 9_1762108657279.jpg",
     imageUrl2: null,
