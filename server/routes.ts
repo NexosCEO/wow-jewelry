@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import Stripe from "stripe";
 import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema, insertCustomNecklaceConfigurationSchema } from "@shared/schema";
 import { requireAdmin } from "./auth-middleware";
+import PDFDocument from "pdfkit";
 
 let stripe: Stripe | null = null;
 
@@ -542,6 +543,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Email notification error:", error);
       res.status(500).json({ message: "Error sending email: " + error.message });
+    }
+  });
+
+  // Generate November invoice PDF
+  app.get("/api/generate-invoice-november", async (req, res) => {
+    try {
+      const doc = new PDFDocument({ margin: 50 });
+
+      // Set response headers
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="WOW-Jewelry-Invoice-November-2025.pdf"');
+
+      // Pipe PDF to response
+      doc.pipe(res);
+
+      // Invoice Header
+      doc.fontSize(24).font('Helvetica-Bold').text('INVOICE', { align: 'left' });
+      doc.moveDown(0.5);
+      
+      doc.fontSize(10).font('Helvetica');
+      doc.text(`Invoice #: INV-${Date.now()}`, { align: 'left' });
+      doc.text('Date: November 5, 2025', { align: 'left' });
+      doc.text('Due Date: Upon Receipt', { align: 'left' });
+      doc.moveDown(2);
+
+      // From and Bill To sections
+      const fromX = 50;
+      const billToX = 320;
+      const currentY = doc.y;
+
+      // FROM section
+      doc.fontSize(10).font('Helvetica-Bold').text('FROM:', fromX, currentY);
+      doc.moveDown(0.5);
+      doc.font('Helvetica').fontSize(10);
+      doc.text('Titan Innovations LLC', fromX, doc.y);
+      doc.text('Professional Website Development', fromX, doc.y);
+      doc.text('Full-Stack E-Commerce Solutions', fromX, doc.y);
+
+      // BILL TO section
+      doc.fontSize(10).font('Helvetica-Bold').text('BILL TO:', billToX, currentY);
+      doc.moveDown(0.5);
+      doc.font('Helvetica').fontSize(10);
+      doc.text('WOW by Dany', billToX, doc.y);
+      doc.text('Jewelry E-Commerce Store', billToX, doc.y);
+      doc.text('Online Retail Business', billToX, doc.y);
+
+      doc.moveDown(3);
+
+      // Table Header
+      const tableTop = doc.y;
+      doc.fontSize(10).font('Helvetica-Bold');
+      doc.text('DESCRIPTION', 50, tableTop, { width: 280 });
+      doc.text('QTY', 330, tableTop, { width: 50, align: 'center' });
+      doc.text('RATE', 380, tableTop, { width: 80, align: 'right' });
+      doc.text('AMOUNT', 460, tableTop, { width: 90, align: 'right' });
+      
+      doc.moveDown(0.5);
+      doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+      doc.moveDown(0.5);
+
+      // Line items
+      const items = [
+        { desc: 'Custom Bracelet Builder Implementation\nInteractive 3-step builder, charm & bead selection, live pricing', qty: 1, rate: 65.00 },
+        { desc: 'Admin Dashboard with Authentication\nSecure admin panel, order management, tabbed interface', qty: 1, rate: 50.00 },
+        { desc: 'Shippo Shipping Label Integration\nAutomated label generation, multi-carrier support, PDF downloads', qty: 1, rate: 55.00 },
+        { desc: 'SendGrid Email Notification System\nOrder confirmations, shipping notifications, HTML templates', qty: 1, rate: 40.00 },
+        { desc: 'Real-Time Inventory Management System\nStock tracking, automatic deduction, manual adjustments', qty: 1, rate: 40.00 }
+      ];
+
+      doc.font('Helvetica').fontSize(9);
+      items.forEach((item) => {
+        const itemY = doc.y;
+        doc.text(item.desc, 50, itemY, { width: 280 });
+        doc.text(item.qty.toString(), 330, itemY, { width: 50, align: 'center' });
+        doc.text(`$${item.rate.toFixed(2)}`, 380, itemY, { width: 80, align: 'right' });
+        doc.text(`$${item.rate.toFixed(2)}`, 460, itemY, { width: 90, align: 'right' });
+        doc.moveDown(1.8);
+      });
+
+      doc.moveDown(1);
+      doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+      doc.moveDown(0.5);
+
+      // Totals
+      doc.fontSize(10).font('Helvetica');
+      doc.text('Subtotal:', 380, doc.y, { width: 80, align: 'right' });
+      doc.text('$250.00', 460, doc.y, { width: 90, align: 'right' });
+      doc.moveDown(0.5);
+
+      doc.fontSize(12).font('Helvetica-Bold');
+      doc.text('TOTAL:', 380, doc.y, { width: 80, align: 'right' });
+      doc.text('$250.00', 460, doc.y, { width: 90, align: 'right' });
+
+      doc.moveDown(2);
+
+      // Payment Terms
+      doc.fontSize(11).font('Helvetica-Bold');
+      doc.text('Payment Terms', 50, doc.y);
+      doc.moveDown(0.5);
+      doc.fontSize(9).font('Helvetica');
+      doc.text('• Payment is due upon receipt of this invoice', 50, doc.y);
+      doc.text('• All work has been completed and delivered as of November 5, 2025', 50, doc.y);
+      doc.text('• Features fully functional with production-ready integrations', 50, doc.y);
+      doc.moveDown(1.5);
+
+      // Payment Methods
+      doc.fontSize(11).font('Helvetica-Bold');
+      doc.text('Payment Methods Accepted', 50, doc.y);
+      doc.moveDown(0.5);
+      doc.fontSize(9).font('Helvetica');
+      doc.text('• Zelle', 50, doc.y);
+      doc.text('• Cash', 50, doc.y);
+      doc.text('• Apple Pay', 50, doc.y);
+      doc.text('• Credit/Debit Card', 50, doc.y);
+      doc.text('• Bank Transfer', 50, doc.y);
+      doc.moveDown(2);
+
+      // Project Summary
+      doc.fontSize(11).font('Helvetica-Bold');
+      doc.text('Project Summary', 50, doc.y);
+      doc.moveDown(0.5);
+      doc.fontSize(9).font('Helvetica');
+      doc.text('WOW by Dany - Enhanced E-Commerce Features', 50, doc.y);
+      doc.text('Custom builders, shipping automation, and inventory management', 50, doc.y);
+      doc.moveDown(1);
+      doc.fontSize(10).font('Helvetica-Bold');
+      doc.text('Thank you for your business!', 50, doc.y);
+
+      // Finalize PDF
+      doc.end();
+    } catch (error: any) {
+      console.error("Invoice generation error:", error);
+      res.status(500).json({ message: "Error generating invoice: " + error.message });
     }
   });
 
