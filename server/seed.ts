@@ -52,7 +52,7 @@ const realProducts: InsertProduct[] = [
     description: "Delicate butterfly-inspired earrings in beautiful blue tones. Add a whimsical touch to your style.",
     price: "35.00",
     regularPrice: null,
-    imageUrl: "/attached_assets/1-BLUE BUTTERFLY EARRINGS SET $35_1762108332901.jpg",
+    imageUrl: "/attached_assets/1- BLUE BUTTERFLY $35_1762438091006.jpeg",
     imageUrl2: null,
     category: "Earrings",
     inStock: true,
