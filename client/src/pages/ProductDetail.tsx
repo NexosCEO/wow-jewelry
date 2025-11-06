@@ -41,6 +41,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
   }
 
   const images = [product.imageUrl, product.imageUrl2].filter(Boolean);
+  const encodedImages = images.map(img => encodeURI(img));
 
   return (
     <div className="min-h-screen bg-background py-12">
@@ -56,7 +57,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
           <div className="space-y-4">
             <div className="aspect-square bg-card rounded-md overflow-hidden border border-card-border">
               <img
-                src={images[selectedImage]}
+                src={encodedImages[selectedImage]}
                 alt={product.name}
                 className="w-full h-full object-cover"
                 data-testid="img-product-main"
@@ -65,7 +66,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             
             {images.length > 1 && (
               <div className="flex gap-4">
-                {images.map((img, index) => (
+                {encodedImages.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}

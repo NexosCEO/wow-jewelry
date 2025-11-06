@@ -13,13 +13,14 @@ interface ProductCardProps {
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [imageIndex, setImageIndex] = useState(0);
   const images = [product.imageUrl, product.imageUrl2].filter((img): img is string => !!img);
+  const encodedImages = images.map(img => encodeURI(img));
 
   return (
     <div className="group relative bg-card border border-card-border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1" data-testid={`card-product-${product.id}`}>
       <Link href={`/product/${product.id}`}>
         <div className="aspect-square bg-background overflow-hidden relative">
           <img
-            src={images[imageIndex]}
+            src={encodedImages[imageIndex]}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onMouseEnter={() => images.length > 1 && setImageIndex(1)}
