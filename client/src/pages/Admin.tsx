@@ -373,15 +373,38 @@ export default function Admin() {
                             </span>
                           </div>
                         ))}
-                        <div className="pt-2 border-t border-border flex justify-between font-semibold">
-                          <span>Total</span>
-                          <span data-testid={`text-order-total-${order.id}`}>
-                            ${parseFloat(order.totalAmount).toFixed(2)}
-                          </span>
+                        <div className="pt-2 border-t border-border space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Shipping</span>
+                            <span>
+                              {order.shippingMethod === "local_pickup" ? (
+                                <span className="text-green-600">FREE (Local Pickup)</span>
+                              ) : (
+                                <span>${parseFloat(order.shippingFee || "5.99").toFixed(2)}</span>
+                              )}
+                            </span>
+                          </div>
+                          <div className="flex justify-between font-semibold">
+                            <span>Total</span>
+                            <span data-testid={`text-order-total-${order.id}`}>
+                              ${parseFloat(order.totalAmount).toFixed(2)}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  {order.shippingMethod === "local_pickup" && (
+                    <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                      <div className="flex items-center gap-2">
+                        <PackageOpen className="w-4 h-4 text-amber-600" />
+                        <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                          Local Pickup - Hand Delivery Arranged
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {order.trackingNumber && (
                     <div className="mb-4 p-3 bg-muted rounded-lg">
