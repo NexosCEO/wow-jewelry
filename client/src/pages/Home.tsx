@@ -258,6 +258,7 @@ export default function Home({ onAddToCart }: HomeProps) {
                 <div className="space-y-2 text-sm">
                   <a href="#" className="block transition-colors" style={{ color: '#f0e7d6' }}>Shipping & Returns</a>
                   <a href="#" className="block transition-colors" style={{ color: '#f0e7d6' }}>Contact</a>
+                  <a href="/privacy-policy" className="block transition-colors" style={{ color: '#f0e7d6' }} data-testid="link-privacy-policy">Privacy Policy</a>
                 </div>
               </div>
             </div>

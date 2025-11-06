@@ -16,6 +16,7 @@ import NecklaceBuilder from "@/pages/NecklaceBuilder";
 import Checkout from "@/pages/Checkout";
 import Orders from "@/pages/Orders";
 import Admin from "@/pages/Admin";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 
@@ -125,6 +126,7 @@ function Router() {
         <Route path="/checkout" component={() => <Checkout cart={cart} onClearCart={handleClearCart} />} />
         <Route path="/orders" component={Orders} />
         <Route path="/admin" component={Admin} />
+        <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route component={NotFound} />
       </Switch>
 
