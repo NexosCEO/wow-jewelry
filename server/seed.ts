@@ -85,7 +85,7 @@ const realProducts: InsertProduct[] = [
     description: "Sophisticated bracelet combining style and craftsmanship. Designed to make a lasting impression.",
     price: "35.00",
     regularPrice: null,
-    imageUrl: "/attached_assets/1-BARTOLOME BRACELET $35 _1762108479918.jpg",
+    imageUrl: "/attached_assets/1- BARTOLOME BRACELET $35_1762437815840.jpeg",
     imageUrl2: null,
     category: "Bracelets",
     inStock: true,
