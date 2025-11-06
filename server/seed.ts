@@ -74,7 +74,7 @@ const realProducts: InsertProduct[] = [
     description: "Handcrafted bracelet with refined details. A timeless addition to your jewelry collection.",
     price: "35.00",
     regularPrice: null,
-    imageUrl: "/attached_assets/1-PLATISE BRACELET $35 _1762108451901.jpg",
+    imageUrl: "/attached_assets/1- PLATISE BRACELET $35_1762438027376.jpeg",
     imageUrl2: null,
     category: "Bracelets",
     inStock: true,
