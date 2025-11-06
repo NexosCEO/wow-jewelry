@@ -112,10 +112,19 @@ Preferred communication style: Simple, everyday language.
 
 **Schema Design**
 - **Products Table**: Core product information with pricing (regular and sale), images (primary and secondary), category, inventory tracking
-- **Orders Table**: Customer information, shipping address, order items (stored as JSON), payment tracking (Stripe payment intent ID), order status, shipping label data (tracking number, label URL, carrier), timestamps
+- **Orders Table**: Customer information, shipping address, order items (stored as JSON), payment tracking (Stripe payment intent ID), order status, shipping method (standard/local_pickup), shipping fee, shipping label data (tracking number, label URL, carrier), timestamps
 - Decimal precision for monetary values (10 digits, 2 decimal places)
 - UUID primary keys using PostgreSQL's `gen_random_uuid()`
 - Default values for boolean flags and timestamps
+
+**Shipping Configuration** (Added November 2025)
+- Mandatory $5.99 shipping fee applied to all standard orders
+- Local Pickup option available for hand delivery (free shipping)
+- Customers select shipping method at checkout via radio buttons
+- Payment intent dynamically updates when shipping method changes
+- Admin dashboard displays shipping method for each order with visual indicators
+- Local pickup orders highlighted with amber badge in admin panel
+- Shipping fee automatically included in Stripe payment processing
 
 **Type Safety**
 - Zod schemas generated from Drizzle table definitions using `createInsertSchema`
