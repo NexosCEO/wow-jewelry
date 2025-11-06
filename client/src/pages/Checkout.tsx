@@ -21,6 +21,7 @@ function CheckoutForm({ cart, onSuccess }: { cart: UnifiedCartItem[]; onSuccess:
   const elements = useElements();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [shippingMethod, setShippingMethod] = useState<"standard" | "local_pickup">("standard");
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     email: "",
@@ -30,7 +31,7 @@ function CheckoutForm({ cart, onSuccess }: { cart: UnifiedCartItem[]; onSuccess:
     zipCode: "",
   });
 
-  const total = cart.reduce((sum, item) => {
+  const subtotal = cart.reduce((sum, item) => {
     if ("product" in item) {
       return sum + parseFloat(item.product.price) * item.quantity;
     } else if ("price" in item) {
@@ -38,6 +39,9 @@ function CheckoutForm({ cart, onSuccess }: { cart: UnifiedCartItem[]; onSuccess:
     }
     return sum;
   }, 0);
+
+  const shippingFee = shippingMethod === "standard" ? 5.99 : 0;
+  const total = subtotal + shippingFee;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +85,8 @@ function CheckoutForm({ cart, onSuccess }: { cart: UnifiedCartItem[]; onSuccess:
           zipCode: customerInfo.zipCode,
           items: JSON.stringify(cart),
           totalAmount: total.toString(),
+          shippingMethod: shippingMethod,
+          shippingFee: shippingFee.toString(),
           status: "completed",
           stripePaymentIntentId: paymentIntent.id,
         };
@@ -187,6 +193,63 @@ function CheckoutForm({ cart, onSuccess }: { cart: UnifiedCartItem[]; onSuccess:
       </div>
 
       <div>
+        <h2 className="font-serif text-2xl font-semibold mb-4">Shipping Method</h2>
+        <div className="space-y-3">
+          <label 
+            className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${
+              shippingMethod === "standard" 
+                ? "border-primary bg-primary/5" 
+                : "border-border hover-elevate"
+            }`}
+            data-testid="label-shipping-standard"
+          >
+            <div className="flex items-center gap-3">
+              <input
+                type="radio"
+                name="shippingMethod"
+                value="standard"
+                checked={shippingMethod === "standard"}
+                onChange={(e) => setShippingMethod(e.target.value as "standard" | "local_pickup")}
+                className="w-4 h-4"
+                data-testid="radio-shipping-standard"
+              />
+              <div>
+                <div className="font-semibold">Standard Shipping</div>
+                <div className="text-sm text-muted-foreground">Delivery via USPS, UPS, or FedEx</div>
+              </div>
+            </div>
+            <div className="font-semibold">$5.99</div>
+          </label>
+
+          <label 
+            className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${
+              shippingMethod === "local_pickup" 
+                ? "border-primary bg-primary/5" 
+                : "border-border hover-elevate"
+            }`}
+            data-testid="label-shipping-local"
+          >
+            <div className="flex items-center gap-3">
+              <input
+                type="radio"
+                name="shippingMethod"
+                value="local_pickup"
+                checked={shippingMethod === "local_pickup"}
+                onChange={(e) => setShippingMethod(e.target.value as "standard" | "local_pickup")}
+                className="w-4 h-4"
+                data-testid="radio-shipping-local"
+              />
+              <div>
+                <div className="font-semibold">Local Pickup</div>
+                <div className="text-sm text-muted-foreground">Hand delivery by arrangement</div>
+              </div>
+            </div>
+            <div className="font-semibold text-green-600">FREE</div>
+          </label>
+        </div>
+      </div>
+
+      <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-serif text-2xl font-semibold">Payment Details</h2>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -210,11 +273,23 @@ function CheckoutForm({ cart, onSuccess }: { cart: UnifiedCartItem[]; onSuccess:
       </div>
 
       <div className="pt-4 border-t border-border">
-        <div className="flex items-center justify-between text-xl mb-4">
-          <span className="font-semibold">Total</span>
-          <span className="font-bold" data-testid="text-total-checkout">
-            ${total.toFixed(2)}
-          </span>
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Subtotal</span>
+            <span data-testid="text-subtotal">${subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Shipping</span>
+            <span data-testid="text-shipping-fee">
+              {shippingFee === 0 ? "FREE" : `$${shippingFee.toFixed(2)}`}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xl pt-2 border-t border-border">
+            <span className="font-semibold">Total</span>
+            <span className="font-bold" data-testid="text-total-checkout">
+              ${total.toFixed(2)}
+            </span>
+          </div>
         </div>
 
         <Button
