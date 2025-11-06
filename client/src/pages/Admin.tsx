@@ -503,7 +503,7 @@ export default function Admin() {
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
                         <img
-                          src={product.imageUrl}
+                          src={encodeURI(product.imageUrl)}
                           alt={product.name}
                           className="w-20 h-20 object-cover rounded-md border border-card-border"
                         />

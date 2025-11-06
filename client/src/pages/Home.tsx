@@ -224,7 +224,7 @@ export default function Home({ onAddToCart }: HomeProps) {
             </div>
             <div className="relative h-64 md:h-96 rounded-lg overflow-hidden shadow-lg">
               <img 
-                src={products?.[2]?.imageUrl || products?.[0]?.imageUrl || ''}
+                src={encodeURI(products?.[2]?.imageUrl || products?.[0]?.imageUrl || '')}
                 alt="Jewelry craftsmanship"
                 className="w-full h-full object-cover"
               />

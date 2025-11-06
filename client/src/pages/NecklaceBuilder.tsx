@@ -183,7 +183,7 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
                 <CardHeader className="relative">
                   <div className="aspect-square overflow-hidden rounded-lg mb-4">
                     <img
-                      src={template.imageUrl}
+                      src={encodeURI(template.imageUrl)}
                       alt={template.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       data-testid={`img-template-${template.id}`}
@@ -274,7 +274,7 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
                     <div key={sc.charm.id} className="flex items-center justify-between p-4 rounded-lg bg-muted">
                       <div className="flex items-center gap-4">
                         <img
-                          src={sc.charm.imageUrl}
+                          src={encodeURI(sc.charm.imageUrl)}
                           alt={sc.charm.name}
                           className="w-16 h-16 object-cover rounded-md"
                         />
@@ -344,7 +344,7 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
                   <CardHeader className="relative">
                     <div className="aspect-square overflow-hidden rounded-lg mb-4">
                       <img
-                        src={charm.imageUrl}
+                        src={encodeURI(charm.imageUrl)}
                         alt={charm.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         data-testid={`img-charm-${charm.id}`}
@@ -401,7 +401,7 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
                 <h3 className="font-semibold mb-3">Necklace String</h3>
                 <div className="flex items-center gap-4 p-4 rounded-lg bg-muted">
                   <img
-                    src={selectedTemplate.imageUrl}
+                    src={encodeURI(selectedTemplate.imageUrl)}
                     alt={selectedTemplate.name}
                     className="w-20 h-20 object-cover rounded-md"
                   />
@@ -419,7 +419,7 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
                   {selectedCharms.map((sc) => (
                     <div key={sc.charm.id} className="flex items-center gap-4 p-4 rounded-lg bg-muted">
                       <img
-                        src={sc.charm.imageUrl}
+                        src={encodeURI(sc.charm.imageUrl)}
                         alt={sc.charm.name}
                         className="w-16 h-16 object-cover rounded-md"
                       />

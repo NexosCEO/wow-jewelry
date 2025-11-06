@@ -259,7 +259,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                 <CardHeader className="relative">
                   <div className="aspect-square overflow-hidden rounded-lg mb-4">
                     <img
-                      src={template.imageUrl}
+                      src={encodeURI(template.imageUrl)}
                       alt={template.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       data-testid={`img-template-${template.id}`}
@@ -351,7 +351,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                     <div key={sc.charm.id} className="flex items-center justify-between p-4 rounded-lg bg-muted">
                       <div className="flex items-center gap-4">
                         <img
-                          src={sc.charm.imageUrl}
+                          src={encodeURI(sc.charm.imageUrl)}
                           alt={sc.charm.name}
                           className="w-16 h-16 object-cover rounded-md"
                         />
@@ -388,7 +388,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                     <div key={sb.bead.id} className="flex items-center justify-between p-4 rounded-lg bg-muted">
                       <div className="flex items-center gap-4">
                         <img
-                          src={sb.bead.imageUrl}
+                          src={encodeURI(sb.bead.imageUrl)}
                           alt={sb.bead.name}
                           className="w-16 h-16 object-cover rounded-md"
                         />
@@ -455,7 +455,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                   <CardHeader className="pb-3">
                     <div className="relative">
                       <img
-                        src={charm.imageUrl}
+                        src={encodeURI(charm.imageUrl)}
                         alt={charm.name}
                         className="w-full h-32 object-cover rounded-md"
                       />
@@ -502,7 +502,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                   <CardHeader className="pb-3">
                     <div className="relative">
                       <img
-                        src={bead.imageUrl}
+                        src={encodeURI(bead.imageUrl)}
                         alt={bead.name}
                         className="w-full h-32 object-cover rounded-md"
                       />
@@ -550,7 +550,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                 <h3 className="font-semibold mb-2">Base Bracelet</h3>
                 <div className="flex items-center gap-3 bg-muted/30 p-3 rounded-md">
                   <img
-                    src={selectedTemplate.imageUrl}
+                    src={encodeURI(selectedTemplate.imageUrl)}
                     alt={selectedTemplate.name}
                     className="w-16 h-16 object-cover rounded"
                   />
@@ -569,7 +569,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                     {selectedCharms.map((sc) => (
                       <div key={sc.charm.id} className="flex items-center gap-3 bg-muted/30 p-3 rounded-md">
                         <img
-                          src={sc.charm.imageUrl}
+                          src={encodeURI(sc.charm.imageUrl)}
                           alt={sc.charm.name}
                           className="w-12 h-12 object-cover rounded"
                         />
@@ -591,7 +591,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                     {selectedBeads.map((sb) => (
                       <div key={sb.bead.id} className="flex items-center gap-3 bg-muted/30 p-3 rounded-md">
                         <img
-                          src={sb.bead.imageUrl}
+                          src={encodeURI(sb.bead.imageUrl)}
                           alt={sb.bead.name}
                           className="w-12 h-12 object-cover rounded"
                         />
