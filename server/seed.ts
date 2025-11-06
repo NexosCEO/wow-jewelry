@@ -96,7 +96,7 @@ const realProducts: InsertProduct[] = [
     description: "Beautifully crafted bracelet featuring unique design elements. An eye-catching accessory.",
     price: "35.00",
     regularPrice: null,
-    imageUrl: "/attached_assets/1-CRISTOBAL BRACELET $35_1762108505912.jpg",
+    imageUrl: "/attached_assets/1- CRISTOBAL BRACELET $35_1762437916001.jpeg",
     imageUrl2: null,
     category: "Bracelets",
     inStock: true,
