@@ -140,7 +140,7 @@ const realProducts: InsertProduct[] = [
     description: "Stunning aurora-inspired ring in Size 9. Unique and eye-catching.",
     price: "25.00",
     regularPrice: null,
-    imageUrl: "/attached_assets/1-AURORA RING SIZE 9_1762108657279.jpg",
+    imageUrl: "/attached_assets/1-AURORA RING $25_1762437734980.jpeg",
     imageUrl2: null,
     category: "Rings",
     inStock: false,
