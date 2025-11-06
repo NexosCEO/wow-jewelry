@@ -16,12 +16,21 @@ const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
   : null;
 
-function CheckoutForm({ cart, onSuccess }: { cart: UnifiedCartItem[]; onSuccess: () => void }) {
+interface CheckoutFormProps {
+  cart: UnifiedCartItem[];
+  onSuccess: () => void;
+  shippingMethod: "standard" | "local_pickup";
+  setShippingMethod: (method: "standard" | "local_pickup") => void;
+  subtotal: number;
+  shippingFee: number;
+  total: number;
+}
+
+function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subtotal, shippingFee, total }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [shippingMethod, setShippingMethod] = useState<"standard" | "local_pickup">("standard");
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     email: "",
@@ -30,18 +39,6 @@ function CheckoutForm({ cart, onSuccess }: { cart: UnifiedCartItem[]; onSuccess:
     state: "",
     zipCode: "",
   });
-
-  const subtotal = cart.reduce((sum, item) => {
-    if ("product" in item) {
-      return sum + parseFloat(item.product.price) * item.quantity;
-    } else if ("price" in item) {
-      return sum + parseFloat(item.price) * item.quantity;
-    }
-    return sum;
-  }, 0);
-
-  const shippingFee = shippingMethod === "standard" ? 5.99 : 0;
-  const total = subtotal + shippingFee;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -322,9 +319,10 @@ interface CheckoutProps {
 export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const [, setLocation] = useLocation();
   const [clientSecret, setClientSecret] = useState("");
+  const [shippingMethod, setShippingMethod] = useState<"standard" | "local_pickup">("standard");
   const { toast } = useToast();
 
-  const total = cart.reduce((sum, item) => {
+  const subtotal = cart.reduce((sum, item) => {
     if ("product" in item) {
       return sum + parseFloat(item.product.price) * item.quantity;
     } else if ("price" in item) {
@@ -332,6 +330,9 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
     }
     return sum;
   }, 0);
+
+  const shippingFee = shippingMethod === "standard" ? 5.99 : 0;
+  const total = subtotal + shippingFee;
 
   useEffect(() => {
     if (cart.length === 0) {
@@ -348,7 +349,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
       return;
     }
 
-    // Only create payment intent once when checkout loads
+    // Create payment intent with current total (including shipping)
     apiRequest("POST", "/api/create-payment-intent", { amount: total })
       .then((res) => res.json())
       .then((data) => {
@@ -363,7 +364,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
         });
         setTimeout(() => setLocation("/"), 3000);
       });
-  }, []); // Only run once on mount
+  }, [shippingMethod]); // Recreate when shipping method changes
 
   const handleSuccess = () => {
     onClearCart();
@@ -424,8 +425,16 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           </div>
         </div>
 
-        <Elements stripe={stripePromise} options={{ clientSecret }}>
-          <CheckoutForm cart={cart} onSuccess={handleSuccess} />
+        <Elements stripe={stripePromise} options={{ clientSecret }} key={clientSecret}>
+          <CheckoutForm 
+            cart={cart} 
+            onSuccess={handleSuccess}
+            shippingMethod={shippingMethod}
+            setShippingMethod={setShippingMethod}
+            subtotal={subtotal}
+            shippingFee={shippingFee}
+            total={total}
+          />
         </Elements>
       </div>
     </div>
