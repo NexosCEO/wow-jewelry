@@ -271,7 +271,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                 <CardHeader className="relative">
                   <div className="aspect-square overflow-hidden rounded-lg mb-4">
                     <img
-                      src={encodeURI(template.imageUrl)}
+                      src={encodeURI(template.imageUrl) + '?v=' + Date.now()}
                       alt={template.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       data-testid={`img-template-${template.id}`}
