@@ -110,8 +110,8 @@ const realProducts: InsertProduct[] = [
     imageUrl: "/attached_assets/IMG_4101_1762443514086.jpeg",
     imageUrl2: null,
     category: "Rings",
-    inStock: false,
-    stockQuantity: 0,
+    inStock: true,
+    stockQuantity: 10,
   },
   {
     name: "Pearl Ring",
@@ -121,8 +121,8 @@ const realProducts: InsertProduct[] = [
     imageUrl: "/attached_assets/IMG_4100_1762443540446.jpeg",
     imageUrl2: null,
     category: "Rings",
-    inStock: false,
-    stockQuantity: 0,
+    inStock: true,
+    stockQuantity: 10,
   },
   {
     name: "Aurora Ring",
@@ -132,8 +132,8 @@ const realProducts: InsertProduct[] = [
     imageUrl: "/attached_assets/1-AURORA RING $25_1762437734980.jpeg",
     imageUrl2: null,
     category: "Rings",
-    inStock: false,
-    stockQuantity: 0,
+    inStock: true,
+    stockQuantity: 10,
   },
   {
     name: "Festiva Cuff Earrings",
