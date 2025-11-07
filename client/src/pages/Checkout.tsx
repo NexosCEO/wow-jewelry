@@ -429,14 +429,6 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
     );
   }
 
-  if (!clientSecret) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" data-testid="loader-checkout" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-3xl mx-auto px-4">
@@ -491,21 +483,160 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           </div>
         </div>
 
-        <Elements stripe={stripePromise} options={{ clientSecret }} key={clientSecret}>
-          <CheckoutForm 
-            cart={cart} 
-            onSuccess={handleSuccess}
-            shippingMethod={shippingMethod}
-            setShippingMethod={setShippingMethod}
-            subtotal={subtotal}
-            shippingFee={shippingFee}
-            total={calculatedTotal > 0 ? calculatedTotal : baseTotal}
-            calculatedTax={calculatedTax}
-            customerAddress={customerAddress}
-            setCustomerAddress={setCustomerAddress}
-            setAddressComplete={setAddressComplete}
-          />
-        </Elements>
+        {clientSecret ? (
+          <Elements stripe={stripePromise} options={{ clientSecret }} key={clientSecret}>
+            <CheckoutForm 
+              cart={cart} 
+              onSuccess={handleSuccess}
+              shippingMethod={shippingMethod}
+              setShippingMethod={setShippingMethod}
+              subtotal={subtotal}
+              shippingFee={shippingFee}
+              total={calculatedTotal > 0 ? calculatedTotal : baseTotal}
+              calculatedTax={calculatedTax}
+              customerAddress={customerAddress}
+              setCustomerAddress={setCustomerAddress}
+              setAddressComplete={setAddressComplete}
+            />
+          </Elements>
+        ) : (
+          <div className="space-y-6">
+            <div>
+              <h2 className="font-serif text-2xl font-semibold mb-4">Shipping Information</h2>
+              <div className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      value={customerAddress.name}
+                      onChange={(e) => setCustomerAddress({ ...customerAddress, name: e.target.value })}
+                      required
+                      data-testid="input-name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email-prelim">Email *</Label>
+                    <Input
+                      id="email-prelim"
+                      type="email"
+                      placeholder="your@email.com"
+                      data-testid="input-email-prelim"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="address">Street Address *</Label>
+                  <Input
+                    id="address"
+                    value={customerAddress.address}
+                    onChange={(e) => setCustomerAddress({ ...customerAddress, address: e.target.value })}
+                    required
+                    data-testid="input-address"
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="city">City *</Label>
+                    <Input
+                      id="city"
+                      value={customerAddress.city}
+                      onChange={(e) => setCustomerAddress({ ...customerAddress, city: e.target.value })}
+                      required
+                      data-testid="input-city"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="state">State *</Label>
+                    <Input
+                      id="state"
+                      value={customerAddress.state}
+                      onChange={(e) => setCustomerAddress({ ...customerAddress, state: e.target.value })}
+                      required
+                      data-testid="input-state"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="zipCode">ZIP Code *</Label>
+                    <Input
+                      id="zipCode"
+                      value={customerAddress.zipCode}
+                      onChange={(e) => setCustomerAddress({ ...customerAddress, zipCode: e.target.value })}
+                      required
+                      data-testid="input-zipcode"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="font-serif text-2xl font-semibold mb-4">Shipping Method</h2>
+              <div className="space-y-3">
+                <label 
+                  className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${
+                    shippingMethod === "standard" 
+                      ? "border-primary bg-primary/5" 
+                      : "border-border hover-elevate"
+                  }`}
+                  data-testid="label-shipping-standard"
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="shippingMethod"
+                      value="standard"
+                      checked={shippingMethod === "standard"}
+                      onChange={(e) => setShippingMethod(e.target.value as "standard" | "local_pickup")}
+                      className="w-4 h-4"
+                      data-testid="radio-shipping-standard"
+                    />
+                    <div>
+                      <div className="font-semibold">Standard Shipping</div>
+                      <div className="text-sm text-muted-foreground">Delivery via USPS, UPS, or FedEx</div>
+                    </div>
+                  </div>
+                  <div className="font-semibold">$5.99</div>
+                </label>
+
+                <label 
+                  className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${
+                    shippingMethod === "local_pickup" 
+                      ? "border-primary bg-primary/5" 
+                      : "border-border hover-elevate"
+                  }`}
+                  data-testid="label-shipping-local"
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="shippingMethod"
+                      value="local_pickup"
+                      checked={shippingMethod === "local_pickup"}
+                      onChange={(e) => setShippingMethod(e.target.value as "standard" | "local_pickup")}
+                      className="w-4 h-4"
+                      data-testid="radio-shipping-local"
+                    />
+                    <div>
+                      <div className="font-semibold">Local Pickup</div>
+                      <div className="text-sm text-muted-foreground">Hand delivery by arrangement</div>
+                    </div>
+                  </div>
+                  <div className="font-semibold text-green-600">FREE</div>
+                </label>
+              </div>
+            </div>
+
+            {addressComplete && (
+              <div className="flex items-center justify-center p-4">
+                <Loader2 className="w-6 h-6 animate-spin text-primary mr-2" />
+                <span className="text-muted-foreground">Preparing secure payment...</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
