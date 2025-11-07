@@ -22,7 +22,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Database & ORM
 - **ORM**: Drizzle ORM for PostgreSQL.
-- **Schema**: Tables for Products (pricing, images, inventory) and Orders (customer info, shipping, payment tracking, order status, shipping details). Uses UUID primary keys and decimal precision for monetary values.
+- **Schema**: Tables for Products (pricing, images, inventory) and Orders (customer info, shipping, payment tracking, order status, shipping details, tax amount). Uses UUID primary keys and decimal precision for monetary values.
 - **Shipping**: Mandatory $5.99 shipping fee for standard orders; free local pickup option. Shipping method selection at checkout dynamically updates payment intent.
 - **Type Safety**: Zod schemas and TypeScript types generated from Drizzle definitions.
 
@@ -36,6 +36,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Payment Processing
 - **Stripe**: `@stripe/stripe-js` and `@stripe/react-stripe-js` for client-side UI, Stripe Node.js SDK for server-side logic, Payment Elements for forms, webhook signature verification.
+- **Stripe Tax**: Automatic sales tax calculation based on customer shipping address. Tax amount displayed in checkout summary and stored in orders. Requires Stripe Tax to be enabled in Stripe Dashboard (Settings → Tax) with business location and tax registrations configured.
 
 ### Database Service
 - **Neon serverless PostgreSQL**: `@neondatabase/serverless` package for database connection.
