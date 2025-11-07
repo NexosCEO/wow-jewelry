@@ -3,7 +3,19 @@ import { X, Plus, Minus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useLocation } from "wouter";
+import { useState } from "react";
 
 type UnifiedCartItem = CartItem | CustomBraceletCartItem | CustomNecklaceCartItem;
 
@@ -13,10 +25,12 @@ interface CartDrawerProps {
   cart: UnifiedCartItem[];
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   onRemoveItem: (itemId: string) => void;
+  onClearCart: () => void;
 }
 
-export function CartDrawer({ isOpen, onClose, cart, onUpdateQuantity, onRemoveItem }: CartDrawerProps) {
+export function CartDrawer({ isOpen, onClose, cart, onUpdateQuantity, onRemoveItem, onClearCart }: CartDrawerProps) {
   const [, setLocation] = useLocation();
+  const [showClearDialog, setShowClearDialog] = useState(false);
   
   const subtotal = cart.reduce((sum, item) => {
     if ("product" in item) {
@@ -168,20 +182,37 @@ export function CartDrawer({ isOpen, onClose, cart, onUpdateQuantity, onRemoveIt
                   >
                     Continue Shopping
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => {
-                      cart.forEach((item) => {
-                        const isProduct = "product" in item;
-                        const itemId = isProduct ? item.product?.id : item.configId;
-                        if (itemId) onRemoveItem(itemId);
-                      });
-                    }}
-                    data-testid="button-clear-cart"
-                  >
-                    Clear Cart
-                  </Button>
+                  <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+                    <AlertDialogTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        className="flex-1"
+                        data-testid="button-clear-cart"
+                      >
+                        Clear Cart
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent data-testid="dialog-clear-cart">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle data-testid="text-dialog-title">Clear Cart?</AlertDialogTitle>
+                        <AlertDialogDescription data-testid="text-dialog-description">
+                          Are you sure you want to remove all items from your cart? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel data-testid="button-cancel-clear">Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={() => {
+                            onClearCart();
+                            setShowClearDialog(false);
+                          }}
+                          data-testid="button-confirm-clear"
+                        >
+                          Clear Cart
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </>
