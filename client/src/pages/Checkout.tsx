@@ -302,6 +302,10 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
               {shippingFee === 0 ? "FREE" : `$${shippingFee.toFixed(2)}`}
             </span>
           </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Tax (8.75%)</span>
+            <span data-testid="text-tax">${calculatedTax.toFixed(2)}</span>
+          </div>
           <div className="flex items-center justify-between text-xl pt-2 border-t border-border">
             <span className="font-semibold">Total</span>
             <span className="font-bold" data-testid="text-total-checkout">
@@ -364,7 +368,9 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   }, 0);
 
   const shippingFee = shippingMethod === "standard" ? 5.99 : 0;
-  const baseTotal = subtotal + shippingFee;
+  const taxRate = 0.0875;
+  const calculatedTaxAmount = (subtotal + shippingFee) * taxRate;
+  const baseTotal = subtotal + shippingFee + calculatedTaxAmount;
 
   useEffect(() => {
     const isComplete = !!(
@@ -402,18 +408,14 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
     apiRequest("POST", "/api/create-payment-intent", { 
       amount: baseTotal,
       customerAddress,
-      cart
+      cart,
+      taxAmount: calculatedTaxAmount
     })
       .then((res) => res.json())
       .then((data) => {
         setClientSecret(data.clientSecret);
-        if (data.taxAmount) {
-          setCalculatedTax(data.taxAmount);
-          setCalculatedTotal(data.totalAmount);
-        } else {
-          setCalculatedTax(0);
-          setCalculatedTotal(baseTotal);
-        }
+        setCalculatedTax(calculatedTaxAmount);
+        setCalculatedTotal(baseTotal);
         setIsCreatingPaymentIntent(false);
       })
       .catch((error) => {
@@ -486,15 +488,13 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
                   {shippingFee === 0 ? "FREE" : `$${shippingFee.toFixed(2)}`}
                 </span>
               </div>
-              {calculatedTax > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Tax</span>
-                  <span className="font-medium">${calculatedTax.toFixed(2)}</span>
-                </div>
-              )}
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Tax (8.75%)</span>
+                <span className="font-medium">${calculatedTaxAmount.toFixed(2)}</span>
+              </div>
               <div className="flex justify-between text-base pt-2 border-t border-border">
                 <span className="font-semibold">Total</span>
-                <span className="font-bold">${(calculatedTotal > 0 ? calculatedTotal : baseTotal).toFixed(2)}</span>
+                <span className="font-bold">${baseTotal.toFixed(2)}</span>
               </div>
             </div>
           </div>
