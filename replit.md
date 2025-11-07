@@ -6,6 +6,13 @@ WOW Jewelry (WOW by Dany) is a full-stack e-commerce platform for handmade artis
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (November 7, 2025)
+### Bug Fixes - Cart and Checkout
+- **Cart Removal Fix**: Implemented robust cart data sanitization on app load to filter out corrupted items missing proper IDs. Added try-catch error handling for localStorage parsing.
+- **Clear Cart Feature**: Added "Clear Cart" button with shadcn AlertDialog confirmation to prevent accidental deletion. Uses dedicated handler with single toast notification.
+- **Checkout Payment Form**: Fixed missing "Complete Payment" button by adding proper loading states (`isCreatingPaymentIntent`) and comprehensive dependency tracking in useEffect. Payment form now appears reliably after address completion.
+- **Error Handling**: Enhanced null safety checks throughout cart operations with proper optional chaining and validation.
+
 ## System Architecture
 
 ### Frontend
