@@ -367,6 +367,17 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const baseTotal = subtotal + shippingFee;
 
   useEffect(() => {
+    const isComplete = !!(
+      customerAddress.name &&
+      customerAddress.address &&
+      customerAddress.city &&
+      customerAddress.state &&
+      customerAddress.zipCode
+    );
+    setAddressComplete(isComplete);
+  }, [customerAddress]);
+
+  useEffect(() => {
     if (cart.length === 0) {
       setLocation("/");
       return;
