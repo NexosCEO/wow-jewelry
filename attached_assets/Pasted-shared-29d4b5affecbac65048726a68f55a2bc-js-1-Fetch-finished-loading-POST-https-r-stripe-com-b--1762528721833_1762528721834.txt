@@ -1,0 +1,56 @@
+shared-29d4b5affecbac65048726a68f55a2bc.js:1 Fetch finished loading: POST "https://r.stripe.com/b".
+(anonymous) @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+e @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+c @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+(anonymous) @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+Warning: Don’t paste code into the DevTools Console that you don’t understand or haven’t reviewed yourself. This could allow attackers to steal your identity or take control of your computer. Please type ‘allow pasting’ below and press Enter to allow pasting.
+allow pasting
+shared-29d4b5affecbac65048726a68f55a2bc.js:1 Fetch finished loading: POST "https://r.stripe.com/b".
+(anonymous) @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+e @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+c @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+(anonymous) @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+setTimeout
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+(anonymous) @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+log @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+log @ controller-with-dual-preconnect-treatment-408d7519421b6319d61421292ab833dd.js:1
+ke @ controller-with-dual-preconnect-treatment-408d7519421b6319d61421292ab833dd.js:1
+(anonymous) @ controller-with-dual-preconnect-treatment-408d7519421b6319d61421292ab833dd.js:1
+Clear()
+VM97:1 Uncaught ReferenceError: Clear is not defined
+    at <anonymous>:1:1
+(anonymous) @ VM97:1
+shared-29d4b5affecbac65048726a68f55a2bc.js:1 Fetch finished loading: POST "https://r.stripe.com/b".
+(anonymous) @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+e @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+c @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+(anonymous) @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+setTimeout
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+(anonymous) @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+value @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+log @ shared-29d4b5affecbac65048726a68f55a2bc.js:1
+log @ controller-with-dual-preconnect-treatment-408d7519421b6319d61421292ab833dd.js:1
+ke @ controller-with-dual-preconnect-treatment-408d7519421b6319d61421292ab833dd.js:1
+(anonymous) @ controller-with-dual-preconnect-treatment-408d7519421b6319d61421292ab833dd.js:1
