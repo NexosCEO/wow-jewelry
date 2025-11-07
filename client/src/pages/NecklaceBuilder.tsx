@@ -453,7 +453,7 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
                 </div>
                 <div className="flex items-center justify-between text-2xl font-bold pt-4 border-t">
                   <span>Total</span>
-                  <span className="bg-gradient-to-r from-rose-gold to-gold-primary bg-clip-text text-transparent">
+                  <span className="text-primary">
                     ${(calculateTotalPrice() + 5.99 + (calculateTotalPrice() + 5.99) * 0.0875).toFixed(2)}
                   </span>
                 </div>
