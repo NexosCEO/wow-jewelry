@@ -45,7 +45,7 @@
 
   --sidebar-border: 36 29% 90%;
 
-  --sidebar-primary: 42 51% 58%;   /* gold */
+  --sidebar-primary: 345 60% 62%;   /* rose-gold */
 
   --sidebar-primary-foreground: 39 14% 21%;
 
@@ -53,7 +53,7 @@
 
   --sidebar-accent-foreground: 39 14% 21%;
 
-  --sidebar-ring: 42 51% 58%;
+  --sidebar-ring: 345 60% 62%;
 
   --popover: 36 50% 97%;
 
@@ -61,7 +61,7 @@
 
   --popover-border: 36 29% 90%;
 
-  --primary: 42 51% 58%;           /* gold */
+  --primary: 345 60% 62%;           /* rose-gold */
 
   --primary-foreground: 39 14% 21%; /* warm-charcoal */
 
@@ -82,8 +82,8 @@
   --destructive-foreground: 0 0% 98%;
 
   --input: 36 29% 90%;
-  --ring: 42 51% 58%;              /* gold */
-  --chart-1: 42 51% 58%;           /* gold */
+  --ring: 345 60% 62%;              /* rose-gold */
+  --chart-1: 345 60% 62%;           /* rose-gold */
   --chart-2: 354 58% 80%;          /* rose */
   --chart-3: 349 49% 69%;          /* rose-deep */
   --chart-4: 42 56% 42%;           /* gold-deep */
@@ -163,7 +163,7 @@
 
   --sidebar-border: 240 4% 16%;
 
-  --sidebar-primary: 340 70% 48%;
+  --sidebar-primary: 345 65% 55%;
 
   --sidebar-primary-foreground: 0 0% 98%;
 
@@ -171,7 +171,7 @@
 
   --sidebar-accent-foreground: 0 0% 95%;
 
-  --sidebar-ring: 340 70% 48%;
+  --sidebar-ring: 345 65% 55%;
 
   --popover: 240 5% 14%;
 
@@ -179,7 +179,7 @@
 
   --popover-border: 240 4% 18%;
 
-  --primary: 340 70% 48%;
+  --primary: 345 65% 55%;
 
   --primary-foreground: 0 0% 98%;
 
@@ -200,8 +200,8 @@
   --destructive-foreground: 0 0% 98%;
 
   --input: 240 8% 35%;
-  --ring: 340 70% 48%;
-  --chart-1: 340 75% 65%;
+  --ring: 345 65% 55%;
+  --chart-1: 345 70% 65%;
   --chart-2: 280 70% 70%;
   --chart-3: 200 75% 65%;
   --chart-4: 25 85% 65%;
