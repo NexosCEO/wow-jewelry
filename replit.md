@@ -1,216 +1,68 @@
 # WOW Jewelry E-Commerce Platform
 
 ## Overview
-
-WOW Jewelry (WOW by Dany) is a handmade artisan jewelry e-commerce platform built as a full-stack web application. Live site: https://wowbydany.com The platform enables customers to browse a curated collection of handcrafted jewelry pieces including necklaces, earrings, bracelets, and rings, add items to a shopping cart, and complete purchases through integrated payment processing. The application features a clean, elegant design inspired by modern e-commerce aesthetics, with a focus on showcasing product photography and providing a smooth checkout experience.
+WOW Jewelry (WOW by Dany) is a full-stack e-commerce platform for handmade artisan jewelry. It allows customers to browse collections, add items to a cart, and complete purchases. The platform emphasizes elegant design, product photography, and a smooth checkout experience, aiming to provide a high-quality online shopping experience for unique handcrafted jewelry.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
-
-## Features in Cold Storage
-
-**Necklace Builder (Disabled November 2025)**
-- Custom "Build Your Own Necklace" feature temporarily disabled per client request
-- Complete implementation preserved in codebase for potential future reactivation
-- Files maintained: `client/src/pages/NecklaceBuilder.tsx`, database tables, API endpoints
-- Route commented out in `App.tsx` (line 127)
-- Navigation links removed from `Header.tsx` (desktop and mobile menus)
-- To re-enable: Uncomment route in App.tsx and restore navigation links in Header.tsx
-- All backend logic (necklace templates, charms, cart handling) remains fully functional
 
 ## System Architecture
 
-### Frontend Architecture
+### Frontend
+- **Frameworks**: React 18 with TypeScript, Vite for bundling, Wouter for routing, TanStack Query for server state.
+- **UI/UX**: Shadcn/ui (Radix UI based) with Tailwind CSS for styling, "new-york" style variant, CSS variables for theming (light/dark mode), custom fonts (Inter/Montserrat, Playfair Display).
+- **State Management**: Local React state, LocalStorage for cart persistence, TanStack Query for API caching, Context for notifications.
+- **Design System**: Rose-Gold theme with a core palette of blush pink, warm gold, and charcoal. Features include gradient accents for CTAs, WCAG AA accessibility, serif headings, rounded elements, card hover effects, product card design with image swap, responsive layouts, and a mobile-first header.
 
-**Framework & Build System**
-- React 18 with TypeScript for type-safe component development
-- Vite as the build tool and development server for fast hot module replacement
-- Wouter for lightweight client-side routing (alternative to React Router)
-- TanStack Query (React Query) for server state management and API data fetching
-
-**UI Component System**
-- Shadcn/ui component library built on Radix UI primitives for accessibility
-- Tailwind CSS for utility-first styling with custom design tokens
-- Component configuration follows the "new-york" style variant
-- CSS variables for theming with light/dark mode support
-- Custom fonts: Inter/Montserrat for body text, Playfair Display for serif accents
-
-**State Management**
-- Local React state for UI interactions (cart drawer, image selection)
-- LocalStorage for cart persistence across sessions
-- TanStack Query for API response caching with infinite stale time (no automatic refetching)
-- Context providers for toast notifications and tooltips
-
-**Design System - Rose-Gold Theme** (Updated October 2025)
-- **Rose-Gold Core Palette** (easily customizable at top of index.css):
-  - Soft blush pink (#e9b3b7) for accents and gradients
-  - Warm brushed gold (#caa55b) for primary actions and highlights
-  - Deeper rose (#d78895) and gold (#a8832f) for contrast and shadows
-  - Warm charcoal (#3a362f) for text, warm muted (#6f6a60) for secondary text
-  - Off-white card backgrounds (#fbf8f3) with warm borders (#ece6dc)
-  - Clean white (#ffffff) base background
-- **Gradient Accents**: Rose-to-gold gradient used for:
-  - Announcement bar (90deg gradient)
-  - Primary CTA buttons (Shop Collection, Add to Cart, Apply Filters, Place Order) with 135deg gradient
-  - Cart count badge uses solid gold (#caa55b) with dark charcoal text for proper contrast
-- **Accessibility**: All gradient CTAs meet WCAG AA contrast requirements (≥4.5:1)
-  - Hero/Filter/Checkout buttons: dark charcoal (#2b211b) on rose-gold gradient (≥4.5:1)
-  - Cart badge: warm charcoal (#3a362f) on gold background (≈5.6:1)
-- **Typography**: Serif headings (Playfair Display) with bold weight, sans-serif body (Inter)
-  - Product card titles use serif font at text-lg for luxury hierarchy
-- **Rounded Elements**: xl border radius (14px) for cards, full rounded buttons for primary CTAs
-- **Card Hover Effects**: Lift animation (-translate-y-1) with shadow increase on hover
-- **Product Cards**: Show category, serif titles, gradient gold Add to Cart button, hover image swap
-- **Footer**: Dark charcoal (#0f0d0b) with warm link colors (#f0e7d6)
-- **Filter System**: Type, Sort, Max Price filters with instant results
-- Responsive grid layouts using Tailwind breakpoints (sm≤640, md≤768, lg≥1024, xl)
-- Elevation system using CSS custom properties (--elevate-1, --elevate-2)
-- Mobile-first responsive header with hamburger menu
-
-### Backend Architecture
-
-**Server Framework**
-- Express.js for HTTP server and API routing
-- TypeScript with ES modules for type safety and modern JavaScript features
-- Custom middleware for request logging with response timing and JSON capture
-- Vite integration in development mode for SSR-like capabilities
-
-**API Design**
-- RESTful endpoints under `/api` prefix
-- Product CRUD operations: GET all products, GET single product, POST/PUT/DELETE
-- Order management: GET all orders, GET single order, POST create order, PATCH update status
-- Stripe webhook endpoint for payment confirmation with raw body verification
-- Validation using Zod schemas derived from Drizzle ORM table definitions
-
-**Data Storage Strategy** (Updated November 2025)
-- **PostgreSQL Database**: Switched from in-memory (MemStorage) to persistent database storage (DatabaseStorage)
-- Production database via Neon serverless PostgreSQL for permanent order/product persistence
-- Interface-based storage abstraction (IStorage) maintains code flexibility
-- Sample product data seeded via `server/seed.ts` script
-- UUID generation for entity identifiers using PostgreSQL's `gen_random_uuid()`
-- Orders now persist across deployments and server restarts
-
-**Security Implementation** (Added October 2025)
-- Helmet middleware for security headers protecting against common web vulnerabilities
-- Content Security Policy (CSP) configured to allow Stripe domains while blocking unauthorized resources
-  - Stripe domains whitelisted: js.stripe.com, m.stripe.com, m.stripe.network, hooks.stripe.com
-  - Google Fonts, local resources, and data URIs permitted for styling
-- Rate limiting with two-tier approach:
-  - General API endpoints: 100 requests per 15 minutes per IP
-  - Payment endpoints: 10 requests per 15 minutes per IP (stricter protection)
-- Visual security indicators on checkout page (lock icons, SSL badges, Stripe branding)
-- Security headers include XSS protection, clickjacking prevention, and MIME-type sniffing protection
+### Backend
+- **Server**: Express.js with TypeScript and ES modules.
+- **API**: RESTful endpoints for product CRUD, order management, and Stripe webhooks, validated using Zod schemas.
+- **Data Storage**: PostgreSQL (Neon serverless) for persistent storage, with Drizzle ORM for type-safe queries. Sample data seeding via `server/seed.ts`.
+- **Security**: Helmet middleware, Content Security Policy (CSP) whitelisting Stripe domains, two-tier rate limiting (100 req/15 min general, 10 req/15 min payment), visual security indicators on checkout.
 
 ### Database & ORM
+- **ORM**: Drizzle ORM for PostgreSQL.
+- **Schema**: Tables for Products (pricing, images, inventory) and Orders (customer info, shipping, payment tracking, order status, shipping details). Uses UUID primary keys and decimal precision for monetary values.
+- **Shipping**: Mandatory $5.99 shipping fee for standard orders; free local pickup option. Shipping method selection at checkout dynamically updates payment intent.
+- **Type Safety**: Zod schemas and TypeScript types generated from Drizzle definitions.
 
-**ORM Configuration**
-- Drizzle ORM for type-safe database queries and schema management
-- PostgreSQL as the target database dialect (via @neondatabase/serverless)
-- Schema-first approach with TypeScript inference for types
-- Drizzle Kit for migration generation in `./migrations` directory
+### Admin Dashboard
+- **Access**: `/admin` route protected by `ADMIN_ACCESS_KEY` (Bearer token).
+- **Features**:
+    - **Orders Tab**: View and manage orders, generate shipping labels via Shippo, send customer notifications, track order status.
+    - **Inventory Tab**: Real-time product stock management with increment/decrement, visual stock indicators, and automatic inventory deduction on order placement.
 
-**Schema Design**
-- **Products Table**: Core product information with pricing (regular and sale), images (primary and secondary), category, inventory tracking
-- **Orders Table**: Customer information, shipping address, order items (stored as JSON), payment tracking (Stripe payment intent ID), order status, shipping method (standard/local_pickup), shipping fee, shipping label data (tracking number, label URL, carrier), timestamps
-- Decimal precision for monetary values (10 digits, 2 decimal places)
-- UUID primary keys using PostgreSQL's `gen_random_uuid()`
-- Default values for boolean flags and timestamps
+## External Dependencies
 
-**Shipping Configuration** (Added November 2025)
-- Mandatory $5.99 shipping fee applied to all standard orders
-- Local Pickup option available for hand delivery (free shipping)
-- Customers select shipping method at checkout via radio buttons
-- Payment intent dynamically updates when shipping method changes
-- Admin dashboard displays shipping method for each order with visual indicators
-- Local pickup orders highlighted with amber badge in admin panel
-- Shipping fee automatically included in Stripe payment processing
+### Payment Processing
+- **Stripe**: `@stripe/stripe-js` and `@stripe/react-stripe-js` for client-side UI, Stripe Node.js SDK for server-side logic, Payment Elements for forms, webhook signature verification.
 
-**Type Safety**
-- Zod schemas generated from Drizzle table definitions using `createInsertSchema`
-- Exported TypeScript types for Product, InsertProduct, Order, InsertOrder
-- CartItem interface combining Product with quantity for shopping cart
+### Database Service
+- **Neon serverless PostgreSQL**: `@neondatabase/serverless` package for database connection.
 
-### External Dependencies
+### Session Management
+- **connect-pg-simple**: For PostgreSQL-backed session storage (future authentication).
 
-**Payment Processing**
-- Stripe integration for payment processing (API version 2025-10-29.clover)
-- Client-side: @stripe/stripe-js and @stripe/react-stripe-js for payment UI
-- Server-side: Stripe Node.js SDK for payment intent creation and webhook handling
-- Environment-based initialization (graceful degradation if STRIPE_SECRET_KEY not provided)
-- Payment Elements for modern, responsive payment form
-- Webhook signature verification for secure payment confirmation
+### UI Libraries
+- **Radix UI**: Accessible component primitives.
+- **Lucide React**: Icon set.
+- **class-variance-authority (CVA)**: Component variant management.
+- **clsx**, **tailwind-merge**: Conditional class name utilities.
+- **cmdk**: Command palette.
+- **date-fns**: Date manipulation.
+- **react-day-picker**: Calendar component.
+- **vaul**: Mobile-friendly drawers.
+- **embla-carousel-react**: Image carousels.
 
-**Database Service**
-- Neon serverless PostgreSQL (@neondatabase/serverless package)
-- Connection via DATABASE_URL environment variable
-- WebSocket-based connections for serverless deployment compatibility
+### Shipping & Email Services
+- **Shippo API**: Integration for shipping label generation (USPS, UPS, FedEx, DHL), rate comparison, tracking number generation. Configurable via `SHIPPO_API_KEY` and ship-from address environment variables.
+- **SendGrid API**: Transactional email notifications (order confirmation, shipping notifications). Configurable via `SENDGRID_API_KEY` and `SENDGRID_FROM_EMAIL`.
 
-**Session Management**
-- connect-pg-simple for PostgreSQL-backed session storage
-- Session data persisted in database for stateful authentication (prepared for future implementation)
+### Development Tools
+- Replit-specific Vite plugins: `@replit/vite-plugin-runtime-error-modal`, `@replit/vite-plugin-cartographer`, `@replit/vite-plugin-dev-banner`.
+- **tsx**: TypeScript execution.
+- **esbuild**: Production server bundling.
 
-**UI Libraries**
-- Radix UI primitives for 20+ accessible component patterns (dialogs, dropdowns, popovers, etc.)
-- Lucide React for consistent icon set
-- class-variance-authority (CVA) for component variant management
-- clsx and tailwind-merge for conditional class name composition
-- cmdk for command palette functionality
-- date-fns for date formatting and manipulation
-- react-day-picker for calendar/date selection
-- vaul for mobile-friendly drawer components
-- embla-carousel-react for image carousels
-
-**Development Tools**
-- @replit/vite-plugin-runtime-error-modal for error overlay in Replit environment
-- @replit/vite-plugin-cartographer for file system visualization
-- @replit/vite-plugin-dev-banner for development environment indicator
-- tsx for running TypeScript directly in development
-- esbuild for production server bundling
-
-**Shipping & Email Services** (Added November 2025)
-- **Shippo API Integration**: Shipping label generation for USPS, UPS, FedEx, DHL
-  - Automatic rate comparison and selection of cheapest carrier
-  - PDF shipping labels printable on regular or thermal printers
-  - Tracking number generation and storage
-  - API key required: SHIPPO_API_KEY (stored in secrets)
-  - Ship-from address configurable via environment variables (SHIP_FROM_ADDRESS, SHIP_FROM_CITY, SHIP_FROM_STATE, SHIP_FROM_ZIP)
-  - **STATUS (Nov 3, 2025)**: Shippo account fully operational - account hold removed by support. Shipping label PDFs now generate successfully. The "View Label" button opens PDFs in new tab for printing.
-- **SendGrid Email Integration**: Transactional email notifications
-  - Customer order confirmation and shipping notification emails
-  - Admin notification system (to be implemented)
-  - Professional HTML email templates with order details and tracking
-  - API key required: SENDGRID_API_KEY (stored in secrets)
-  - From email configurable via SENDGRID_FROM_EMAIL environment variable
-  - **STATUS (Nov 2, 2025)**: SendGrid sender verification completed - emails fully operational. Sender jewelryboutiquewow@gmail.com verified and ready to send order confirmations.
-- **NOTE**: User declined to use Replit's SendGrid connector integration, preferring manual API key management
-
-**Admin Dashboard** (Added November 2025)
-- Accessible at `/admin` route for order and inventory management
-- **Authentication**: Protected by ADMIN_ACCESS_KEY secret (Bearer token authentication)
-  - Admin must enter access key to view dashboard
-  - All privileged endpoints require valid admin token
-  - Prevents unauthorized access to order data, inventory, and shipping/email operations
-- **Tabbed Interface** (Updated November 3, 2025):
-  - **Orders Tab**: Order management and shipping operations
-    - View all orders with customer information and shipping details
-    - One-click shipping label generation via Shippo API
-    - Download and print labels as PDF (works with regular printers or thermal label printers like DYMO LabelWriter 4XL)
-    - Send customer notifications with tracking information
-    - Order status tracking (pending → shipped)
-    - Tracking number and carrier information display
-  - **Inventory Tab**: Real-time product stock management
-    - View all products sorted alphabetically with current stock levels
-    - +/- buttons to adjust inventory quantities for each product
-    - Visual indicators: red text and "Out of Stock" badge when stock reaches zero
-    - Automatic disabling of decrement button when stock is zero (prevents negative inventory)
-    - Concurrent mutation handling: multiple products can be updated simultaneously without state conflicts
-    - Real-time updates with optimistic UI feedback
-    - Inventory changes persist immediately to database
-    - **Backend Integration**: PATCH `/api/products/:id/inventory` endpoint with admin authentication
-    - **Automatic Inventory Deduction**: Stock automatically decreases when customers place orders
-
-**Design Assets**
-- Google Fonts CDN for Inter, Montserrat, and Playfair Display
-- Product images stored in `/attached_assets/generated_images/` directory
-- Design guidelines documented in `design_guidelines.md` with references to lalahairbrand.com and Etsy aesthetics
+### Design Assets
+- **Google Fonts CDN**: Inter, Montserrat, Playfair Display.
+- **Product Images**: Stored in `/attached_assets/generated_images/`. Requires `./deploy.sh` to copy to `dist/attached_assets/` for production.
