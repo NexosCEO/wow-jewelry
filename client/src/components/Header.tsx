@@ -38,7 +38,7 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
                 </span>
               </Link>
               <Link href="/">
-                <span className={`text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary ${location === "/" ? "text-primary font-semibold" : ""}`} data-testid="link-shop">
+                <span className="text-sm uppercase tracking-wider cursor-pointer transition-colors hover:text-primary" data-testid="link-shop">
                   Shop
                 </span>
               </Link>
@@ -98,7 +98,7 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
               </Link>
               <Link href="/">
                 <span 
-                  className={`block py-2 text-base cursor-pointer transition-colors hover:text-primary ${location === "/" ? "text-primary font-semibold" : ""}`}
+                  className="block py-2 text-base cursor-pointer transition-colors hover:text-primary"
                   onClick={() => setMobileMenuOpen(false)}
                   data-testid="link-shop-mobile"
                 >
