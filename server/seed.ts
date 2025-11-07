@@ -413,36 +413,6 @@ const realBraceletTemplates: InsertBraceletTemplate[] = [
     color: "Pink",
     inStock: true,
   },
-  {
-    name: "Platise Beaded Bracelet",
-    description: "Pre-made beaded bracelet with refined details. Add charms to personalize it!",
-    basePrice: "35.00",
-    maxSlots: 11,
-    imageUrl: "/attached_assets/1-PLATISE BRACELET $35 _1762108451901.jpg",
-    category: "Beaded",
-    color: "Multi",
-    inStock: true,
-  },
-  {
-    name: "Bartolome Beaded Bracelet",
-    description: "Pre-made beaded bracelet combining style and craftsmanship. Add charms to customize!",
-    basePrice: "35.00",
-    maxSlots: 11,
-    imageUrl: "/attached_assets/1-BARTOLOME BRACELET $35 _1762108479918.jpg",
-    category: "Beaded",
-    color: "Multi",
-    inStock: true,
-  },
-  {
-    name: "Cristobal Beaded Bracelet",
-    description: "Pre-made beaded bracelet with unique design elements. Personalize with charms!",
-    basePrice: "35.00",
-    maxSlots: 11,
-    imageUrl: "/attached_assets/1-CRISTOBAL BRACELET $35_1762108505912.jpg",
-    category: "Beaded",
-    color: "Multi",
-    inStock: true,
-  },
 ];
 
 const realBraceletBeads: InsertBraceletBead[] = [
