@@ -62,14 +62,17 @@ export function CartDrawer({ isOpen, onClose, cart, onUpdateQuantity, onRemoveIt
             <>
               <ScrollArea className="flex-1 p-6">
                 <div className="space-y-4">
-                  {cart.map((item) => {
-                    console.log("Cart item:", item);
+                  {cart.map((item, index) => {
                     const isProduct = "product" in item;
-                    const itemId = isProduct ? item.product.id : item.configId;
-                    console.log("Calculated itemId:", itemId, "isProduct:", isProduct);
-                    const itemName = isProduct ? item.product.name : item.templateName;
-                    const itemPrice = isProduct ? item.product.price : item.price;
-                    const itemImage = isProduct ? item.product.imageUrl : "/attached_assets/IMG_3453_1761882788256.jpeg";
+                    const itemId = isProduct ? item.product?.id : item.configId;
+                    const itemName = isProduct ? item.product?.name : item.templateName;
+                    const itemPrice = isProduct ? item.product?.price : item.price;
+                    const itemImage = isProduct ? item.product?.imageUrl : "/attached_assets/IMG_3453_1761882788256.jpeg";
+                    
+                    if (!itemId) {
+                      console.error("Cart item missing ID:", item);
+                      return null;
+                    }
                     
                     return (
                       <div key={itemId} className="flex gap-4" data-testid={`cart-item-${itemId}`}>
