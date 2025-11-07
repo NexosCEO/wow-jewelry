@@ -92,17 +92,6 @@ const realProducts: InsertProduct[] = [
     stockQuantity: 10,
   },
   {
-    name: "Black Clover",
-    description: "Distinctive black clover design bracelet. Bold and elegant for those who love unique pieces.",
-    price: "10.00",
-    regularPrice: null,
-    imageUrl: "/attached_assets/2-BLACK CLOVER $10_1762108708434.webp",
-    imageUrl2: null,
-    category: "Bracelets",
-    inStock: true,
-    stockQuantity: 10,
-  },
-  {
     name: "Astral Ring",
     description: "Celestial-inspired ring in Size 9. Handcrafted with attention to detail.",
     price: "25.00",
