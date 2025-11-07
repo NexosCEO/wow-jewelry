@@ -437,11 +437,23 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
                 </div>
               </div>
 
-              <div className="border-t pt-6">
-                <div className="flex items-center justify-between text-2xl font-bold">
-                  <span>Total Price</span>
+              <div className="border-t pt-6 space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span>${calculateTotalPrice().toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Shipping</span>
+                  <span>$5.99</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Tax (8.75%)</span>
+                  <span>${((calculateTotalPrice() + 5.99) * 0.0875).toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between text-2xl font-bold pt-4 border-t">
+                  <span>Total</span>
                   <span className="bg-gradient-to-r from-rose-gold to-gold-primary bg-clip-text text-transparent">
-                    ${calculateTotalPrice().toFixed(2)}
+                    ${(calculateTotalPrice() + 5.99 + (calculateTotalPrice() + 5.99) * 0.0875).toFixed(2)}
                   </span>
                 </div>
               </div>

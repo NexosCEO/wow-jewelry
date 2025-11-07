@@ -627,10 +627,18 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                     </span>
                   </div>
                 )}
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-muted-foreground">Shipping</span>
+                  <span>$5.99</span>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-muted-foreground">Tax (8.75%)</span>
+                  <span>${((calculateTotalPrice() + 5.99) * 0.0875).toFixed(2)}</span>
+                </div>
                 <div className="flex items-center justify-between text-2xl font-bold pt-4 border-t border-border">
                   <span>Total</span>
                   <span className="bg-gradient-to-r from-rose-gold to-gold-primary bg-clip-text text-transparent" data-testid="text-total-price">
-                    ${calculateTotalPrice().toFixed(2)}
+                    ${(calculateTotalPrice() + 5.99 + (calculateTotalPrice() + 5.99) * 0.0875).toFixed(2)}
                   </span>
                 </div>
               </div>
