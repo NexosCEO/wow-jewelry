@@ -384,6 +384,14 @@ export default function Admin() {
                               )}
                             </span>
                           </div>
+                          {order.taxAmount !== undefined && order.taxAmount !== null && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Tax (8.75%)</span>
+                              <span data-testid={`text-tax-${order.id}`}>
+                                ${parseFloat(order.taxAmount).toFixed(2)}
+                              </span>
+                            </div>
+                          )}
                           <div className="flex justify-between font-semibold">
                             <span>Total</span>
                             <span data-testid={`text-order-total-${order.id}`}>
