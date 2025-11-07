@@ -159,14 +159,30 @@ export function CartDrawer({ isOpen, onClose, cart, onUpdateQuantity, onRemoveIt
                   Proceed to Checkout
                 </Button>
                 
-                <Button 
-                  variant="ghost" 
-                  className="w-full"
-                  onClick={onClose}
-                  data-testid="button-continue-shopping-bottom"
-                >
-                  Continue Shopping
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    className="flex-1"
+                    onClick={onClose}
+                    data-testid="button-continue-shopping-bottom"
+                  >
+                    Continue Shopping
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => {
+                      cart.forEach((item) => {
+                        const isProduct = "product" in item;
+                        const itemId = isProduct ? item.product?.id : item.configId;
+                        if (itemId) onRemoveItem(itemId);
+                      });
+                    }}
+                    data-testid="button-clear-cart"
+                  >
+                    Clear Cart
+                  </Button>
+                </div>
               </div>
             </>
           )}

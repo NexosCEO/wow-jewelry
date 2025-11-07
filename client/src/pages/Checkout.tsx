@@ -344,6 +344,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const [calculatedTax, setCalculatedTax] = useState<number>(0);
   const [calculatedTotal, setCalculatedTotal] = useState<number>(0);
   const [addressComplete, setAddressComplete] = useState(false);
+  const [isCreatingPaymentIntent, setIsCreatingPaymentIntent] = useState(false);
   const [customerAddress, setCustomerAddress] = useState({
     name: "",
     address: "",
@@ -384,6 +385,9 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
       return;
     }
 
+    setIsCreatingPaymentIntent(true);
+    setClientSecret("");
+    
     apiRequest("POST", "/api/create-payment-intent", { 
       amount: baseTotal,
       customerAddress,
@@ -399,16 +403,18 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           setCalculatedTax(0);
           setCalculatedTotal(baseTotal);
         }
+        setIsCreatingPaymentIntent(false);
       })
       .catch((error) => {
         console.error("Payment intent creation failed:", error);
+        setIsCreatingPaymentIntent(false);
         toast({
           title: "Payment Setup Error",
           description: error.message || "Unable to initialize payment. Please try again.",
           variant: "destructive",
         });
       });
-  }, [shippingMethod, addressComplete]); // Recreate when shipping or address changes
+  }, [shippingMethod, addressComplete, baseTotal, customerAddress.name, customerAddress.address, customerAddress.city, customerAddress.state, customerAddress.zipCode]); // Recreate when shipping or address changes
 
   const handleSuccess = () => {
     onClearCart();
@@ -483,7 +489,13 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           </div>
         </div>
 
-        {clientSecret ? (
+        {isCreatingPaymentIntent ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
+            <p className="text-lg font-medium">Preparing secure payment...</p>
+            <p className="text-sm text-muted-foreground">Calculating tax and setting up payment</p>
+          </div>
+        ) : clientSecret ? (
           <Elements stripe={stripePromise} options={{ clientSecret }} key={clientSecret}>
             <CheckoutForm 
               cart={cart} 

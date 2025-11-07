@@ -23,7 +23,25 @@ import { useToast } from "@/hooks/use-toast";
 function Router() {
   const [cart, setCart] = useState<UnifiedCartItem[]>(() => {
     const saved = localStorage.getItem("wow-cart");
-    return saved ? JSON.parse(saved) : [];
+    if (!saved) return [];
+    
+    try {
+      const parsed = JSON.parse(saved);
+      const sanitized = parsed.filter((item: any) => {
+        if ("product" in item && item.product && item.product.id) {
+          return true;
+        }
+        if ("configId" in item && item.configId) {
+          return true;
+        }
+        console.warn("Removing corrupted cart item:", item);
+        return false;
+      });
+      return sanitized;
+    } catch (e) {
+      console.error("Failed to parse cart from localStorage:", e);
+      return [];
+    }
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
