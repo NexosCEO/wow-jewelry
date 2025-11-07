@@ -57,6 +57,7 @@ function Router() {
         toast({
           title: "Added to Cart",
           description: "Your custom bracelet has been added to cart!",
+          duration: 2000,
         });
         return [...prev, { ...customItem, quantity: 1 }];
       } else if ("type" in item && item.type === "custom-necklace") {
@@ -64,6 +65,7 @@ function Router() {
         toast({
           title: "Added to Cart",
           description: "Your custom necklace has been added to cart!",
+          duration: 2000,
         });
         return [...prev, { ...customItem, quantity: 1 }];
       } else {
@@ -75,6 +77,7 @@ function Router() {
           toast({
             title: "Cart Updated",
             description: `${product.name} quantity increased`,
+            duration: 2000,
           });
           return prev.map((cartItem) =>
             "product" in cartItem && cartItem.product.id === product.id
@@ -85,6 +88,7 @@ function Router() {
         toast({
           title: "Added to Cart",
           description: `${product.name} has been added to your cart`,
+          duration: 2000,
         });
         return [...prev, { product, quantity: 1 } as CartItem];
       }
