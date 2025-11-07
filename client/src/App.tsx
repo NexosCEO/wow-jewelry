@@ -88,11 +88,23 @@ function Router() {
   };
 
   const handleRemoveItem = (itemId: string) => {
-    setCart((prev) => prev.filter((item) => {
-      if ("product" in item) return item.product.id !== itemId;
-      if ("configId" in item) return item.configId !== itemId;
-      return true;
-    }));
+    console.log("Removing item with ID:", itemId);
+    setCart((prev) => {
+      console.log("Current cart:", prev);
+      const newCart = prev.filter((item) => {
+        if ("product" in item) {
+          console.log("Product item:", item.product.id, "Match:", item.product.id === itemId);
+          return item.product.id !== itemId;
+        }
+        if ("configId" in item) {
+          console.log("Custom item:", item.configId, "Match:", item.configId === itemId);
+          return item.configId !== itemId;
+        }
+        return true;
+      });
+      console.log("New cart after filter:", newCart);
+      return newCart;
+    });
     toast({
       title: "Item Removed",
       description: "Item has been removed from your cart",
