@@ -143,7 +143,6 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>• Handmade with care and attention to detail</li>
                 <li>• Unique design - each piece may vary slightly</li>
-                <li>• Free shipping on all orders</li>
                 <li>• Carefully packaged for gift-giving</li>
               </ul>
             </div>
