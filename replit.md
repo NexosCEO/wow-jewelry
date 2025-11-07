@@ -7,10 +7,11 @@ WOW Jewelry (WOW by Dany) is a full-stack e-commerce platform for handmade artis
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (November 7, 2025)
-### Bug Fixes - Cart and Checkout
+### Bug Fixes - Cart and Checkout (COMPLETED & VERIFIED)
 - **Cart Removal Fix**: Implemented robust cart data sanitization on app load to filter out corrupted items missing proper IDs. Added try-catch error handling for localStorage parsing.
 - **Clear Cart Feature**: Added "Clear Cart" button with shadcn AlertDialog confirmation to prevent accidental deletion. Uses dedicated handler with single toast notification.
-- **Checkout Payment Form**: Fixed missing "Complete Payment" button by adding proper loading states (`isCreatingPaymentIntent`) and comprehensive dependency tracking in useEffect. Payment form now appears reliably after address completion.
+- **Checkout Payment Form - Circular Dependency Fix**: Fixed critical bug where payment form never appeared. Added useEffect in parent Checkout component (lines 372-381) that automatically sets `addressComplete` when all 5 address fields are filled, breaking the circular dependency where payment intent required addressComplete but addressComplete was only set inside the form that needed clientSecret.
+- **Stripe Payment Intent API Fix**: Removed unsupported `automatic_tax` parameter from payment intent creation that was causing 500 errors. Tax calculations disabled until Stripe Tax is manually configured in Stripe Dashboard.
 - **Error Handling**: Enhanced null safety checks throughout cart operations with proper optional chaining and validation.
 
 ## System Architecture
