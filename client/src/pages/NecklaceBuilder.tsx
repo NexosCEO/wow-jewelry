@@ -105,6 +105,7 @@ export default function NecklaceBuilder({ onAddToCart }: NecklaceBuilderProps) {
     if (!selectedTemplate) return;
 
     const customNecklace = {
+      configId: `custom-necklace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: "custom-necklace",
       templateId: selectedTemplate.id,
       templateName: selectedTemplate.name,

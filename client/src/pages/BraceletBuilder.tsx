@@ -163,6 +163,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     if (!selectedTemplate) return;
 
     const customBracelet = {
+      configId: `custom-bracelet-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: "custom-bracelet",
       templateId: selectedTemplate.id,
       templateName: selectedTemplate.name,
