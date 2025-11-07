@@ -285,15 +285,6 @@ const realCharms: InsertCharm[] = [
     stockQuantity: 10,
   },
   {
-    name: "Dog Love",
-    description: "Adorable dog-themed charm for pet lovers. Show your love for furry friends.",
-    price: "5.00",
-    imageUrl: "/attached_assets/1- DOG LOVE $5_1762109248253.jpg",
-    category: "Charms",
-    inStock: true,
-    stockQuantity: 10,
-  },
-  {
     name: "Mini Heart",
     description: "Delicate heart charm with crystal center. Perfect symbol of love.",
     price: "5.00",
