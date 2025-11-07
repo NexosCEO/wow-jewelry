@@ -11,7 +11,7 @@ Preferred communication style: Simple, everyday language.
 - **Cart Removal Fix**: Implemented robust cart data sanitization on app load to filter out corrupted items missing proper IDs. Added try-catch error handling for localStorage parsing.
 - **Clear Cart Feature**: Added "Clear Cart" button with shadcn AlertDialog confirmation to prevent accidental deletion. Uses dedicated handler with single toast notification.
 - **Checkout Payment Form - Circular Dependency Fix**: Fixed critical bug where payment form never appeared. Added useEffect in parent Checkout component (lines 372-381) that automatically sets `addressComplete` when all 5 address fields are filled, breaking the circular dependency where payment intent required addressComplete but addressComplete was only set inside the form that needed clientSecret.
-- **Stripe Payment Intent API Fix**: Removed unsupported `automatic_tax` parameter from payment intent creation that was causing 500 errors. Tax calculations disabled until Stripe Tax is manually configured in Stripe Dashboard.
+- **Stripe Automatic Tax**: Re-enabled after user confirmed Stripe Tax is configured in Stripe Dashboard. Payment intents now include `automatic_tax: { enabled: true }` and tax is automatically calculated based on customer shipping address and displayed in checkout.
 - **Error Handling**: Enhanced null safety checks throughout cart operations with proper optional chaining and validation.
 
 ## System Architecture

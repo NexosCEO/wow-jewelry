@@ -279,6 +279,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       if (customerAddress) {
+        paymentIntentParams.automatic_tax = { enabled: true };
         paymentIntentParams.shipping = {
           name: customerAddress.name || "Customer",
           address: {
