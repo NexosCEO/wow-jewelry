@@ -76,6 +76,17 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   };
 
   const handleAddCharm = (charm: Charm) => {
+    const totalCharms = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0);
+    
+    if (totalCharms >= 3) {
+      toast({
+        title: "Maximum Charms Reached",
+        description: "You can only add up to 3 charms per bracelet.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (remainingSlots <= 0) {
       toast({
         title: "Maximum Slots Reached",
