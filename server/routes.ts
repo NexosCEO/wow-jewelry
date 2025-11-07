@@ -226,6 +226,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/payment-intent/:id", async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({ 
+          message: "Payment processing is not available." 
+        });
+      }
+
+      const paymentIntent: any = await stripe.paymentIntents.retrieve(req.params.id);
+      
+      const taxAmount = paymentIntent.amount_details?.total_details?.amount_tax 
+        ? paymentIntent.amount_details.total_details.amount_tax / 100 
+        : 0;
+      
+      res.json({
+        id: paymentIntent.id,
+        amount: paymentIntent.amount / 100,
+        taxAmount,
+        status: paymentIntent.status,
+      });
+    } catch (error: any) {
+      console.error("Error retrieving payment intent:", error);
+      res.status(500).json({ 
+        message: "Error retrieving payment intent: " + error.message 
+      });
+    }
+  });
+
   app.post("/api/create-payment-intent", async (req, res) => {
     try {
       if (!stripe) {
@@ -234,7 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const { amount } = req.body;
+      const { amount, customerAddress, cart } = req.body;
 
       if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
         return res.status(400).json({ message: "Invalid amount" });
@@ -242,16 +270,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`Creating payment intent for amount: $${amount}`);
       
-      const paymentIntent = await stripe.paymentIntents.create({
+      const paymentIntentParams: any = {
         amount: Math.round(parseFloat(amount) * 100),
         currency: "usd",
         automatic_payment_methods: {
           enabled: true,
         },
-      });
+      };
+
+      if (customerAddress) {
+        paymentIntentParams.automatic_tax = { enabled: true };
+        paymentIntentParams.shipping = {
+          name: customerAddress.name || "Customer",
+          address: {
+            line1: customerAddress.address || "",
+            city: customerAddress.city || "",
+            state: customerAddress.state || "",
+            postal_code: customerAddress.zipCode || "",
+            country: "US",
+          },
+        };
+      }
+      
+      const paymentIntent: any = await stripe.paymentIntents.create(paymentIntentParams);
 
       console.log(`Payment intent created: ${paymentIntent.id}`);
-      res.json({ clientSecret: paymentIntent.client_secret });
+      
+      const taxAmount = paymentIntent.amount_details?.total_details?.amount_tax 
+        ? paymentIntent.amount_details.total_details.amount_tax / 100 
+        : 0;
+      
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        taxAmount,
+        totalAmount: paymentIntent.amount / 100,
+      });
     } catch (error: any) {
       console.error("Stripe payment intent error:", error);
       res.status(500).json({ 

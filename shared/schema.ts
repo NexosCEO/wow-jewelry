@@ -26,6 +26,7 @@ export const orders = pgTable("orders", {
   zipCode: text("zip_code").notNull(),
   items: text("items").notNull(),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
+  taxAmount: decimal("tax_amount", { precision: 10, scale: 2 }).default("0.00"),
   shippingMethod: text("shipping_method").notNull().default("standard"),
   shippingFee: decimal("shipping_fee", { precision: 10, scale: 2 }).notNull().default("5.99"),
   status: text("status").notNull().default("pending"),

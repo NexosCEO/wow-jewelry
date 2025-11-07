@@ -24,28 +24,42 @@ interface CheckoutFormProps {
   subtotal: number;
   shippingFee: number;
   total: number;
+  calculatedTax: number;
+  customerAddress: {
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+  setCustomerAddress: (address: any) => void;
+  setAddressComplete: (complete: boolean) => void;
 }
 
-function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subtotal, shippingFee, total }: CheckoutFormProps) {
+function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subtotal, shippingFee, total, calculatedTax, customerAddress, setCustomerAddress, setAddressComplete }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [customerInfo, setCustomerInfo] = useState({
-    name: "",
-    email: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-  });
+  const [customerEmail, setCustomerEmail] = useState("");
+
+  useEffect(() => {
+    const isComplete = !!(
+      customerAddress.name &&
+      customerAddress.address &&
+      customerAddress.city &&
+      customerAddress.state &&
+      customerAddress.zipCode
+    );
+    setAddressComplete(isComplete);
+  }, [customerAddress, setAddressComplete]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!stripe || !elements) return;
 
-    if (!customerInfo.name || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.state || !customerInfo.zipCode) {
+    if (!customerAddress.name || !customerEmail || !customerAddress.address || !customerAddress.city || !customerAddress.state || !customerAddress.zipCode) {
       toast({
         title: "Missing Information",
         description: "Please fill in all shipping details",
@@ -61,7 +75,7 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
         elements,
         confirmParams: {
           return_url: window.location.origin + "/checkout",
-          receipt_email: customerInfo.email,
+          receipt_email: customerEmail,
         },
         redirect: "if_required",
       });
@@ -73,22 +87,29 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
           variant: "destructive",
         });
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        const orderData = {
-          customerName: customerInfo.name,
-          customerEmail: customerInfo.email,
-          shippingAddress: customerInfo.address,
-          city: customerInfo.city,
-          state: customerInfo.state,
-          zipCode: customerInfo.zipCode,
-          items: JSON.stringify(cart),
-          totalAmount: total.toString(),
-          shippingMethod: shippingMethod,
-          shippingFee: shippingFee.toString(),
-          status: "completed",
-          stripePaymentIntentId: paymentIntent.id,
-        };
-
         try {
+          const paymentDetailsResponse = await apiRequest("GET", `/api/payment-intent/${paymentIntent.id}`);
+          const paymentDetails = await paymentDetailsResponse.json();
+          
+          const actualTax = paymentDetails.taxAmount || 0;
+          const actualTotal = paymentDetails.amount || total;
+
+          const orderData = {
+            customerName: customerAddress.name,
+            customerEmail: customerEmail,
+            shippingAddress: customerAddress.address,
+            city: customerAddress.city,
+            state: customerAddress.state,
+            zipCode: customerAddress.zipCode,
+            items: JSON.stringify(cart),
+            totalAmount: actualTotal.toString(),
+            taxAmount: actualTax.toString(),
+            shippingMethod: shippingMethod,
+            shippingFee: shippingFee.toString(),
+            status: "completed",
+            stripePaymentIntentId: paymentIntent.id,
+          };
+
           await apiRequest("POST", "/api/orders", orderData);
           toast({
             title: "Order Placed Successfully!",
@@ -124,8 +145,8 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
               <Label htmlFor="name">Full Name *</Label>
               <Input
                 id="name"
-                value={customerInfo.name}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                value={customerAddress.name}
+                onChange={(e) => setCustomerAddress({ ...customerAddress, name: e.target.value })}
                 required
                 data-testid="input-name"
               />
@@ -135,8 +156,8 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
               <Input
                 id="email"
                 type="email"
-                value={customerInfo.email}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
+                value={customerEmail}
+                onChange={(e) => setCustomerEmail(e.target.value)}
                 required
                 data-testid="input-email"
               />
@@ -147,8 +168,8 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
             <Label htmlFor="address">Street Address *</Label>
             <Input
               id="address"
-              value={customerInfo.address}
-              onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
+              value={customerAddress.address}
+              onChange={(e) => setCustomerAddress({ ...customerAddress, address: e.target.value })}
               required
               data-testid="input-address"
             />
@@ -159,8 +180,8 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
               <Label htmlFor="city">City *</Label>
               <Input
                 id="city"
-                value={customerInfo.city}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, city: e.target.value })}
+                value={customerAddress.city}
+                onChange={(e) => setCustomerAddress({ ...customerAddress, city: e.target.value })}
                 required
                 data-testid="input-city"
               />
@@ -169,8 +190,8 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
               <Label htmlFor="state">State *</Label>
               <Input
                 id="state"
-                value={customerInfo.state}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, state: e.target.value })}
+                value={customerAddress.state}
+                onChange={(e) => setCustomerAddress({ ...customerAddress, state: e.target.value })}
                 required
                 data-testid="input-state"
               />
@@ -179,8 +200,8 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
               <Label htmlFor="zipCode">ZIP Code *</Label>
               <Input
                 id="zipCode"
-                value={customerInfo.zipCode}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, zipCode: e.target.value })}
+                value={customerAddress.zipCode}
+                onChange={(e) => setCustomerAddress({ ...customerAddress, zipCode: e.target.value })}
                 required
                 data-testid="input-zipcode"
               />
@@ -320,6 +341,16 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const [, setLocation] = useLocation();
   const [clientSecret, setClientSecret] = useState("");
   const [shippingMethod, setShippingMethod] = useState<"standard" | "local_pickup">("standard");
+  const [calculatedTax, setCalculatedTax] = useState<number>(0);
+  const [calculatedTotal, setCalculatedTotal] = useState<number>(0);
+  const [addressComplete, setAddressComplete] = useState(false);
+  const [customerAddress, setCustomerAddress] = useState({
+    name: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  });
   const { toast } = useToast();
 
   const subtotal = cart.reduce((sum, item) => {
@@ -332,7 +363,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   }, 0);
 
   const shippingFee = shippingMethod === "standard" ? 5.99 : 0;
-  const total = subtotal + shippingFee;
+  const baseTotal = subtotal + shippingFee;
 
   useEffect(() => {
     if (cart.length === 0) {
@@ -349,11 +380,25 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
       return;
     }
 
-    // Create payment intent with current total (including shipping)
-    apiRequest("POST", "/api/create-payment-intent", { amount: total })
+    if (!addressComplete || !customerAddress.name || !customerAddress.address || !customerAddress.city || !customerAddress.state || !customerAddress.zipCode) {
+      return;
+    }
+
+    apiRequest("POST", "/api/create-payment-intent", { 
+      amount: baseTotal,
+      customerAddress,
+      cart
+    })
       .then((res) => res.json())
       .then((data) => {
         setClientSecret(data.clientSecret);
+        if (data.taxAmount) {
+          setCalculatedTax(data.taxAmount);
+          setCalculatedTotal(data.totalAmount);
+        } else {
+          setCalculatedTax(0);
+          setCalculatedTotal(baseTotal);
+        }
       })
       .catch((error) => {
         console.error("Payment intent creation failed:", error);
@@ -362,9 +407,8 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           description: error.message || "Unable to initialize payment. Please try again.",
           variant: "destructive",
         });
-        setTimeout(() => setLocation("/"), 3000);
       });
-  }, [shippingMethod]); // Recreate when shipping method changes
+  }, [shippingMethod, addressComplete]); // Recreate when shipping or address changes
 
   const handleSuccess = () => {
     onClearCart();
@@ -433,9 +477,15 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
                   {shippingFee === 0 ? "FREE" : `$${shippingFee.toFixed(2)}`}
                 </span>
               </div>
+              {calculatedTax > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Tax</span>
+                  <span className="font-medium">${calculatedTax.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-base pt-2 border-t border-border">
                 <span className="font-semibold">Total</span>
-                <span className="font-bold">${total.toFixed(2)}</span>
+                <span className="font-bold">${(calculatedTotal > 0 ? calculatedTotal : baseTotal).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -449,7 +499,11 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
             setShippingMethod={setShippingMethod}
             subtotal={subtotal}
             shippingFee={shippingFee}
-            total={total}
+            total={calculatedTotal > 0 ? calculatedTotal : baseTotal}
+            calculatedTax={calculatedTax}
+            customerAddress={customerAddress}
+            setCustomerAddress={setCustomerAddress}
+            setAddressComplete={setAddressComplete}
           />
         </Elements>
       </div>
