@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOW by Dany - Monthly Maintenance Invoice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #3a362f;
+            background: #fff;
+            padding: 20px;
+        }
+        
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            color: #3a362f;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-details {
+            color: #6f6a60;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+        }
+        
+        .column {
+            width: 48%;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #3a362f;
+            margin-bottom: 10px;
+        }
+        
+        .section-content {
+            color: #6f6a60;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .divider {
+            height: 2px;
+            background: #ece6dc;
+            margin: 30px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th {
+            background: #f8f5f0;
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: bold;
+            color: #3a362f;
+            border-bottom: 2px solid #ece6dc;
+        }
+        
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #ece6dc;
+            font-size: 13px;
+        }
+        
+        .item-description {
+            font-weight: bold;
+            color: #3a362f;
+            margin-bottom: 5px;
+        }
+        
+        .item-details {
+            color: #6f6a60;
+            font-size: 11px;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .totals-section {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .totals-table {
+            width: 300px;
+        }
+        
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        
+        .total-row {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3a362f;
+            border-top: 2px solid #caa55b;
+            padding-top: 15px;
+            margin-top: 10px;
+        }
+        
+        .services-included {
+            background: #f8f5f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        
+        .services-included h3 {
+            color: #3a362f;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .services-included ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        
+        .services-included li {
+            color: #6f6a60;
+            font-size: 13px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        .services-included li:before {
+            content: "✓";
+            position: absolute;
+            left: -20px;
+            color: #caa55b;
+            font-weight: bold;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 3px solid #caa55b;
+            text-align: center;
+            color: #6f6a60;
+            font-size: 12px;
+        }
+        
+        .print-button {
+            background: #caa55b;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .print-button:hover {
+            background: #b8944a;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+            }
+            .invoice-container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            .print-button {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .invoice-container {
+                padding: 20px;
+            }
+            .row {
+                flex-direction: column;
+            }
+            .column {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            table {
+                font-size: 11px;
+            }
+            th, td {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <button class="print-button" onclick="window.print()">Download/Print Invoice</button>
+        
+        <div class="header">
+            <h1>INVOICE</h1>
+            <div class="invoice-details">
+                <div>Invoice #: INV-2024-MAINT-001</div>
+                <div>Date: November 14, 2024</div>
+                <div>Service Period: November 2024</div>
+                <div>Due Date: Upon Receipt</div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="column">
+                <div class="section-title">FROM:</div>
+                <div class="section-content">
+                    <strong>Titan Innovations LLC</strong><br>
+                    Professional Website Development<br>
+                    Full-Stack E-Commerce Solutions
+                </div>
+            </div>
+            <div class="column">
+                <div class="section-title">BILL TO:</div>
+                <div class="section-content">
+                    <strong>WOW by Dany</strong><br>
+                    Jewelry E-Commerce Store<br>
+                    wowbydany.com
+                </div>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%;">DESCRIPTION</th>
+                    <th class="text-center">QTY</th>
+                    <th class="text-right">RATE</th>
+                    <th class="text-right">AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="item-description">Monthly Website Hosting & Maintenance</div>
+                        <div class="item-details">Server hosting, uptime monitoring, daily backups, security patches</div>
+                    </td>
+                    <td class="text-center">1</td>
+                    <td class="text-right">$25.00</td>
+                    <td class="text-right">$25.00</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="item-description">Product Management Support</div>
+                        <div class="item-details">Inventory updates, product additions, price adjustments assistance</div>
+                    </td>
+                    <td class="text-center">1</td>
+                    <td class="text-right">$15.00</td>
+                    <td class="text-right">$15.00</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="item-description">Technical Support & Updates</div>
+                        <div class="item-details">24/7 error monitoring, bug fixes, performance optimization</div>
+                    </td>
+                    <td class="text-center">1</td>
+                    <td class="text-right">$20.00</td>
+                    <td class="text-right">$20.00</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="item-description">Payment Processing Maintenance</div>
+                        <div class="item-details">Stripe integration monitoring, transaction support, tax compliance</div>
+                    </td>
+                    <td class="text-center">1</td>
+                    <td class="text-right">$10.00</td>
+                    <td class="text-right">$10.00</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="item-description">Security & Compliance</div>
+                        <div class="item-details">SSL certificate, HTTPS enforcement, data protection, PCI compliance</div>
+                    </td>
+                    <td class="text-center">1</td>
+                    <td class="text-right">$10.00</td>
+                    <td class="text-right">$10.00</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="totals-section">
+            <div class="totals-table">
+                <div class="totals-row">
+                    <span>Subtotal:</span>
+                    <span>$80.00</span>
+                </div>
+                <div class="totals-row total-row">
+                    <span>TOTAL:</span>
+                    <span>$80.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="services-included">
+            <h3>Services Included</h3>
+            <ul>
+                <li>99.9% uptime guarantee with monitoring</li>
+                <li>Daily automated backups and recovery</li>
+                <li>Priority technical support response</li>
+                <li>Monthly performance reports</li>
+                <li>Free minor updates and improvements</li>
+            </ul>
+        </div>
+        
+        <div class="services-included">
+            <h3>Payment Methods Accepted</h3>
+            <ul>
+                <li>Zelle</li>
+                <li>Cash</li>
+                <li>Apple Pay</li>
+                <li>Credit/Debit Card</li>
+                <li>Bank Transfer</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Service Notes:</strong></p>
+            <p>Your website at wowbydany.com is fully maintained and monitored.</p>
+            <p>All services are performed remotely with no downtime required.</p>
+            <p style="margin-top: 20px; font-size: 14px; color: #caa55b;">Thank you for your continued business!</p>
+        </div>
+    </div>
+</body>
+</html>
