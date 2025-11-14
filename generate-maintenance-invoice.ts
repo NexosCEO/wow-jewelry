@@ -1,8 +1,14 @@
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
+import path from 'path';
 
 function generateMaintenanceInvoice() {
-  const doc = new PDFDocument({ margin: 50, size: 'A4' });
+  const doc = new PDFDocument({ 
+    margin: 50, 
+    size: 'A4',
+    autoFirstPage: true,
+    compress: false // Disable compression for better compatibility
+  });
   const invoiceNumber = `INV-${Date.now()}`;
   const invoiceDate = new Date().toLocaleDateString('en-US', { 
     year: 'numeric', 
