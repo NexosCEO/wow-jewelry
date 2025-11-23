@@ -356,6 +356,9 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
     state: "",
     zipCode: "",
   });
+  const [couponCode, setCouponCode] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  const [appliedCoupon, setAppliedCoupon] = useState<string>("");
   const { toast } = useToast();
 
   const subtotal = cart.reduce((sum, item) => {
@@ -369,8 +372,55 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
 
   const shippingFee = shippingMethod === "standard" ? 5.99 : 0;
   const taxRate = 0.0875;
-  const calculatedTaxAmount = (subtotal + shippingFee) * taxRate;
-  const baseTotal = subtotal + shippingFee + calculatedTaxAmount;
+  const discountedSubtotal = Math.max(0, subtotal - couponDiscount);
+  const calculatedTaxAmount = (discountedSubtotal + shippingFee) * taxRate;
+  const baseTotal = discountedSubtotal + shippingFee + calculatedTaxAmount;
+
+  const handleApplyCoupon = () => {
+    const couponUpper = couponCode.toUpperCase().trim();
+    
+    // Define available coupons
+    const coupons: { [key: string]: { type: "percentage" | "fixed", value: number } } = {
+      "SAVE10": { type: "percentage", value: 10 },
+      "SAVE20": { type: "percentage", value: 20 },
+      "WELCOME": { type: "fixed", value: 5 },
+      "JEWELRY15": { type: "percentage", value: 15 },
+    };
+
+    if (coupons[couponUpper]) {
+      const coupon = coupons[couponUpper];
+      let discount = 0;
+      
+      if (coupon.type === "percentage") {
+        discount = subtotal * (coupon.value / 100);
+      } else {
+        discount = Math.min(coupon.value, subtotal); // Don't discount more than subtotal
+      }
+      
+      setCouponDiscount(discount);
+      setAppliedCoupon(couponUpper);
+      toast({
+        title: "Coupon Applied!",
+        description: `You saved $${discount.toFixed(2)} with code ${couponUpper}`,
+      });
+    } else {
+      toast({
+        title: "Invalid Coupon",
+        description: "The coupon code you entered is not valid.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponDiscount(0);
+    setAppliedCoupon("");
+    setCouponCode("");
+    toast({
+      title: "Coupon Removed",
+      description: "The discount has been removed from your order.",
+    });
+  };
 
   useEffect(() => {
     const isComplete = !!(
@@ -482,6 +532,55 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-medium">${subtotal.toFixed(2)}</span>
               </div>
+              
+              {/* Coupon Code Section */}
+              {!appliedCoupon ? (
+                <div className="flex gap-2 items-end">
+                  <div className="flex-1">
+                    <Input
+                      placeholder="Enter coupon code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="text-sm"
+                      data-testid="input-coupon"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleApplyCoupon}
+                    disabled={!couponCode.trim()}
+                    data-testid="button-apply-coupon"
+                  >
+                    Apply
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex justify-between text-sm bg-primary/10 p-2 rounded">
+                  <span className="text-primary font-medium">
+                    Coupon: {appliedCoupon} applied!
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto p-0 text-sm text-destructive hover:text-destructive/80"
+                    onClick={handleRemoveCoupon}
+                    data-testid="button-remove-coupon"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              )}
+              
+              {couponDiscount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-primary font-medium">Discount</span>
+                  <span className="font-medium text-primary">-${couponDiscount.toFixed(2)}</span>
+                </div>
+              )}
+              
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Shipping</span>
                 <span className="font-medium">
