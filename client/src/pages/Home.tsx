@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import heroImage from "@assets/IMG_3464_1761882788256.jpeg";
+import logoUrl from "@assets/IMG_3548_1761884766204.jpeg";
 import { SiInstagram, SiTiktok } from "react-icons/si";
 
 interface HomeProps {
@@ -226,11 +227,11 @@ export default function Home({ onAddToCart }: HomeProps) {
                 Thank you for making this journey shine brighter!
               </p>
             </div>
-            <div className="relative h-64 md:h-96 rounded-lg overflow-hidden shadow-lg">
+            <div className="relative h-64 md:h-96 rounded-lg overflow-hidden shadow-lg flex items-center justify-center bg-gradient-to-br from-[#e8d5c4] to-[#f0e5d8]">
               <img 
-                src={encodeURI(products?.[2]?.imageUrl || products?.[0]?.imageUrl || '')}
-                alt="Jewelry craftsmanship"
-                className="w-full h-full object-cover"
+                src={logoUrl}
+                alt="WOW by Dany logo"
+                className="max-h-full max-w-full object-contain p-8"
               />
             </div>
           </div>
