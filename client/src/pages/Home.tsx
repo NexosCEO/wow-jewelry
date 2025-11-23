@@ -214,13 +214,16 @@ export default function Home({ onAddToCart }: HomeProps) {
                 WOW by Dany
               </h2>
               <p className="text-base md:text-lg text-foreground/80 mb-4 leading-relaxed">
-                Handmade modern jewelry inspired by everyday moments of delight.
+                WOW by Dany jewelry collection it's more than just an accessory—it's a tool for self-confidence and a symbol of connection. Our collection is crafted with love and attention to detail, featuring premium finishes, including luxurious 24k gold plating and durable 18k gold lamination.
               </p>
               <p className="text-base md:text-lg text-foreground/80 mb-4 leading-relaxed">
-                Every piece in our collection is handmade with love and attention to detail. We believe jewelry should be as unique as the person wearing it.
+                We create unique pieces that reflect the uniqueness in you.
+              </p>
+              <p className="text-base md:text-lg text-foreground/80 mb-4 leading-relaxed">
+                I'm very happy of my new brand and the new journey filled with pride and excitement. My greatest hope is to foster a beautiful community where everyone feels empowered, radiant and celebrated.
               </p>
               <p className="text-base text-muted-foreground leading-relaxed">
-                From delicate necklaces to statement earrings, each item is crafted to bring joy and beauty to your everyday life.
+                Thank you for making this journey shine brighter!
               </p>
             </div>
             <div className="relative h-64 md:h-96 rounded-lg overflow-hidden shadow-lg">
@@ -240,7 +243,7 @@ export default function Home({ onAddToCart }: HomeProps) {
             <div>
               <h3 className="font-serif text-xl font-bold mb-3">WOW by Dany</h3>
               <p className="mb-4 max-w-md" style={{ color: '#f0e7d6' }}>
-                Handmade modern jewelry inspired by everyday moments of delight.
+                Jewelry that's more than just an accessory—it's a tool for self-confidence and a symbol of connection.
               </p>
               {/* Social Media Links */}
               <div className="flex gap-4 mb-4">
