@@ -6,8 +6,16 @@ WOW Jewelry (WOW by Dany) is a full-stack e-commerce platform for handmade artis
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (November 7, 2025)
-### Bug Fixes - Cart and Checkout (COMPLETED & VERIFIED)
+## Recent Changes (November 23, 2025)
+### Coupon Management System (COMPLETED)
+- **Database-Driven Coupons**: Replaced hardcoded discounts with full database-backed coupon management system
+- **Secure Stripe Integration**: Server-side coupon validation and discount calculation prevents price manipulation. Coupon metadata sent to Stripe for tracking and reconciliation
+- **Admin Dashboard**: New Coupons tab with full CRUD operations (create, read, update, delete) for managing discount codes
+- **Coupon Features**: Support for percentage and fixed discounts, minimum purchase requirements, usage limits, expiry dates, and active/inactive status
+- **Order Tracking**: Orders now store coupon code and discount amount for reporting and auditing
+- **Security**: All discount calculations done server-side in payment intent creation to prevent client-side manipulation
+
+### Previous Changes (November 7, 2025)
 - **Cart Removal Fix**: Implemented robust cart data sanitization on app load to filter out corrupted items missing proper IDs. Added try-catch error handling for localStorage parsing.
 - **Clear Cart Feature**: Added "Clear Cart" button with shadcn AlertDialog confirmation to prevent accidental deletion. Uses dedicated handler with single toast notification.
 - **Checkout Payment Form - Circular Dependency Fix**: Fixed critical bug where payment form never appeared. Added useEffect in parent Checkout component (lines 372-381) that automatically sets `addressComplete` when all 5 address fields are filled, breaking the circular dependency where payment intent required addressComplete but addressComplete was only set inside the form that needed clientSecret.

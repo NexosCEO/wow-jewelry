@@ -346,33 +346,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const { amount, customerAddress, cart, couponCode, discountAmount } = req.body;
+      const { customerAddress, cart, couponCode, shippingMethod } = req.body;
 
-      if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
-        return res.status(400).json({ message: "Invalid amount" });
+      if (!cart || !Array.isArray(cart) || cart.length === 0) {
+        return res.status(400).json({ message: "Cart is empty" });
       }
 
-      console.log(`Creating payment intent for amount: $${amount}`);
+      // Calculate subtotal server-side
+      let subtotal = 0;
+      for (const item of cart) {
+        if (item.product && item.product.price && item.quantity) {
+          subtotal += parseFloat(item.product.price) * item.quantity;
+        }
+      }
+
+      // Validate and apply coupon server-side
+      let discountAmount = 0;
+      let validCoupon = null;
+      
       if (couponCode) {
-        console.log(`Applying coupon ${couponCode} with discount: $${discountAmount}`);
+        try {
+          const coupon = await storage.getCouponByCode(couponCode);
+          
+          if (!coupon || !coupon.active) {
+            return res.status(400).json({ message: "Invalid or inactive coupon" });
+          }
+
+          // Check date validity
+          const now = new Date();
+          if (coupon.expiresAt && new Date(coupon.expiresAt) < now) {
+            return res.status(400).json({ message: "Coupon has expired" });
+          }
+
+          // Check minimum purchase
+          if (coupon.minimumPurchase && subtotal < parseFloat(coupon.minimumPurchase)) {
+            return res.status(400).json({ 
+              message: `Minimum purchase of $${coupon.minimumPurchase} required for this coupon` 
+            });
+          }
+
+          // Check usage limits
+          if (coupon.maxUses && coupon.usedCount >= coupon.maxUses) {
+            return res.status(400).json({ message: "Coupon usage limit reached" });
+          }
+
+          // Calculate discount
+          if (coupon.discountType === "percentage") {
+            discountAmount = subtotal * (parseFloat(coupon.discountValue) / 100);
+          } else {
+            discountAmount = Math.min(parseFloat(coupon.discountValue), subtotal);
+          }
+          
+          validCoupon = coupon;
+          console.log(`Valid coupon ${couponCode} applied: $${discountAmount} discount`);
+        } catch (error) {
+          console.error("Error validating coupon:", error);
+          return res.status(400).json({ message: "Error validating coupon" });
+        }
       }
+
+      // Calculate shipping fee
+      const shippingFee = shippingMethod === "local_pickup" ? 0 : 5.99;
+      
+      // Calculate tax (8.75% of subtotal after discount + shipping)
+      const taxableAmount = subtotal - discountAmount + shippingFee;
+      const taxAmount = taxableAmount * 0.0875;
+      
+      // Calculate final total
+      const total = subtotal - discountAmount + shippingFee + taxAmount;
+
+      console.log(`Creating payment intent - Subtotal: $${subtotal}, Discount: $${discountAmount}, Shipping: $${shippingFee}, Tax: $${taxAmount}, Total: $${total}`);
       
       const paymentIntentParams: any = {
-        amount: Math.round(parseFloat(amount) * 100),
+        amount: Math.round(total * 100), // Convert to cents
         currency: "usd",
         automatic_payment_methods: {
           enabled: true,
         },
-        metadata: {}
+        metadata: {
+          subtotal: subtotal.toFixed(2),
+          shipping_fee: shippingFee.toFixed(2),
+          tax_amount: taxAmount.toFixed(2),
+        }
       };
 
       // Add coupon information to Stripe metadata for tracking
-      if (couponCode) {
-        paymentIntentParams.metadata.coupon_code = couponCode;
-        paymentIntentParams.metadata.discount_amount = discountAmount?.toString() || "0";
+      if (validCoupon) {
+        paymentIntentParams.metadata.coupon_code = validCoupon.code;
+        paymentIntentParams.metadata.discount_amount = discountAmount.toFixed(2);
+        paymentIntentParams.metadata.discount_type = validCoupon.discountType;
+        paymentIntentParams.metadata.discount_value = validCoupon.discountValue;
         
         // Add description to show discount was applied
-        paymentIntentParams.description = `Order with coupon ${couponCode} applied`;
+        paymentIntentParams.description = `Order with coupon ${validCoupon.code} applied ($${discountAmount.toFixed(2)} discount)`;
       }
 
       if (customerAddress) {
@@ -392,14 +458,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`Payment intent created: ${paymentIntent.id}`);
       
-      const taxAmount = paymentIntent.amount_details?.total_details?.amount_tax 
-        ? paymentIntent.amount_details.total_details.amount_tax / 100 
-        : 0;
-      
       res.json({ 
         clientSecret: paymentIntent.client_secret,
-        taxAmount,
-        totalAmount: paymentIntent.amount / 100,
+        taxAmount: taxAmount,
+        totalAmount: total,
+        discountAmount: discountAmount,
       });
     } catch (error: any) {
       console.error("Stripe payment intent error:", error);

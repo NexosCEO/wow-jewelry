@@ -474,18 +474,21 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
     setClientSecret("");
     
     apiRequest("POST", "/api/create-payment-intent", { 
-      amount: baseTotal,
       customerAddress,
       cart,
-      taxAmount: calculatedTaxAmount,
       couponCode: appliedCoupon,
-      discountAmount: couponDiscount
+      shippingMethod
     })
       .then((res) => res.json())
       .then((data) => {
         setClientSecret(data.clientSecret);
-        setCalculatedTax(calculatedTaxAmount);
-        setCalculatedTotal(baseTotal);
+        // Use server-calculated values
+        setCalculatedTax(data.taxAmount || 0);
+        setCalculatedTotal(data.totalAmount || baseTotal);
+        // Update discount amount from server validation
+        if (data.discountAmount !== undefined) {
+          setCouponDiscount(data.discountAmount);
+        }
         setIsCreatingPaymentIntent(false);
       })
       .catch((error) => {
