@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import heroImage from "@assets/IMG_3464_1761882788256.jpeg";
+import { SiInstagram, SiTiktok } from "react-icons/si";
 
 interface HomeProps {
   onAddToCart: (product: Product) => void;
@@ -241,6 +242,29 @@ export default function Home({ onAddToCart }: HomeProps) {
               <p className="mb-4 max-w-md" style={{ color: '#f0e7d6' }}>
                 Handmade modern jewelry inspired by everyday moments of delight.
               </p>
+              {/* Social Media Links */}
+              <div className="flex gap-4 mb-4">
+                <a 
+                  href="https://www.instagram.com/wow_bydany?igsh=MXFsZXZpbDVqaGp4dQ%3D%3D&utm_source=qr" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:opacity-80 transition-opacity"
+                  aria-label="Follow us on Instagram"
+                  data-testid="link-instagram"
+                >
+                  <SiInstagram size={24} style={{ color: '#caa55b' }} />
+                </a>
+                <a 
+                  href="http://www.tiktok.com/@wow_bydany" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:opacity-80 transition-opacity"
+                  aria-label="Follow us on TikTok"
+                  data-testid="link-tiktok"
+                >
+                  <SiTiktok size={24} style={{ color: '#caa55b' }} />
+                </a>
+              </div>
               <p className="text-xs" style={{ color: '#c9c0b0' }}>
                 &copy; {new Date().getFullYear()} WOW by Dany. All rights reserved.
               </p>
@@ -249,16 +273,16 @@ export default function Home({ onAddToCart }: HomeProps) {
               <div>
                 <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider">Shop</h4>
                 <div className="space-y-2 text-sm">
-                  <a href="/" className="block transition-colors" style={{ color: '#f0e7d6' }}>Shop All</a>
-                  <a href="#products" className="block transition-colors" style={{ color: '#f0e7d6' }}>Best Sellers</a>
+                  <a href="/" className="block transition-colors hover:opacity-80" style={{ color: '#f0e7d6' }}>Shop All</a>
+                  <a href="#products" className="block transition-colors hover:opacity-80" style={{ color: '#f0e7d6' }}>Best Sellers</a>
                 </div>
               </div>
               <div>
                 <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider">Support</h4>
                 <div className="space-y-2 text-sm">
-                  <a href="#" className="block transition-colors" style={{ color: '#f0e7d6' }}>Shipping & Returns</a>
-                  <a href="#" className="block transition-colors" style={{ color: '#f0e7d6' }}>Contact</a>
-                  <a href="/privacy-policy" className="block transition-colors" style={{ color: '#f0e7d6' }} data-testid="link-privacy-policy">Privacy Policy</a>
+                  <a href="#" className="block transition-colors hover:opacity-80" style={{ color: '#f0e7d6' }}>Shipping & Returns</a>
+                  <a href="#" className="block transition-colors hover:opacity-80" style={{ color: '#f0e7d6' }}>Contact</a>
+                  <a href="/privacy-policy" className="block transition-colors hover:opacity-80" style={{ color: '#f0e7d6' }} data-testid="link-privacy-policy">Privacy Policy</a>
                 </div>
               </div>
             </div>
