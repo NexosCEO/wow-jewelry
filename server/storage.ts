@@ -288,6 +288,8 @@ export class MemStorage implements IStorage {
       trackingNumber: null,
       shippingLabelUrl: null,
       shippingCarrier: null,
+      couponCode: insertOrder.couponCode ?? null,
+      discountAmount: insertOrder.discountAmount ?? "0.00",
       createdAt: new Date(),
     };
     this.orders.set(id, order);

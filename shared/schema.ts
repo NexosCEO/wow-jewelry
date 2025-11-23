@@ -34,6 +34,8 @@ export const orders = pgTable("orders", {
   trackingNumber: text("tracking_number"),
   shippingLabelUrl: text("shipping_label_url"),
   shippingCarrier: text("shipping_carrier"),
+  couponCode: text("coupon_code"),
+  discountAmount: decimal("discount_amount", { precision: 10, scale: 2 }).default("0.00"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 

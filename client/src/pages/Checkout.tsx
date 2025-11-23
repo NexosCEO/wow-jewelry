@@ -34,9 +34,11 @@ interface CheckoutFormProps {
   };
   setCustomerAddress: (address: any) => void;
   setAddressComplete: (complete: boolean) => void;
+  appliedCoupon?: string;
+  couponDiscount: number;
 }
 
-function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subtotal, shippingFee, total, calculatedTax, customerAddress, setCustomerAddress, setAddressComplete }: CheckoutFormProps) {
+function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subtotal, shippingFee, total, calculatedTax, customerAddress, setCustomerAddress, setAddressComplete, appliedCoupon, couponDiscount }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -108,6 +110,8 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
             shippingFee: shippingFee.toString(),
             status: "completed",
             stripePaymentIntentId: paymentIntent.id,
+            couponCode: appliedCoupon,
+            discountAmount: couponDiscount.toString(),
           };
 
           await apiRequest("POST", "/api/orders", orderData);
@@ -376,37 +380,51 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const calculatedTaxAmount = (discountedSubtotal + shippingFee) * taxRate;
   const baseTotal = discountedSubtotal + shippingFee + calculatedTaxAmount;
 
-  const handleApplyCoupon = () => {
+  const handleApplyCoupon = async () => {
     const couponUpper = couponCode.toUpperCase().trim();
     
-    // Define available coupons
-    const coupons: { [key: string]: { type: "percentage" | "fixed", value: number } } = {
-      "SAVE10": { type: "percentage", value: 10 },
-      "SAVE20": { type: "percentage", value: 20 },
-      "WELCOME": { type: "fixed", value: 5 },
-      "JEWELRY15": { type: "percentage", value: 15 },
-    };
-
-    if (coupons[couponUpper]) {
-      const coupon = coupons[couponUpper];
-      let discount = 0;
+    try {
+      const response = await fetch(`/api/coupons/validate/${couponUpper}`);
+      const result = await response.json();
       
-      if (coupon.type === "percentage") {
-        discount = subtotal * (coupon.value / 100);
+      if (result.valid && result.coupon) {
+        const { discountType, discountValue, minimumPurchase } = result.coupon;
+        
+        // Check minimum purchase requirement
+        if (minimumPurchase && subtotal < parseFloat(minimumPurchase)) {
+          toast({
+            title: "Minimum Purchase Not Met",
+            description: `This coupon requires a minimum purchase of $${minimumPurchase}`,
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        let discount = 0;
+        
+        if (discountType === "percentage") {
+          discount = subtotal * (parseFloat(discountValue) / 100);
+        } else {
+          discount = Math.min(parseFloat(discountValue), subtotal);
+        }
+        
+        setCouponDiscount(discount);
+        setAppliedCoupon(couponUpper);
+        toast({
+          title: "Coupon Applied!",
+          description: `You saved $${discount.toFixed(2)} with code ${couponUpper}`,
+        });
       } else {
-        discount = Math.min(coupon.value, subtotal); // Don't discount more than subtotal
+        toast({
+          title: "Invalid Coupon",
+          description: result.message || "The coupon code you entered is not valid.",
+          variant: "destructive",
+        });
       }
-      
-      setCouponDiscount(discount);
-      setAppliedCoupon(couponUpper);
+    } catch (error) {
       toast({
-        title: "Coupon Applied!",
-        description: `You saved $${discount.toFixed(2)} with code ${couponUpper}`,
-      });
-    } else {
-      toast({
-        title: "Invalid Coupon",
-        description: "The coupon code you entered is not valid.",
+        title: "Error",
+        description: "Failed to validate coupon. Please try again.",
         variant: "destructive",
       });
     }
@@ -619,6 +637,8 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
               customerAddress={customerAddress}
               setCustomerAddress={setCustomerAddress}
               setAddressComplete={setAddressComplete}
+              appliedCoupon={appliedCoupon}
+              couponDiscount={couponDiscount}
             />
           </Elements>
         ) : (

@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
-import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema, insertCustomNecklaceConfigurationSchema } from "@shared/schema";
+import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema, insertCustomNecklaceConfigurationSchema, insertCouponSchema } from "@shared/schema";
 import { requireAdmin } from "./auth-middleware";
 import PDFDocument from "pdfkit";
 
@@ -254,6 +254,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Coupon routes
+  app.get("/api/coupons/validate/:code", async (req, res) => {
+    try {
+      const coupon = await storage.getCouponByCode(req.params.code);
+      if (!coupon) {
+        return res.status(404).json({ valid: false, message: "Coupon code not found" });
+      }
+
+      // Check if coupon is active
+      if (!coupon.isActive) {
+        return res.json({ valid: false, message: "This coupon is no longer active" });
+      }
+
+      // Check usage limits
+      if (coupon.maxUsage && coupon.currentUsage >= coupon.maxUsage) {
+        return res.json({ valid: false, message: "This coupon has reached its usage limit" });
+      }
+
+      // Check date validity
+      const now = new Date();
+      if (coupon.startDate && new Date(coupon.startDate) > now) {
+        return res.json({ valid: false, message: "This coupon is not yet valid" });
+      }
+      if (coupon.endDate && new Date(coupon.endDate) < now) {
+        return res.json({ valid: false, message: "This coupon has expired" });
+      }
+
+      res.json({
+        valid: true,
+        coupon: {
+          code: coupon.code,
+          discountType: coupon.discountType,
+          discountValue: coupon.discountValue,
+          minimumPurchase: coupon.minimumPurchase,
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error validating coupon: " + error.message });
+    }
+  });
+
+  app.get("/api/coupons", requireAdmin, async (req, res) => {
+    try {
+      const coupons = await storage.getAllCoupons();
+      res.json(coupons);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching coupons: " + error.message });
+    }
+  });
+
+  app.post("/api/coupons", requireAdmin, async (req, res) => {
+    try {
+      const validatedData = insertCouponSchema.parse(req.body);
+      const coupon = await storage.createCoupon(validatedData);
+      res.status(201).json(coupon);
+    } catch (error: any) {
+      res.status(400).json({ message: "Error creating coupon: " + error.message });
+    }
+  });
+
+  app.patch("/api/coupons/:id", requireAdmin, async (req, res) => {
+    try {
+      const coupon = await storage.updateCoupon(req.params.id, req.body);
+      if (!coupon) {
+        return res.status(404).json({ message: "Coupon not found" });
+      }
+      res.json(coupon);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating coupon: " + error.message });
+    }
+  });
+
+  app.delete("/api/coupons/:id", requireAdmin, async (req, res) => {
+    try {
+      const deleted = await storage.deleteCoupon(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Coupon not found" });
+      }
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(500).json({ message: "Error deleting coupon: " + error.message });
+    }
+  });
+
   app.post("/api/create-payment-intent", async (req, res) => {
     try {
       if (!stripe) {
@@ -327,6 +411,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const quantityToSubtract = -item.quantity; // Negative to subtract
           await storage.updateProductInventory(item.product.id, quantityToSubtract);
         }
+      }
+      
+      // Increment coupon usage if a coupon was used
+      if (req.body.couponCode) {
+        await storage.incrementCouponUsage(req.body.couponCode);
       }
       
       const order = await storage.createOrder(validatedData);
