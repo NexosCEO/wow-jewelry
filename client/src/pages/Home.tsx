@@ -242,9 +242,9 @@ export default function Home({ onAddToCart }: HomeProps) {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             <div>
-              <h3 className="font-serif text-xl font-bold mb-3">WOW by Dany</h3>
+              <h3 className="font-serif text-xl font-bold mb-3">Follow Us on Social Media</h3>
               <p className="mb-4 max-w-md" style={{ color: '#f0e7d6' }}>
-                Jewelry that's more than just an accessory—it's a tool for self-confidence and a symbol of connection.
+                Join our community for exclusive behind-the-scenes content, new collection launches, and special offers!
               </p>
               {/* Social Media Links */}
               <div className="flex gap-4 mb-4">
