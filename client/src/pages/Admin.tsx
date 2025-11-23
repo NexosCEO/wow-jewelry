@@ -527,6 +527,12 @@ export default function Admin() {
                           </div>
                         ))}
                         <div className="pt-2 border-t border-border space-y-1">
+                          {order.couponCode && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-primary">Coupon ({order.couponCode})</span>
+                              <span className="text-primary">-${parseFloat(order.discountAmount || "0").toFixed(2)}</span>
+                            </div>
+                          )}
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Shipping</span>
                             <span>

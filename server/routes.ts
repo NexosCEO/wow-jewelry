@@ -346,13 +346,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const { amount, customerAddress, cart } = req.body;
+      const { amount, customerAddress, cart, couponCode, discountAmount } = req.body;
 
       if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
         return res.status(400).json({ message: "Invalid amount" });
       }
 
       console.log(`Creating payment intent for amount: $${amount}`);
+      if (couponCode) {
+        console.log(`Applying coupon ${couponCode} with discount: $${discountAmount}`);
+      }
       
       const paymentIntentParams: any = {
         amount: Math.round(parseFloat(amount) * 100),
@@ -360,7 +363,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         automatic_payment_methods: {
           enabled: true,
         },
+        metadata: {}
       };
+
+      // Add coupon information to Stripe metadata for tracking
+      if (couponCode) {
+        paymentIntentParams.metadata.coupon_code = couponCode;
+        paymentIntentParams.metadata.discount_amount = discountAmount?.toString() || "0";
+        
+        // Add description to show discount was applied
+        paymentIntentParams.description = `Order with coupon ${couponCode} applied`;
+      }
 
       if (customerAddress) {
         paymentIntentParams.shipping = {

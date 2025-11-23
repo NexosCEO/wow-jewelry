@@ -477,7 +477,9 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
       amount: baseTotal,
       customerAddress,
       cart,
-      taxAmount: calculatedTaxAmount
+      taxAmount: calculatedTaxAmount,
+      couponCode: appliedCoupon,
+      discountAmount: couponDiscount
     })
       .then((res) => res.json())
       .then((data) => {
