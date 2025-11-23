@@ -7,8 +7,9 @@ import {
   type CustomBraceletConfiguration, type InsertCustomBraceletConfiguration,
   type NecklaceTemplate, type InsertNecklaceTemplate,
   type CustomNecklaceConfiguration, type InsertCustomNecklaceConfiguration,
+  type Coupon, type InsertCoupon,
   products, orders, charms, braceletBeads, braceletTemplates, customBraceletConfigurations,
-  necklaceTemplates, customNecklaceConfigurations
+  necklaceTemplates, customNecklaceConfigurations, coupons
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -53,15 +54,25 @@ export interface IStorage {
   
   createCustomNecklaceConfiguration(config: InsertCustomNecklaceConfiguration): Promise<CustomNecklaceConfiguration>;
   getCustomNecklaceConfiguration(id: string): Promise<CustomNecklaceConfiguration | undefined>;
+  
+  getAllCoupons(): Promise<Coupon[]>;
+  getCoupon(id: string): Promise<Coupon | undefined>;
+  getCouponByCode(code: string): Promise<Coupon | undefined>;
+  createCoupon(coupon: InsertCoupon): Promise<Coupon>;
+  updateCoupon(id: string, coupon: Partial<InsertCoupon>): Promise<Coupon | undefined>;
+  deleteCoupon(id: string): Promise<boolean>;
+  incrementCouponUsage(code: string): Promise<Coupon | undefined>;
 }
 
 export class MemStorage implements IStorage {
   private products: Map<string, Product>;
   private orders: Map<string, Order>;
+  private coupons: Map<string, Coupon>;
 
   constructor() {
     this.products = new Map();
     this.orders = new Map();
+    this.coupons = new Map();
     this.initializeProducts();
   }
 
@@ -269,6 +280,9 @@ export class MemStorage implements IStorage {
       zipCode: insertOrder.zipCode,
       items: insertOrder.items,
       totalAmount: insertOrder.totalAmount,
+      taxAmount: insertOrder.taxAmount ?? "0.00",
+      shippingMethod: insertOrder.shippingMethod ?? "standard",
+      shippingFee: insertOrder.shippingFee ?? "5.99",
       status: insertOrder.status ?? "pending",
       stripePaymentIntentId: insertOrder.stripePaymentIntentId ?? null,
       trackingNumber: null,
@@ -367,6 +381,70 @@ export class MemStorage implements IStorage {
 
   async getCustomNecklaceConfiguration(id: string): Promise<CustomNecklaceConfiguration | undefined> {
     return undefined;
+  }
+
+  async getAllCoupons(): Promise<Coupon[]> {
+    return Array.from(this.coupons.values()).sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+  async getCoupon(id: string): Promise<Coupon | undefined> {
+    return this.coupons.get(id);
+  }
+
+  async getCouponByCode(code: string): Promise<Coupon | undefined> {
+    const upperCode = code.toUpperCase();
+    return Array.from(this.coupons.values()).find(c => c.code === upperCode);
+  }
+
+  async createCoupon(insertCoupon: InsertCoupon): Promise<Coupon> {
+    const id = randomUUID();
+    const coupon: Coupon = {
+      id,
+      code: insertCoupon.code.toUpperCase(),
+      description: insertCoupon.description ?? null,
+      discountType: insertCoupon.discountType,
+      discountValue: insertCoupon.discountValue,
+      minimumPurchase: insertCoupon.minimumPurchase ?? null,
+      maxUsage: insertCoupon.maxUsage ?? null,
+      currentUsage: 0,
+      startDate: insertCoupon.startDate ?? null,
+      endDate: insertCoupon.endDate ?? null,
+      isActive: insertCoupon.isActive ?? true,
+      createdAt: new Date(),
+    };
+    this.coupons.set(id, coupon);
+    return coupon;
+  }
+
+  async updateCoupon(id: string, updates: Partial<InsertCoupon>): Promise<Coupon | undefined> {
+    const coupon = this.coupons.get(id);
+    if (!coupon) return undefined;
+    
+    const updatedCoupon: Coupon = {
+      ...coupon,
+      ...updates,
+      code: updates.code ? updates.code.toUpperCase() : coupon.code,
+    };
+    this.coupons.set(id, updatedCoupon);
+    return updatedCoupon;
+  }
+
+  async deleteCoupon(id: string): Promise<boolean> {
+    return this.coupons.delete(id);
+  }
+
+  async incrementCouponUsage(code: string): Promise<Coupon | undefined> {
+    const coupon = await this.getCouponByCode(code);
+    if (!coupon) return undefined;
+    
+    const updatedCoupon: Coupon = {
+      ...coupon,
+      currentUsage: coupon.currentUsage + 1,
+    };
+    this.coupons.set(coupon.id, updatedCoupon);
+    return updatedCoupon;
   }
 }
 
@@ -549,6 +627,64 @@ export class DatabaseStorage implements IStorage {
   async getCustomNecklaceConfiguration(id: string): Promise<CustomNecklaceConfiguration | undefined> {
     const [config] = await db.select().from(customNecklaceConfigurations).where(eq(customNecklaceConfigurations.id, id));
     return config || undefined;
+  }
+
+  async getAllCoupons(): Promise<Coupon[]> {
+    return await db.select().from(coupons).orderBy(desc(coupons.createdAt));
+  }
+
+  async getCoupon(id: string): Promise<Coupon | undefined> {
+    const [coupon] = await db.select().from(coupons).where(eq(coupons.id, id));
+    return coupon || undefined;
+  }
+
+  async getCouponByCode(code: string): Promise<Coupon | undefined> {
+    const [coupon] = await db.select().from(coupons).where(eq(coupons.code, code.toUpperCase()));
+    return coupon || undefined;
+  }
+
+  async createCoupon(insertCoupon: InsertCoupon): Promise<Coupon> {
+    const [coupon] = await db
+      .insert(coupons)
+      .values({
+        ...insertCoupon,
+        code: insertCoupon.code.toUpperCase(),
+      })
+      .returning();
+    return coupon;
+  }
+
+  async updateCoupon(id: string, updates: Partial<InsertCoupon>): Promise<Coupon | undefined> {
+    const updateData = updates.code 
+      ? { ...updates, code: updates.code.toUpperCase() }
+      : updates;
+    
+    const [coupon] = await db
+      .update(coupons)
+      .set(updateData)
+      .where(eq(coupons.id, id))
+      .returning();
+    return coupon || undefined;
+  }
+
+  async deleteCoupon(id: string): Promise<boolean> {
+    const result = await db.delete(coupons).where(eq(coupons.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async incrementCouponUsage(code: string): Promise<Coupon | undefined> {
+    const coupon = await this.getCouponByCode(code);
+    if (!coupon) return undefined;
+    
+    const [updatedCoupon] = await db
+      .update(coupons)
+      .set({
+        currentUsage: coupon.currentUsage + 1,
+      })
+      .where(eq(coupons.code, code.toUpperCase()))
+      .returning();
+    
+    return updatedCoupon || undefined;
   }
 }
 
