@@ -7,6 +7,12 @@ WOW Jewelry (WOW by Dany) is a full-stack e-commerce platform for handmade artis
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (November 24, 2025)
+### Gmail Integration for Order Notifications (COMPLETED)
+- **Gmail API Integration**: Connected Gmail API to send order notifications directly from client's Gmail account
+- **Automatic Email Notifications**: Emails sent automatically when orders are placed through ANY payment method
+- **Comprehensive Order Details**: Notifications include customer info, items ordered, shipping details, and order total
+- **Test Endpoint**: Added `/api/test-email` for admins to verify email functionality is working
+
 ### Stripe Webhook Integration (COMPLETED)
 - **Webhook Endpoint**: Added `/api/stripe-webhook` endpoint to automatically create orders for ALL Stripe payment methods
 - **Universal Payment Support**: Now captures payments from CashApp, payment links, manual dashboard payments, and any other Stripe payment method
