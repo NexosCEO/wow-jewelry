@@ -6,7 +6,16 @@ WOW Jewelry (WOW by Dany) is a full-stack e-commerce platform for handmade artis
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (November 23, 2025)
+## Recent Changes (November 24, 2025)
+### Stripe Webhook Integration (COMPLETED)
+- **Webhook Endpoint**: Added `/api/stripe-webhook` endpoint to automatically create orders for ALL Stripe payment methods
+- **Universal Payment Support**: Now captures payments from CashApp, payment links, manual dashboard payments, and any other Stripe payment method
+- **Cart in Metadata**: Payment intents now include full cart items in metadata for accurate order creation
+- **Duplicate Prevention**: Webhook processes each payment intent only once
+- **Automatic Coupon Tracking**: Webhook increments coupon usage count when orders are created
+- **Tax Fix**: Corrected tax retrieval from payment intent metadata (was incorrectly looking at Stripe automatic tax field)
+
+## Previous Changes (November 23, 2025)
 ### Coupon Management System (COMPLETED)
 - **Database-Driven Coupons**: Replaced hardcoded discounts with full database-backed coupon management system
 - **Secure Stripe Integration**: Server-side coupon validation and discount calculation prevents price manipulation. Coupon metadata sent to Stripe for tracking and reconciliation
