@@ -510,9 +510,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await sendOrderNotification({
           orderId: order.id,
           customerName: order.customerName,
-          customerEmail: order.email,
-          customerPhone: order.phoneNumber,
-          total: order.total,
+          customerEmail: order.customerEmail,
+          customerPhone: order.customerEmail, // Using email as phone is not in order
+          total: order.totalAmount,
           items: parsedItems.map((item: any) => ({
             name: item.product?.title || item.customBraceletConfiguration?.title || item.customNecklaceConfiguration?.title || 'Unknown Item',
             quantity: item.quantity,
@@ -1039,9 +1039,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await sendOrderNotification({
             orderId: order.id,
             customerName: order.customerName,
-            customerEmail: order.email,
-            customerPhone: order.phoneNumber,
-            total: order.total,
+            customerEmail: order.customerEmail,
+            customerPhone: order.customerEmail, // Using email as phone is not in order
+            total: order.totalAmount,
             items: parsedItems.map((item: any) => ({
               name: item.product?.title || item.customBraceletConfiguration?.title || item.customNecklaceConfiguration?.title || 'Unknown Item',
               quantity: item.quantity,
@@ -1067,14 +1067,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // If a coupon was used, increment its usage count
         if (metadata.coupon_code) {
           try {
-            // Update coupon usage count
-            const coupon = await storage.getCouponByCode(metadata.coupon_code);
-            if (coupon) {
-              await storage.updateCoupon(coupon.id, {
-                currentUsage: coupon.currentUsage + 1
-              });
-              console.log(`Incremented usage for coupon: ${metadata.coupon_code}`);
-            }
+            // Increment coupon usage count
+            await storage.incrementCouponUsage(metadata.coupon_code);
+            console.log(`Incremented usage for coupon: ${metadata.coupon_code}`);
           } catch (couponError) {
             console.error("Failed to increment coupon usage:", couponError);
           }
