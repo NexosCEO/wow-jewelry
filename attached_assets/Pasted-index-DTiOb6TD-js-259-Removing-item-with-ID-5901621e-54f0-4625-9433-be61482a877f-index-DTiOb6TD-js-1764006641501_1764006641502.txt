@@ -1,0 +1,150 @@
+index-DTiOb6TD.js:259 Removing item with ID: 5901621e-54f0-4625-9433-be61482a877f
+index-DTiOb6TD.js:259 Current cart: Array(4)
+index-DTiOb6TD.js:259 Product item: 0aff96b5-a66c-4218-b4de-55a3cb1963ab Match: false
+index-DTiOb6TD.js:259 Product item: 6c3fb893-c597-46d4-beab-9e7318873633 Match: false
+index-DTiOb6TD.js:259 Product item: 093ec5ef-afb2-44ef-addd-d113aaf480ff Match: false
+index-DTiOb6TD.js:259 Product item: 5901621e-54f0-4625-9433-be61482a877f Match: true
+index-DTiOb6TD.js:259 New cart after filter: Array(3)
+index-DTiOb6TD.js:259 Removing item with ID: 093ec5ef-afb2-44ef-addd-d113aaf480ff
+index-DTiOb6TD.js:259 Current cart: Array(3)
+index-DTiOb6TD.js:259 Product item: 0aff96b5-a66c-4218-b4de-55a3cb1963ab Match: false
+index-DTiOb6TD.js:259 Product item: 6c3fb893-c597-46d4-beab-9e7318873633 Match: false
+index-DTiOb6TD.js:259 Product item: 093ec5ef-afb2-44ef-addd-d113aaf480ff Match: true
+index-DTiOb6TD.js:259 New cart after filter: Array(2)
+index-DTiOb6TD.js:259 Removing item with ID: 6c3fb893-c597-46d4-beab-9e7318873633
+index-DTiOb6TD.js:259 Current cart: Array(2)
+index-DTiOb6TD.js:259 Product item: 0aff96b5-a66c-4218-b4de-55a3cb1963ab Match: false
+index-DTiOb6TD.js:259 Product item: 6c3fb893-c597-46d4-beab-9e7318873633 Match: true
+index-DTiOb6TD.js:259 New cart after filter: Array(1)
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Tracking Prevention blocked access to storage for <URL>.
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+Fetch finished loading: POST "<URL>".
+ Fetch finished loading: GET "https://api.stripe.com/v1/elements/sessions?client_secret=pi_3SX3t6Hn7XxSINsj1O9xMQZ3_secret_sDqttxflG74a95vVpO0iw96yc&key=pk_live_51SO6gqHn7XxSINsj8ZmgrMr4DGeztTeV6JMG1OGdklt2RHMMNxbNnpkELMv3wM1YilBtcOExiCCNRQZYNpWr2S3c003wd18dVv&_stripe_version=2025-09-30.clover&elements_init_source=stripe.elements&referrer_host=wowbydany.com&stripe_js_id=13c8110d-4606-465a-b018-bfa308af50eb&locale=en-US&expand[0]=payment_method_preference.payment_intent.payment_method&type=payment_intent".
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+e @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+c @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+i @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+s @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+e @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+n @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+a @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+i @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+_ @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+d @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+Hy.t.requestParams @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+Hy @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+Ky.singleFlightCreateAndParse @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+(anonymous) @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+n @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+a @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+i @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+(anonymous) @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+(anonymous) @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+n @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+a @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+i @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ shared-4b9ca1ebc23c6…19da6f4c58dbd5.js:1
+(anonymous) @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+value @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1
+(anonymous) @ controller-with-preconnect-092006a996cb8b31d014206aff716714.js:1

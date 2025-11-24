@@ -466,7 +466,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
       return;
     }
 
-    if (!addressComplete || !customerAddress.name || !customerAddress.address || !customerAddress.city || !customerAddress.state || !customerAddress.zipCode) {
+    if (!addressComplete) {
       return;
     }
 
@@ -500,7 +500,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           variant: "destructive",
         });
       });
-  }, [shippingMethod, addressComplete, baseTotal, customerAddress.name, customerAddress.address, customerAddress.city, customerAddress.state, customerAddress.zipCode]); // Recreate when shipping or address changes
+  }, [cart, shippingMethod, addressComplete, appliedCoupon]); // Only recreate when cart, shipping, address completeness, or coupon changes
 
   const handleSuccess = () => {
     onClearCart();
