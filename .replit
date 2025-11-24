@@ -27,10 +27,6 @@ localPort = 35637
 externalPort = 6000
 
 [[ports]]
-localPort = 36471
-externalPort = 9000
-
-[[ports]]
 localPort = 37439
 externalPort = 8081
 
@@ -100,3 +96,10 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_mem_db:1.0.0", "javascript_stripe:1.0.0", "javascript_database:1.0.0", "google-mail:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+TESTING_VITE_STRIPE_PUBLIC_KEY = "KEY=pk_test_dummy_placeholder_ignore"
+TESTING_STRIPE_SECRET_KEY = "test_dummy_placeholder_ignore"
+VITE_TESTING_STRIPE_PUBLIC_KEY = "pk_test_dummy_placeholder_ignore"

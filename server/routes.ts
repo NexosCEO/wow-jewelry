@@ -9,13 +9,17 @@ import { sendOrderNotification, sendTestEmail } from './emailService';
 
 let stripe: Stripe | null = null;
 
-if (process.env.STRIPE_SECRET_KEY) {
-  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+// Try production key first, then testing key as fallback
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY || process.env.TESTING_STRIPE_SECRET_KEY;
+
+if (stripeSecretKey) {
+  stripe = new Stripe(stripeSecretKey, {
     apiVersion: "2025-10-29.clover",
   });
-  console.log("✓ Stripe initialized successfully");
+  const keyType = process.env.STRIPE_SECRET_KEY ? 'production' : 'testing';
+  console.log(`✓ Stripe initialized successfully with ${keyType} key`);
 } else {
-  console.warn("⚠ Stripe not initialized - payment processing will be disabled. Please provide STRIPE_SECRET_KEY.");
+  console.warn("⚠ Stripe not initialized - payment processing will be disabled. Please provide STRIPE_SECRET_KEY or TESTING_STRIPE_SECRET_KEY.");
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {

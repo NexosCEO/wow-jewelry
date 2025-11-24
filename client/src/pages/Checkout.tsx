@@ -12,9 +12,9 @@ import { useLocation } from "wouter";
 
 type UnifiedCartItem = CartItem | CustomBraceletCartItem | CustomNecklaceCartItem;
 
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
-  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-  : null;
+// Try production key first, then testing key as fallback
+const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY || import.meta.env.VITE_TESTING_STRIPE_PUBLIC_KEY;
+const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
 
 interface CheckoutFormProps {
   cart: UnifiedCartItem[];
