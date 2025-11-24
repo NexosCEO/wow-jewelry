@@ -5,6 +5,7 @@ import Stripe from "stripe";
 import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema, insertCustomNecklaceConfigurationSchema, insertCouponSchema } from "@shared/schema";
 import { requireAdmin } from "./auth-middleware";
 import PDFDocument from "pdfkit";
+import { sendOrderNotification, sendTestEmail } from './emailService';
 
 let stripe: Stripe | null = null;
 
@@ -498,6 +499,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const order = await storage.createOrder(validatedData);
+      
+      // Send email notification for new order
+      try {
+        const parsedItems = JSON.parse(order.items);
+        await sendOrderNotification({
+          orderId: order.id,
+          customerName: order.customerName,
+          customerEmail: order.email,
+          customerPhone: order.phoneNumber,
+          total: order.total,
+          items: parsedItems.map((item: any) => ({
+            name: item.product?.title || item.customBraceletConfiguration?.title || item.customNecklaceConfiguration?.title || 'Unknown Item',
+            quantity: item.quantity,
+            price: item.price
+          })),
+          shippingAddress: {
+            street: order.shippingAddress,
+            city: order.city,
+            state: order.state,
+            zipCode: order.zipCode
+          },
+          shippingMethod: order.shippingMethod,
+          paymentMethod: 'Stripe',
+          couponCode: order.couponCode || undefined,
+          discountAmount: order.discountAmount || undefined
+        });
+        console.log('📧 Order notification email sent for order:', order.id);
+      } catch (emailError) {
+        console.error('Failed to send order notification email:', emailError);
+        // Don't fail the order creation if email fails
+      }
+      
       res.status(201).json(order);
     } catch (error: any) {
       res.status(400).json({ message: "Error creating order: " + error.message });
@@ -996,6 +1029,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const order = await storage.createOrder(orderData as any);
         console.log(`✅ Order created: ${order.id} for payment ${paymentIntent.id}`);
         
+        // Send email notification for new order
+        try {
+          const parsedItems = JSON.parse(order.items);
+          await sendOrderNotification({
+            orderId: order.id,
+            customerName: order.customerName,
+            customerEmail: order.email,
+            customerPhone: order.phoneNumber,
+            total: order.total,
+            items: parsedItems.map((item: any) => ({
+              name: item.product?.title || item.customBraceletConfiguration?.title || item.customNecklaceConfiguration?.title || 'Unknown Item',
+              quantity: item.quantity,
+              price: item.price
+            })),
+            shippingAddress: {
+              street: order.shippingAddress,
+              city: order.city,
+              state: order.state,
+              zipCode: order.zipCode
+            },
+            shippingMethod: order.shippingMethod,
+            paymentMethod: 'Stripe (via webhook)',
+            couponCode: order.couponCode || undefined,
+            discountAmount: order.discountAmount || undefined
+          });
+          console.log('📧 Order notification email sent for order (via webhook):', order.id);
+        } catch (emailError) {
+          console.error('Failed to send order notification email:', emailError);
+          // Don't fail the order creation if email fails
+        }
+        
         // If a coupon was used, increment its usage count
         if (metadata.coupon_code) {
           try {
@@ -1017,6 +1081,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error processing webhook:", error);
       res.status(500).json({ message: "Error processing webhook: " + error.message });
+    }
+  });
+
+  // Admin - Test email notification
+  app.post("/api/test-email", requireAdmin, async (req, res) => {
+    try {
+      const success = await sendTestEmail();
+      if (success) {
+        res.json({ message: "Test email sent successfully! Check your Gmail inbox." });
+      } else {
+        res.status(500).json({ message: "Failed to send test email. Check server logs for details." });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: "Error sending test email: " + error.message });
     }
   });
 
