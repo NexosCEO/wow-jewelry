@@ -112,12 +112,14 @@ export default function Admin() {
     try {
       const data = {
         code: couponForm.code,
+        description: '',
         discountType: couponForm.discountType,
-        discountValue: parseFloat(couponForm.discountValue),
-        minimumPurchase: couponForm.minimumPurchase ? parseFloat(couponForm.minimumPurchase) : null,
-        maxUses: couponForm.maxUses ? parseInt(couponForm.maxUses) : null,
-        expiresAt: couponForm.expiresAt || null,
-        active: true,
+        discountValue: couponForm.discountValue, // Keep as string - backend expects string
+        minimumPurchase: couponForm.minimumPurchase || null,
+        maxUsage: couponForm.maxUses ? parseInt(couponForm.maxUses) : null,
+        startDate: null,
+        endDate: couponForm.expiresAt || null,
+        isActive: true,
       };
 
       const token = getAdminToken();
