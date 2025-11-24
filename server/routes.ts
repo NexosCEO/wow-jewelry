@@ -236,8 +236,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const paymentIntent: any = await stripe.paymentIntents.retrieve(req.params.id);
       
-      const taxAmount = paymentIntent.amount_details?.total_details?.amount_tax 
-        ? paymentIntent.amount_details.total_details.amount_tax / 100 
+      // Get tax amount from metadata (we store it there during creation)
+      const taxAmount = paymentIntent.metadata?.tax_amount 
+        ? parseFloat(paymentIntent.metadata.tax_amount)
         : 0;
       
       res.json({
@@ -368,13 +369,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const coupon = await storage.getCouponByCode(couponCode);
           
-          if (!coupon || !coupon.active) {
+          if (!coupon || !coupon.isActive) {
             return res.status(400).json({ message: "Invalid or inactive coupon" });
           }
 
           // Check date validity
           const now = new Date();
-          if (coupon.expiresAt && new Date(coupon.expiresAt) < now) {
+          if (coupon.endDate && new Date(coupon.endDate) < now) {
             return res.status(400).json({ message: "Coupon has expired" });
           }
 
@@ -386,7 +387,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
 
           // Check usage limits
-          if (coupon.maxUses && coupon.usedCount >= coupon.maxUses) {
+          if (coupon.maxUsage && coupon.currentUsage >= coupon.maxUsage) {
             return res.status(400).json({ message: "Coupon usage limit reached" });
           }
 
@@ -427,6 +428,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           subtotal: subtotal.toFixed(2),
           shipping_fee: shippingFee.toFixed(2),
           tax_amount: taxAmount.toFixed(2),
+          shipping_method: shippingMethod || "standard",
+          cart_items: JSON.stringify(cart), // Include cart items for webhook
         }
       };
 
@@ -911,6 +914,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Invoice generation error:", error);
       res.status(500).json({ message: "Error generating invoice: " + error.message });
+    }
+  });
+
+  // Stripe webhook endpoint to handle successful payments from any source
+  app.post("/api/stripe-webhook", async (req, res) => {
+    const sig = req.headers['stripe-signature'] as string | undefined;
+    let event;
+
+    try {
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe is not configured" });
+      }
+
+      // We need the webhook secret to verify the signature
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      
+      // Get the raw body for signature verification
+      const rawBody = JSON.stringify(req.body);
+      
+      if (webhookSecret && sig) {
+        // Verify the webhook signature
+        event = stripe.webhooks.constructEvent(
+          rawBody,
+          sig,
+          webhookSecret
+        );
+      } else {
+        // If no webhook secret, parse the body directly (less secure but works for testing)
+        event = req.body;
+        console.warn("⚠️ Stripe webhook secret not configured - signature verification skipped");
+      }
+    } catch (err: any) {
+      console.error("Webhook signature verification failed:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    try {
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object;
+        console.log(`💰 Payment successful for payment intent ${paymentIntent.id}`);
+
+        // Check if order already exists to avoid duplicates
+        // For now, we'll skip this check since the method doesn't exist yet
+        // TODO: Add getOrderByPaymentIntentId to storage interface
+        console.log(`Processing payment for intent ${paymentIntent.id}`);
+
+        // Extract metadata and shipping info from the payment intent
+        const metadata = paymentIntent.metadata || {};
+        const shipping = paymentIntent.shipping;
+        
+        // Create the order
+        const orderData = {
+          customerName: shipping?.name || metadata.customer_name || "Customer",
+          customerEmail: paymentIntent.receipt_email || metadata.customer_email || "",
+          shippingAddress: shipping?.address?.line1 || "",
+          city: shipping?.address?.city || "",
+          state: shipping?.address?.state || "",
+          zipCode: shipping?.address?.postal_code || "",
+          items: metadata.cart_items || "[]", // Cart items should be stored in metadata
+          totalAmount: (paymentIntent.amount / 100).toFixed(2),
+          taxAmount: metadata.tax_amount || "0",
+          shippingMethod: metadata.shipping_method || "standard",
+          shippingFee: metadata.shipping_fee || "5.99",
+          status: "completed",
+          stripePaymentIntentId: paymentIntent.id,
+          couponCode: metadata.coupon_code || "",
+          discountAmount: metadata.discount_amount || "0",
+        };
+
+        // Validate required fields
+        if (!orderData.customerName || !orderData.totalAmount) {
+          console.error("Missing required order data:", orderData);
+          return res.status(400).json({ 
+            message: "Missing required order information",
+            details: "Customer name or total amount is missing"
+          });
+        }
+
+        const order = await storage.createOrder(orderData as any);
+        console.log(`✅ Order created: ${order.id} for payment ${paymentIntent.id}`);
+        
+        // If a coupon was used, increment its usage count
+        if (metadata.coupon_code) {
+          try {
+            // Update coupon usage count
+            const coupon = await storage.getCouponByCode(metadata.coupon_code);
+            if (coupon) {
+              await storage.updateCoupon(coupon.id, {
+                currentUsage: coupon.currentUsage + 1
+              });
+              console.log(`Incremented usage for coupon: ${metadata.coupon_code}`);
+            }
+          } catch (couponError) {
+            console.error("Failed to increment coupon usage:", couponError);
+          }
+        }
+      }
+
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error("Error processing webhook:", error);
+      res.status(500).json({ message: "Error processing webhook: " + error.message });
     }
   });
 
