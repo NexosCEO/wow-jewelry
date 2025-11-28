@@ -36,14 +36,15 @@ interface CheckoutFormProps {
   setAddressComplete: (complete: boolean) => void;
   appliedCoupon?: string;
   couponDiscount: number;
+  customerEmail: string;
+  setCustomerEmail: (email: string) => void;
 }
 
-function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subtotal, shippingFee, total, calculatedTax, customerAddress, setCustomerAddress, setAddressComplete, appliedCoupon, couponDiscount }: CheckoutFormProps) {
+function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subtotal, shippingFee, total, calculatedTax, customerAddress, setCustomerAddress, setAddressComplete, appliedCoupon, couponDiscount, customerEmail, setCustomerEmail }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [customerEmail, setCustomerEmail] = useState("");
 
   useEffect(() => {
     const isComplete = !!(
@@ -363,6 +364,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const [appliedCoupon, setAppliedCoupon] = useState<string>("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const { toast } = useToast();
 
   const subtotal = cart.reduce((sum, item) => {
@@ -644,6 +646,8 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
               setAddressComplete={setAddressComplete}
               appliedCoupon={appliedCoupon}
               couponDiscount={couponDiscount}
+              customerEmail={customerEmail}
+              setCustomerEmail={setCustomerEmail}
             />
           </Elements>
         ) : (
@@ -667,6 +671,8 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
                     <Input
                       id="email-prelim"
                       type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
                       placeholder="your@email.com"
                       data-testid="input-email-prelim"
                     />
