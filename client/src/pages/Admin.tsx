@@ -89,6 +89,7 @@ export default function Admin() {
       minimumPurchase: "",
       maxUses: "",
       expiresAt: "",
+      isActive: true,
     });
   };
 
@@ -101,6 +102,7 @@ export default function Admin() {
       minimumPurchase: coupon.minimumPurchase?.toString() || "",
       maxUses: coupon.maxUses?.toString() || "",
       expiresAt: coupon.expiresAt ? new Date(coupon.expiresAt).toISOString().slice(0, 16) : "",
+      isActive: coupon.isActive ?? true,
     });
     setShowCouponForm(true);
   };
@@ -119,12 +121,12 @@ export default function Admin() {
         maxUsage: couponForm.maxUses ? parseInt(couponForm.maxUses) : null,
         startDate: null,
         endDate: couponForm.expiresAt || null,
-        isActive: true,
+        isActive: couponForm.isActive,
       };
 
       const token = getAdminToken();
       const url = editingCoupon ? `/api/coupons/${editingCoupon.id}` : "/api/coupons";
-      const method = editingCoupon ? "PUT" : "POST";
+      const method = editingCoupon ? "PATCH" : "POST";
 
       const response = await fetch(url, {
         method,
@@ -211,6 +213,7 @@ export default function Admin() {
     minimumPurchase: "",
     maxUses: "",
     expiresAt: "",
+    isActive: true,
   });
 
   const generateLabelMutation = useMutation({
@@ -914,6 +917,20 @@ export default function Admin() {
                         </div>
                       </div>
 
+                      <div className="flex items-center gap-3 py-2">
+                        <input
+                          type="checkbox"
+                          id="coupon-active"
+                          checked={couponForm.isActive}
+                          onChange={(e) => setCouponForm({ ...couponForm, isActive: e.target.checked })}
+                          className="w-4 h-4 rounded border-border"
+                          data-testid="checkbox-coupon-active"
+                        />
+                        <Label htmlFor="coupon-active" className="cursor-pointer">
+                          Active (customers can use this coupon)
+                        </Label>
+                      </div>
+
                       <div className="flex justify-end gap-2">
                         <Button
                           type="button"
@@ -969,7 +986,7 @@ export default function Admin() {
                               <h3 className="text-lg font-semibold" data-testid={`text-coupon-code-${coupon.id}`}>
                                 {coupon.code}
                               </h3>
-                              {coupon.active ? (
+                              {coupon.isActive ? (
                                 <Badge variant="default" data-testid={`badge-coupon-active-${coupon.id}`}>Active</Badge>
                               ) : (
                                 <Badge variant="secondary" data-testid={`badge-coupon-inactive-${coupon.id}`}>Inactive</Badge>
