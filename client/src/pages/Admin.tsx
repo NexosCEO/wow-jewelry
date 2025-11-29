@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Order, Product } from "@shared/schema";
+import { Order, Product, Charm, BraceletBead } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,16 @@ export default function Admin() {
 
   const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: charms, isLoading: charmsLoading } = useQuery<Charm[]>({
+    queryKey: ["/api/charms"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: beads, isLoading: beadsLoading } = useQuery<BraceletBead[]>({
+    queryKey: ["/api/bracelet-beads"],
     enabled: isAuthenticated,
   });
 
@@ -198,6 +208,8 @@ export default function Admin() {
 
   const [processingOrderId, setProcessingOrderId] = useState<string | null>(null);
   const [processingProductIds, setProcessingProductIds] = useState<Set<string>>(new Set());
+  const [processingCharmIds, setProcessingCharmIds] = useState<Set<string>>(new Set());
+  const [processingBeadIds, setProcessingBeadIds] = useState<Set<string>>(new Set());
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null);
   const [tempPrice, setTempPrice] = useState<string>("");
   
@@ -330,6 +342,94 @@ export default function Admin() {
     },
   });
 
+  const updateCharmInventoryMutation = useMutation({
+    mutationFn: async ({ charmId, quantityChange }: { charmId: string; quantityChange: number }) => {
+      setProcessingCharmIds(prev => new Set(prev).add(charmId));
+      const token = getAdminToken();
+      const response = await fetch(`/api/charms/${charmId}/inventory`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ quantityChange }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update charm inventory");
+      }
+      return await response.json();
+    },
+    onSuccess: (data, variables) => {
+      setProcessingCharmIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.charmId);
+        return next;
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/charms"] });
+      toast({
+        title: "Charm Inventory Updated!",
+        description: "Charm stock has been updated",
+      });
+    },
+    onError: (error, variables) => {
+      setProcessingCharmIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.charmId);
+        return next;
+      });
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update charm inventory",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateBeadInventoryMutation = useMutation({
+    mutationFn: async ({ beadId, quantityChange }: { beadId: string; quantityChange: number }) => {
+      setProcessingBeadIds(prev => new Set(prev).add(beadId));
+      const token = getAdminToken();
+      const response = await fetch(`/api/bracelet-beads/${beadId}/inventory`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ quantityChange }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update bead inventory");
+      }
+      return await response.json();
+    },
+    onSuccess: (data, variables) => {
+      setProcessingBeadIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.beadId);
+        return next;
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/bracelet-beads"] });
+      toast({
+        title: "Bead Inventory Updated!",
+        description: "Bead stock has been updated",
+      });
+    },
+    onError: (error, variables) => {
+      setProcessingBeadIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.beadId);
+        return next;
+      });
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update bead inventory",
+        variant: "destructive",
+      });
+    },
+  });
+
   const updatePriceMutation = useMutation({
     mutationFn: async ({ productId, price }: { productId: string; price: number }) => {
       setProcessingProductIds(prev => new Set(prev).add(productId));
@@ -446,7 +546,7 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-3 mb-6">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4 mb-6">
             <TabsTrigger value="orders" data-testid="tab-orders">
               <Package className="w-4 h-4 mr-2" />
               Orders
@@ -454,6 +554,10 @@ export default function Admin() {
             <TabsTrigger value="inventory" data-testid="tab-inventory">
               <PackageOpen className="w-4 h-4 mr-2" />
               Inventory
+            </TabsTrigger>
+            <TabsTrigger value="charms-beads" data-testid="tab-charms-beads">
+              <PackageOpen className="w-4 h-4 mr-2" />
+              Charms & Beads
             </TabsTrigger>
             <TabsTrigger value="coupons" data-testid="tab-coupons">
               <Ticket className="w-4 h-4 mr-2" />
@@ -791,6 +895,156 @@ export default function Admin() {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="charms-beads" className="mt-0">
+            {(charmsLoading || beadsLoading) ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {/* Charms Section */}
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Charms Inventory</h2>
+                  {!charms || charms.length === 0 ? (
+                    <Card>
+                      <CardContent className="flex flex-col items-center justify-center py-16">
+                        <PackageOpen className="w-16 h-16 text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground">No charms found</p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="grid gap-4">
+                      {charms.map((charm) => (
+                        <Card key={charm.id} data-testid={`card-charm-${charm.id}`}>
+                          <CardContent className="p-6">
+                            <div className="flex items-start gap-4">
+                              <img
+                                src={encodeURI(charm.imageUrl)}
+                                alt={charm.name}
+                                className="w-20 h-20 object-cover rounded-md border border-card-border"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-lg mb-1" data-testid={`text-charm-name-${charm.id}`}>
+                                  {charm.name}
+                                </h3>
+                                <p className="text-sm text-muted-foreground mb-2">{charm.category}</p>
+                                <p className="text-lg font-bold">${charm.price}</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-sm text-muted-foreground mb-2">Stock</p>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => updateCharmInventoryMutation.mutate({ charmId: charm.id, quantityChange: -1 })}
+                                    disabled={charm.stockQuantity === 0 || processingCharmIds.has(charm.id)}
+                                    data-testid={`button-decrease-charm-stock-${charm.id}`}
+                                  >
+                                    <Minus className="w-4 h-4" />
+                                  </Button>
+                                  <div className="min-w-[60px] text-center">
+                                    <span 
+                                      className={`text-xl font-bold ${charm.stockQuantity === 0 ? 'text-destructive' : ''}`}
+                                      data-testid={`text-charm-stock-${charm.id}`}
+                                    >
+                                      {charm.stockQuantity}
+                                    </span>
+                                    {!charm.inStock && (
+                                      <Badge variant="destructive" className="mt-1 text-xs">Out of Stock</Badge>
+                                    )}
+                                  </div>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => updateCharmInventoryMutation.mutate({ charmId: charm.id, quantityChange: 1 })}
+                                    disabled={processingCharmIds.has(charm.id)}
+                                    data-testid={`button-increase-charm-stock-${charm.id}`}
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Beads Section */}
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Beads Inventory</h2>
+                  {!beads || beads.length === 0 ? (
+                    <Card>
+                      <CardContent className="flex flex-col items-center justify-center py-16">
+                        <PackageOpen className="w-16 h-16 text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground">No beads found</p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="grid gap-4">
+                      {beads.map((bead) => (
+                        <Card key={bead.id} data-testid={`card-bead-${bead.id}`}>
+                          <CardContent className="p-6">
+                            <div className="flex items-start gap-4">
+                              <img
+                                src={encodeURI(bead.imageUrl)}
+                                alt={bead.name}
+                                className="w-20 h-20 object-cover rounded-md border border-card-border"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-lg mb-1" data-testid={`text-bead-name-${bead.id}`}>
+                                  {bead.name}
+                                </h3>
+                                <p className="text-sm text-muted-foreground mb-2">{bead.color}</p>
+                                <p className="text-lg font-bold">${bead.price}</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-sm text-muted-foreground mb-2">Stock</p>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => updateBeadInventoryMutation.mutate({ beadId: bead.id, quantityChange: -1 })}
+                                    disabled={bead.stockQuantity === 0 || processingBeadIds.has(bead.id)}
+                                    data-testid={`button-decrease-bead-stock-${bead.id}`}
+                                  >
+                                    <Minus className="w-4 h-4" />
+                                  </Button>
+                                  <div className="min-w-[60px] text-center">
+                                    <span 
+                                      className={`text-xl font-bold ${bead.stockQuantity === 0 ? 'text-destructive' : ''}`}
+                                      data-testid={`text-bead-stock-${bead.id}`}
+                                    >
+                                      {bead.stockQuantity}
+                                    </span>
+                                    {!bead.inStock && (
+                                      <Badge variant="destructive" className="mt-1 text-xs">Out of Stock</Badge>
+                                    )}
+                                  </div>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => updateBeadInventoryMutation.mutate({ beadId: bead.id, quantityChange: 1 })}
+                                    disabled={processingBeadIds.has(bead.id)}
+                                    data-testid={`button-increase-bead-stock-${bead.id}`}
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </TabsContent>
