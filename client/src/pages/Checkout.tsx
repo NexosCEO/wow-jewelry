@@ -46,6 +46,12 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
   const elements = useElements();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Calculate correct values including coupon discount
+  const taxRate = 0.0875;
+  const discountedSubtotal = Math.max(0, subtotal - couponDiscount);
+  const correctTax = (discountedSubtotal + shippingFee) * taxRate;
+  const correctTotal = discountedSubtotal + shippingFee + correctTax;
 
   useEffect(() => {
     const isComplete = !!(
@@ -304,6 +310,12 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
             <span className="text-muted-foreground">Subtotal</span>
             <span data-testid="text-subtotal">${subtotal.toFixed(2)}</span>
           </div>
+          {couponDiscount > 0 && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-primary font-medium">Discount</span>
+              <span className="font-medium text-primary" data-testid="text-discount">-${couponDiscount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Shipping</span>
             <span data-testid="text-shipping-fee">
@@ -312,12 +324,12 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Tax (8.75%)</span>
-            <span data-testid="text-tax">${calculatedTax.toFixed(2)}</span>
+            <span data-testid="text-tax">${correctTax.toFixed(2)}</span>
           </div>
           <div className="flex items-center justify-between text-xl pt-2 border-t border-border">
             <span className="font-semibold">Total</span>
             <span className="font-bold" data-testid="text-total-checkout">
-              ${total.toFixed(2)}
+              ${correctTotal.toFixed(2)}
             </span>
           </div>
         </div>
@@ -336,7 +348,7 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
               Processing...
             </>
           ) : (
-            `Place Order - $${total.toFixed(2)}`
+            `Place Order - $${correctTotal.toFixed(2)}`
           )}
         </Button>
       </div>
