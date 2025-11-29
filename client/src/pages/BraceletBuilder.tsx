@@ -238,7 +238,8 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     
     toast({
       title: "Added to Cart",
-      description: "Your custom bracelet has been added to cart!",
+      description: `Custom ${selectedTemplate.name} Bracelet has been added to your cart`,
+      duration: 3000,
     });
 
     setLocation("/");

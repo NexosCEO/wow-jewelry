@@ -54,11 +54,7 @@ function Router() {
     setCart((prev) => {
       if ("type" in item && item.type === "custom-bracelet") {
         const customItem = item as CustomBraceletCartItem;
-        toast({
-          title: "Added to Cart",
-          description: "Your custom bracelet has been added to cart!",
-          duration: 2000,
-        });
+        // Toast is shown in BraceletBuilder.tsx with the template name
         return [...prev, { ...customItem, quantity: 1 }];
       } else if ("type" in item && item.type === "custom-necklace") {
         const customItem = item as CustomNecklaceCartItem;
