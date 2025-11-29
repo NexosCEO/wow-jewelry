@@ -5,7 +5,7 @@ import Stripe from "stripe";
 import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema, insertCustomNecklaceConfigurationSchema, insertCouponSchema } from "@shared/schema";
 import { requireAdmin, verifyAdminPassword, createAdminSession, invalidateAdminSession } from "./auth-middleware";
 import PDFDocument from "pdfkit";
-import { sendOrderNotification, sendTestEmail } from './emailService';
+import { sendOrderNotification, sendTestEmail, sendShippingNotification } from './emailService';
 
 let stripe: Stripe | null = null;
 
@@ -1015,88 +1015,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
 
-      if (!process.env.SENDGRID_API_KEY) {
-        return res.status(503).json({
-          message: "Email service not configured. Please add SENDGRID_API_KEY to secrets.",
-        });
-      }
-
-      const sendgridApiKey = process.env.SENDGRID_API_KEY;
       const items = JSON.parse(order.items);
       
-      const emailHtml = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #3a362f;">Order Shipped - Tracking Available</h2>
-          <p>Dear ${order.customerName},</p>
-          <p>Great news! Your order has been shipped and is on its way to you.</p>
-          
-          ${order.trackingNumber ? `
-            <div style="background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 8px;">
-              <p style="margin: 0;"><strong>Tracking Number:</strong></p>
-              <p style="font-size: 18px; font-family: monospace; margin: 5px 0;">${order.trackingNumber}</p>
-              ${order.shippingCarrier ? `<p style="margin: 0;"><strong>Carrier:</strong> ${order.shippingCarrier.toUpperCase()}</p>` : ''}
-            </div>
-          ` : ''}
+      // Build items list for email - handle both regular products and custom items
+      const itemsList = items.map((item: any) => {
+        if (item.product) {
+          return `${item.product.name} x ${item.quantity} - $${(parseFloat(item.product.price) * item.quantity).toFixed(2)}`;
+        } else if (item.templateName) {
+          return `Custom ${item.templateName} x ${item.quantity} - $${(parseFloat(item.price) * item.quantity).toFixed(2)}`;
+        }
+        return `Item x ${item.quantity}`;
+      }).join('\n');
 
-          <h3>Order Details:</h3>
-          <table style="width: 100%; border-collapse: collapse;">
-            ${items.map((item: any) => `
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
-                  ${item.product.name} x ${item.quantity}
-                </td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
-                  $${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
-                </td>
-              </tr>
-            `).join('')}
-            <tr>
-              <td style="padding: 8px 0; font-weight: bold;">Total</td>
-              <td style="padding: 8px 0; text-align: right; font-weight: bold;">
-                $${parseFloat(order.totalAmount).toFixed(2)}
-              </td>
-            </tr>
-          </table>
-
-          <p style="margin-top: 20px;">Thank you for shopping with WOW Jewelry!</p>
-          <p style="color: #666; font-size: 12px;">
-            If you have any questions, please contact us at jewelryboutiquewow@gmail.com
-          </p>
-        </div>
-      `;
-
-      const emailResponse = await fetch("https://api.sendgrid.com/v3/mail/send", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${sendgridApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          personalizations: [
-            {
-              to: [{ email: order.customerEmail, name: order.customerName }],
-              subject: order.trackingNumber
-                ? `Your WOW Jewelry Order Has Shipped! 📦`
-                : `Order Confirmation - WOW Jewelry`,
-            },
-          ],
-          from: {
-            email: process.env.SENDGRID_FROM_EMAIL || "orders@wowjewelry.com",
-            name: "WOW by Dany",
-          },
-          content: [
-            {
-              type: "text/html",
-              value: emailHtml,
-            },
-          ],
-        }),
+      // Use Gmail to send shipping notification to customer
+      await sendShippingNotification({
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        shippingAddress: `${order.shippingAddress}, ${order.city}, ${order.state} ${order.zipCode}`,
+        items: itemsList,
+        totalAmount: parseFloat(order.totalAmount),
+        trackingNumber: order.trackingNumber || undefined,
+        shippingCarrier: order.shippingCarrier || undefined,
       });
-
-      if (!emailResponse.ok) {
-        const errorText = await emailResponse.text();
-        throw new Error(`SendGrid API error: ${errorText}`);
-      }
 
       res.json({ success: true, message: "Email sent successfully" });
     } catch (error: any) {

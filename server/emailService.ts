@@ -161,6 +161,86 @@ WOW by Dany Team
   }
 }
 
+// Send shipping notification email to customer
+export async function sendShippingNotification(details: {
+  customerName: string;
+  customerEmail: string;
+  shippingAddress: string;
+  items: string;
+  totalAmount: number;
+  trackingNumber?: string;
+  shippingCarrier?: string;
+}) {
+  try {
+    const gmail = await getUncachableGmailClient();
+    const senderEmail = await getUserEmail();
+    
+    if (!senderEmail) {
+      console.error('Could not get sender email address');
+      throw new Error('Gmail not properly configured');
+    }
+
+    const subject = details.trackingNumber 
+      ? `Your WOW by Dany Order Has Shipped!`
+      : `Order Update - WOW by Dany`;
+    
+    const trackingSection = details.trackingNumber 
+      ? `
+TRACKING INFORMATION:
+--------------------
+Tracking Number: ${details.trackingNumber}
+${details.shippingCarrier ? `Carrier: ${details.shippingCarrier.toUpperCase()}` : ''}
+
+You can track your package using your tracking number on the carrier's website.
+` 
+      : '';
+
+    const messageBody = `
+Dear ${details.customerName},
+
+Great news! Your order from WOW by Dany has been shipped and is on its way to you!
+${trackingSection}
+SHIPPING ADDRESS:
+----------------
+${details.shippingAddress}
+
+ORDER DETAILS:
+-------------
+${details.items}
+
+Total: $${details.totalAmount.toFixed(2)}
+
+Thank you for shopping with WOW by Dany! We hope you love your new jewelry.
+
+If you have any questions, please reply to this email or contact us at jewelryboutiquewow@gmail.com
+
+With love,
+WOW by Dany Team
+    `.trim();
+
+    const encodedMessage = Buffer.from(
+      `From: ${senderEmail}\r\n` +
+      `To: ${details.customerEmail}\r\n` +
+      `Subject: ${subject}\r\n` +
+      `Content-Type: text/plain; charset=utf-8\r\n\r\n` +
+      `${messageBody}`
+    ).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+    const result = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: encodedMessage
+      }
+    });
+
+    console.log('✅ Shipping notification sent to customer:', result.data.id);
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to send shipping notification:', error);
+    throw error;
+  }
+}
+
 // Send test email to verify connection
 export async function sendTestEmail() {
   try {
