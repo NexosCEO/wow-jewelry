@@ -2,12 +2,9 @@
 import { google } from 'googleapis';
 
 let connectionSettings: any;
+let cachedUserEmail: string | null = null;
 
-async function getAccessToken() {
-  if (connectionSettings && connectionSettings.settings?.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
-    return connectionSettings.settings.access_token;
-  }
-  
+async function getConnectionSettings() {
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY 
     ? 'repl ' + process.env.REPL_IDENTITY 
@@ -19,7 +16,7 @@ async function getAccessToken() {
     throw new Error('X_REPLIT_TOKEN not found for repl/depl');
   }
 
-  connectionSettings = await fetch(
+  const response = await fetch(
     'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=google-mail',
     {
       headers: {
@@ -27,12 +24,29 @@ async function getAccessToken() {
         'X_REPLIT_TOKEN': xReplitToken
       }
     }
-  ).then(res => res.json()).then(data => data.items?.[0]);
+  );
+  
+  const data = await response.json();
+  connectionSettings = data.items?.[0];
+  
+  if (!connectionSettings) {
+    throw new Error('Gmail not connected');
+  }
+  
+  return connectionSettings;
+}
+
+async function getAccessToken() {
+  if (connectionSettings && connectionSettings.settings?.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
+    return connectionSettings.settings.access_token;
+  }
+  
+  await getConnectionSettings();
 
   const accessToken = connectionSettings?.settings?.access_token || connectionSettings?.settings?.oauth?.credentials?.access_token;
 
-  if (!connectionSettings || !accessToken) {
-    throw new Error('Gmail not connected');
+  if (!accessToken) {
+    throw new Error('Gmail not connected - no access token');
   }
   return accessToken;
 }
@@ -51,16 +65,39 @@ async function getUncachableGmailClient() {
   return google.gmail({ version: 'v1', auth: oauth2Client });
 }
 
-// Get the authenticated user's email address
-async function getUserEmail() {
+// Get the authenticated user's email from connection settings (no API call needed)
+async function getUserEmail(): Promise<string> {
+  // Try to get email from connection settings first (avoids API call that may fail due to scopes)
+  if (!connectionSettings) {
+    await getConnectionSettings();
+  }
+  
+  // Try multiple paths to find the email in connection settings
+  const email = connectionSettings?.settings?.email || 
+                connectionSettings?.settings?.user_email ||
+                connectionSettings?.email ||
+                connectionSettings?.settings?.oauth?.credentials?.email;
+  
+  if (email) {
+    console.log('Using email from connection settings:', email);
+    return email;
+  }
+  
+  // Fallback: try API call (may fail due to scopes)
   try {
     const gmail = await getUncachableGmailClient();
     const profile = await gmail.users.getProfile({ userId: 'me' });
-    return profile.data.emailAddress;
-  } catch (error) {
-    console.error('Error getting user email:', error);
-    return null;
+    if (profile.data.emailAddress) {
+      console.log('Got email from Gmail API:', profile.data.emailAddress);
+      return profile.data.emailAddress;
+    }
+  } catch (error: any) {
+    console.log('Gmail API getProfile failed (expected due to scopes):', error?.message);
   }
+  
+  // Final fallback: use store email
+  console.log('Using fallback store email');
+  return 'jewelryboutiquewow@gmail.com';
 }
 
 // Send order notification email

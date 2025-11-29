@@ -1,0 +1,164 @@
+2025-11-29 16:05:19.07
+4ac71e87
+User
+'accept-encoding': 'gzip',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+method: 'GET',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+'x-goog-api-client': 'gdcl/8.0.1 gl-node/20.19.3'
+2025-11-29 16:05:19.07
+4ac71e87
+User
+currentRetryAttempt: 0,
+2025-11-29 16:05:19.07
+4ac71e87
+User
+},
+2025-11-29 16:05:19.07
+4ac71e87
+User
+pathname: '/gmail/v1/users/me/profile',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+username: '',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+retryConfig: {
+2025-11-29 16:05:19.07
+4ac71e87
+User
+at async sendShippingNotification (file:///home/runner/workspace/dist/index.js:565:25)
+2025-11-29 16:05:19.07
+4ac71e87
+User
+userAgentDirectives: [Array],
+2025-11-29 16:05:19.07
+4ac71e87
+User
+boundary: null,
+2025-11-29 16:05:19.07
+4ac71e87
+User
+},
+2025-11-29 16:05:19.07
+4ac71e87
+User
+},
+2025-11-29 16:05:19.07
+4ac71e87
+User
+method: 'GET',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+password: '',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+statusCodesToRetry: [Array]
+2025-11-29 16:05:19.07
+4ac71e87
+User
+at Gaxios._request (/home/runner/workspace/node_modules/gaxios/build/cjs/src/gaxios.js:155:23)
+2025-11-29 16:05:19.07
+4ac71e87
+User
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-29 16:05:19.07
+4ac71e87
+User
+httpMethodsToRetry: [Array],
+2025-11-29 16:05:19.07
+4ac71e87
+User
+host: 'gmail.googleapis.com',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+validateStatus: [Function (anonymous)],
+2025-11-29 16:05:19.07
+4ac71e87
+User
+},
+2025-11-29 16:05:19.07
+4ac71e87
+User
+hash: ''
+2025-11-29 16:05:19.07
+4ac71e87
+User
+authorization: '< - See `errorRedactor` option in `gaxios` for configuration>.',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+authorization: '< - See `errorRedactor` option in `gaxios` for configuration>.',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+at async OAuth2Client.requestAsync (/home/runner/workspace/node_modules/google-auth-library/build/src/auth/oauth2client.js:463:20)
+2025-11-29 16:05:19.07
+4ac71e87
+User
+apiVersion: '',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+origin: 'https://gmail.googleapis.com',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+errorRedactor: [Function: defaultErrorRedactor]
+2025-11-29 16:05:19.07
+4ac71e87
+User
+body: [Gunzip],
+2025-11-29 16:05:19.07
+4ac71e87
+User
+totalTimeout: 9007199254740991,
+2025-11-29 16:05:19.07
+4ac71e87
+User
+},
+2025-11-29 16:05:19.07
+4ac71e87
+User
+at async createAPIRequestAsync (/home/runner/workspace/node_modules/googleapis-common/build/src/apirequest.js:308:25)
+2025-11-29 16:05:19.07
+4ac71e87
+User
+config: {
+2025-11-29 16:05:19.07
+4ac71e87
+User
+}
+2025-11-29 16:05:19.07
+4ac71e87
+User
+config: {
+2025-11-29 16:05:19.07
+4ac71e87
+User
+searchParams: URLSearchParams {},
+2025-11-29 16:05:19.07
+4ac71e87
+User
+protocol: 'https:',
+2025-11-29 16:05:19.07
+4ac71e87
+User
+headers: Headers {
+2025-11-29 16:05:19.07
+4ac71e87
+User
+at async file:///home/runner/workspace/dist/index.js:1541:7 {
+2025-11-29 16:05:19.07
+4ac71e87
+User
+'x-goog-api-client': 'gdcl/8.0.1 gl-node/20.19.3'
