@@ -36,11 +36,13 @@ export interface IStorage {
 
   getAllCharms(): Promise<Charm[]>;
   getCharm(id: string): Promise<Charm | undefined>;
+  getCharmByName(name: string): Promise<Charm | undefined>;
   createCharm(charm: InsertCharm): Promise<Charm>;
   updateCharmInventory(id: string, quantityChange: number): Promise<Charm | undefined>;
   
   getAllBraceletBeads(): Promise<BraceletBead[]>;
   getBraceletBead(id: string): Promise<BraceletBead | undefined>;
+  getBeadByName(name: string): Promise<BraceletBead | undefined>;
   updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined>;
   
   getAllBraceletTemplates(): Promise<BraceletTemplate[]>;
@@ -335,6 +337,10 @@ export class MemStorage implements IStorage {
     return undefined;
   }
 
+  async getCharmByName(name: string): Promise<Charm | undefined> {
+    return undefined;
+  }
+
   async createCharm(charm: InsertCharm): Promise<Charm> {
     throw new Error("Not implemented in MemStorage");
   }
@@ -348,6 +354,10 @@ export class MemStorage implements IStorage {
   }
 
   async getBraceletBead(id: string): Promise<BraceletBead | undefined> {
+    return undefined;
+  }
+
+  async getBeadByName(name: string): Promise<BraceletBead | undefined> {
     return undefined;
   }
 
@@ -564,6 +574,11 @@ export class DatabaseStorage implements IStorage {
     return charm || undefined;
   }
 
+  async getCharmByName(name: string): Promise<Charm | undefined> {
+    const [charm] = await db.select().from(charms).where(eq(charms.name, name));
+    return charm || undefined;
+  }
+
   async createCharm(insertCharm: InsertCharm): Promise<Charm> {
     const [charm] = await db
       .insert(charms)
@@ -594,6 +609,11 @@ export class DatabaseStorage implements IStorage {
 
   async getBraceletBead(id: string): Promise<BraceletBead | undefined> {
     const [bead] = await db.select().from(braceletBeads).where(eq(braceletBeads.id, id));
+    return bead || undefined;
+  }
+
+  async getBeadByName(name: string): Promise<BraceletBead | undefined> {
+    const [bead] = await db.select().from(braceletBeads).where(eq(braceletBeads.name, name));
     return bead || undefined;
   }
 
