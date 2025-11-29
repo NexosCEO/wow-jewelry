@@ -205,6 +205,7 @@ export function CartDrawer({ isOpen, onClose, cart, onUpdateQuantity, onRemoveIt
                           onClick={() => {
                             onClearCart();
                             setShowClearDialog(false);
+                            onClose();
                           }}
                           data-testid="button-confirm-clear"
                         >
