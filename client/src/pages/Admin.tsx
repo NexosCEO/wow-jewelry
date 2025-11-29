@@ -321,6 +321,8 @@ export default function Admin() {
   const [processingCharmIds, setProcessingCharmIds] = useState<Set<string>>(new Set());
   const [processingBeadIds, setProcessingBeadIds] = useState<Set<string>>(new Set());
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null);
+  const [editingCharmPriceId, setEditingCharmPriceId] = useState<string | null>(null);
+  const [editingBeadPriceId, setEditingBeadPriceId] = useState<string | null>(null);
   const [tempPrice, setTempPrice] = useState<string>("");
   
   // Stock editing state
@@ -1300,7 +1302,54 @@ export default function Admin() {
                                   {charm.name}
                                 </h3>
                                 <p className="text-sm text-muted-foreground mb-2">{charm.category}</p>
-                                <p className="text-lg font-bold">${charm.price}</p>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm text-muted-foreground">Price:</span>
+                                  {editingCharmPriceId === charm.id ? (
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      value={tempPrice}
+                                      onChange={(e) => setTempPrice(e.target.value)}
+                                      onBlur={() => {
+                                        const newPrice = parseFloat(tempPrice);
+                                        if (!isNaN(newPrice) && newPrice >= 0) {
+                                          updateCharmPriceMutation.mutate({ charmId: charm.id, price: newPrice.toFixed(2) });
+                                        }
+                                        setEditingCharmPriceId(null);
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          const newPrice = parseFloat(tempPrice);
+                                          if (!isNaN(newPrice) && newPrice >= 0) {
+                                            updateCharmPriceMutation.mutate({ charmId: charm.id, price: newPrice.toFixed(2) });
+                                          }
+                                          setEditingCharmPriceId(null);
+                                        } else if (e.key === 'Escape') {
+                                          setEditingCharmPriceId(null);
+                                        }
+                                      }}
+                                      className="w-24 h-8 text-center font-bold"
+                                      autoFocus
+                                      disabled={processingCharmIds.has(charm.id)}
+                                      data-testid={`input-charm-price-${charm.id}`}
+                                    />
+                                  ) : (
+                                    <span 
+                                      className={`text-lg font-bold cursor-pointer hover:text-primary transition-colors ${processingCharmIds.has(charm.id) ? 'opacity-50 pointer-events-none' : ''}`}
+                                      onClick={() => {
+                                        if (!processingCharmIds.has(charm.id)) {
+                                          setEditingCharmPriceId(charm.id);
+                                          setTempPrice(charm.price);
+                                        }
+                                      }}
+                                      title="Click to edit price"
+                                      data-testid={`text-charm-price-${charm.id}`}
+                                    >
+                                      ${charm.price}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                               <div className="text-center">
                                 <p className="text-sm text-muted-foreground mb-2">Stock</p>
@@ -1411,7 +1460,54 @@ export default function Admin() {
                                   {bead.name}
                                 </h3>
                                 <p className="text-sm text-muted-foreground mb-2">{bead.color}</p>
-                                <p className="text-lg font-bold">${bead.price}</p>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm text-muted-foreground">Price:</span>
+                                  {editingBeadPriceId === bead.id ? (
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      value={tempPrice}
+                                      onChange={(e) => setTempPrice(e.target.value)}
+                                      onBlur={() => {
+                                        const newPrice = parseFloat(tempPrice);
+                                        if (!isNaN(newPrice) && newPrice >= 0) {
+                                          updateBeadPriceMutation.mutate({ beadId: bead.id, price: newPrice.toFixed(2) });
+                                        }
+                                        setEditingBeadPriceId(null);
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          const newPrice = parseFloat(tempPrice);
+                                          if (!isNaN(newPrice) && newPrice >= 0) {
+                                            updateBeadPriceMutation.mutate({ beadId: bead.id, price: newPrice.toFixed(2) });
+                                          }
+                                          setEditingBeadPriceId(null);
+                                        } else if (e.key === 'Escape') {
+                                          setEditingBeadPriceId(null);
+                                        }
+                                      }}
+                                      className="w-24 h-8 text-center font-bold"
+                                      autoFocus
+                                      disabled={processingBeadIds.has(bead.id)}
+                                      data-testid={`input-bead-price-${bead.id}`}
+                                    />
+                                  ) : (
+                                    <span 
+                                      className={`text-lg font-bold cursor-pointer hover:text-primary transition-colors ${processingBeadIds.has(bead.id) ? 'opacity-50 pointer-events-none' : ''}`}
+                                      onClick={() => {
+                                        if (!processingBeadIds.has(bead.id)) {
+                                          setEditingBeadPriceId(bead.id);
+                                          setTempPrice(bead.price);
+                                        }
+                                      }}
+                                      title="Click to edit price"
+                                      data-testid={`text-bead-price-${bead.id}`}
+                                    >
+                                      ${bead.price}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                               <div className="text-center">
                                 <p className="text-sm text-muted-foreground mb-2">Stock</p>
