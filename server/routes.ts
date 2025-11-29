@@ -215,6 +215,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/charms/:id/price", requireAdmin, async (req, res) => {
+    try {
+      const { price } = req.body;
+      
+      if (typeof price !== 'string' || isNaN(parseFloat(price)) || parseFloat(price) < 0) {
+        return res.status(400).json({ message: "price must be a valid non-negative number string" });
+      }
+
+      const charm = await storage.updateCharmPrice(req.params.id, price);
+      if (!charm) {
+        return res.status(404).json({ message: "Charm not found" });
+      }
+      res.json(charm);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating charm price: " + error.message });
+    }
+  });
+
   app.get("/api/bracelet-beads", async (req, res) => {
     try {
       const beads = await storage.getAllBraceletBeads();
@@ -239,6 +257,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(bead);
     } catch (error: any) {
       res.status(500).json({ message: "Error updating bead inventory: " + error.message });
+    }
+  });
+
+  app.patch("/api/bracelet-beads/:id/price", requireAdmin, async (req, res) => {
+    try {
+      const { price } = req.body;
+      
+      if (typeof price !== 'string' || isNaN(parseFloat(price)) || parseFloat(price) < 0) {
+        return res.status(400).json({ message: "price must be a valid non-negative number string" });
+      }
+
+      const bead = await storage.updateBeadPrice(req.params.id, price);
+      if (!bead) {
+        return res.status(404).json({ message: "Bead not found" });
+      }
+      res.json(bead);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating bead price: " + error.message });
     }
   });
 
