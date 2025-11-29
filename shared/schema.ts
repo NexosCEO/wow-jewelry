@@ -30,6 +30,8 @@ export const orders = pgTable("orders", {
   shippingMethod: text("shipping_method").notNull().default("standard"),
   shippingFee: decimal("shipping_fee", { precision: 10, scale: 2 }).notNull().default("5.99"),
   status: text("status").notNull().default("pending"),
+  paymentMethod: text("payment_method").notNull().default("stripe"),
+  paymentStatus: text("payment_status").notNull().default("pending"),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   trackingNumber: text("tracking_number"),
   shippingLabelUrl: text("shipping_label_url"),
