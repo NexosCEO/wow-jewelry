@@ -323,6 +323,12 @@ export default function Admin() {
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null);
   const [tempPrice, setTempPrice] = useState<string>("");
   
+  // Stock editing state
+  const [editingStockId, setEditingStockId] = useState<string | null>(null);
+  const [editingCharmStockId, setEditingCharmStockId] = useState<string | null>(null);
+  const [editingBeadStockId, setEditingBeadStockId] = useState<string | null>(null);
+  const [tempStock, setTempStock] = useState<string>("");
+  
   // Coupon form state
   const [showCouponForm, setShowCouponForm] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<any>(null);
@@ -1109,12 +1115,53 @@ export default function Admin() {
                                 <Minus className="w-4 h-4" />
                               </Button>
                               <div className="min-w-[60px] text-center">
-                                <span 
-                                  className={`text-xl font-bold ${product.stockQuantity === 0 ? 'text-destructive' : ''}`}
-                                  data-testid={`text-stock-${product.id}`}
-                                >
-                                  {product.stockQuantity}
-                                </span>
+                                {editingStockId === product.id ? (
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    value={tempStock}
+                                    onChange={(e) => setTempStock(e.target.value)}
+                                    onBlur={() => {
+                                      const newStock = parseInt(tempStock);
+                                      if (!isNaN(newStock) && newStock >= 0) {
+                                        const change = newStock - product.stockQuantity;
+                                        if (change !== 0) {
+                                          updateInventoryMutation.mutate({ productId: product.id, quantityChange: change });
+                                        }
+                                      }
+                                      setEditingStockId(null);
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        const newStock = parseInt(tempStock);
+                                        if (!isNaN(newStock) && newStock >= 0) {
+                                          const change = newStock - product.stockQuantity;
+                                          if (change !== 0) {
+                                            updateInventoryMutation.mutate({ productId: product.id, quantityChange: change });
+                                          }
+                                        }
+                                        setEditingStockId(null);
+                                      } else if (e.key === 'Escape') {
+                                        setEditingStockId(null);
+                                      }
+                                    }}
+                                    className="w-16 h-8 text-center text-lg font-bold"
+                                    autoFocus
+                                    data-testid={`input-stock-${product.id}`}
+                                  />
+                                ) : (
+                                  <span 
+                                    className={`text-xl font-bold cursor-pointer hover:text-primary transition-colors ${product.stockQuantity === 0 ? 'text-destructive' : ''}`}
+                                    onClick={() => {
+                                      setEditingStockId(product.id);
+                                      setTempStock(product.stockQuantity.toString());
+                                    }}
+                                    title="Click to edit stock"
+                                    data-testid={`text-stock-${product.id}`}
+                                  >
+                                    {product.stockQuantity}
+                                  </span>
+                                )}
                                 {!product.inStock && (
                                   <Badge variant="destructive" className="mt-1 text-xs">Out of Stock</Badge>
                                 )}
@@ -1187,12 +1234,53 @@ export default function Admin() {
                                     <Minus className="w-4 h-4" />
                                   </Button>
                                   <div className="min-w-[60px] text-center">
-                                    <span 
-                                      className={`text-xl font-bold ${charm.stockQuantity === 0 ? 'text-destructive' : ''}`}
-                                      data-testid={`text-charm-stock-${charm.id}`}
-                                    >
-                                      {charm.stockQuantity}
-                                    </span>
+                                    {editingCharmStockId === charm.id ? (
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        value={tempStock}
+                                        onChange={(e) => setTempStock(e.target.value)}
+                                        onBlur={() => {
+                                          const newStock = parseInt(tempStock);
+                                          if (!isNaN(newStock) && newStock >= 0) {
+                                            const change = newStock - charm.stockQuantity;
+                                            if (change !== 0) {
+                                              updateCharmInventoryMutation.mutate({ charmId: charm.id, quantityChange: change });
+                                            }
+                                          }
+                                          setEditingCharmStockId(null);
+                                        }}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') {
+                                            const newStock = parseInt(tempStock);
+                                            if (!isNaN(newStock) && newStock >= 0) {
+                                              const change = newStock - charm.stockQuantity;
+                                              if (change !== 0) {
+                                                updateCharmInventoryMutation.mutate({ charmId: charm.id, quantityChange: change });
+                                              }
+                                            }
+                                            setEditingCharmStockId(null);
+                                          } else if (e.key === 'Escape') {
+                                            setEditingCharmStockId(null);
+                                          }
+                                        }}
+                                        className="w-16 h-8 text-center text-lg font-bold"
+                                        autoFocus
+                                        data-testid={`input-charm-stock-${charm.id}`}
+                                      />
+                                    ) : (
+                                      <span 
+                                        className={`text-xl font-bold cursor-pointer hover:text-primary transition-colors ${charm.stockQuantity === 0 ? 'text-destructive' : ''}`}
+                                        onClick={() => {
+                                          setEditingCharmStockId(charm.id);
+                                          setTempStock(charm.stockQuantity.toString());
+                                        }}
+                                        title="Click to edit stock"
+                                        data-testid={`text-charm-stock-${charm.id}`}
+                                      >
+                                        {charm.stockQuantity}
+                                      </span>
+                                    )}
                                     {!charm.inStock && (
                                       <Badge variant="destructive" className="mt-1 text-xs">Out of Stock</Badge>
                                     )}
@@ -1257,12 +1345,53 @@ export default function Admin() {
                                     <Minus className="w-4 h-4" />
                                   </Button>
                                   <div className="min-w-[60px] text-center">
-                                    <span 
-                                      className={`text-xl font-bold ${bead.stockQuantity === 0 ? 'text-destructive' : ''}`}
-                                      data-testid={`text-bead-stock-${bead.id}`}
-                                    >
-                                      {bead.stockQuantity}
-                                    </span>
+                                    {editingBeadStockId === bead.id ? (
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        value={tempStock}
+                                        onChange={(e) => setTempStock(e.target.value)}
+                                        onBlur={() => {
+                                          const newStock = parseInt(tempStock);
+                                          if (!isNaN(newStock) && newStock >= 0) {
+                                            const change = newStock - bead.stockQuantity;
+                                            if (change !== 0) {
+                                              updateBeadInventoryMutation.mutate({ beadId: bead.id, quantityChange: change });
+                                            }
+                                          }
+                                          setEditingBeadStockId(null);
+                                        }}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') {
+                                            const newStock = parseInt(tempStock);
+                                            if (!isNaN(newStock) && newStock >= 0) {
+                                              const change = newStock - bead.stockQuantity;
+                                              if (change !== 0) {
+                                                updateBeadInventoryMutation.mutate({ beadId: bead.id, quantityChange: change });
+                                              }
+                                            }
+                                            setEditingBeadStockId(null);
+                                          } else if (e.key === 'Escape') {
+                                            setEditingBeadStockId(null);
+                                          }
+                                        }}
+                                        className="w-16 h-8 text-center text-lg font-bold"
+                                        autoFocus
+                                        data-testid={`input-bead-stock-${bead.id}`}
+                                      />
+                                    ) : (
+                                      <span 
+                                        className={`text-xl font-bold cursor-pointer hover:text-primary transition-colors ${bead.stockQuantity === 0 ? 'text-destructive' : ''}`}
+                                        onClick={() => {
+                                          setEditingBeadStockId(bead.id);
+                                          setTempStock(bead.stockQuantity.toString());
+                                        }}
+                                        title="Click to edit stock"
+                                        data-testid={`text-bead-stock-${bead.id}`}
+                                      >
+                                        {bead.stockQuantity}
+                                      </span>
+                                    )}
                                     {!bead.inStock && (
                                       <Badge variant="destructive" className="mt-1 text-xs">Out of Stock</Badge>
                                     )}
