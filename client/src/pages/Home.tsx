@@ -27,7 +27,8 @@ export default function Home({ onAddToCart }: HomeProps) {
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];
 
-    let result = [...products];
+    // First filter out sold out products - they should not show on the main app
+    let result = products.filter((p) => p.inStock);
 
     // Filter by type/category
     if (filterType !== "all") {

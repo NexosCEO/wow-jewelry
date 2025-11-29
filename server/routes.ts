@@ -470,11 +470,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Cart is empty" });
       }
 
-      // Calculate subtotal server-side
+      // Calculate subtotal server-side with validated prices from database
       let subtotal = 0;
       for (const item of cart) {
-        if (item.product && item.product.price && item.quantity) {
-          subtotal += parseFloat(item.product.price) * item.quantity;
+        if (item.product && item.product.id && item.quantity) {
+          // Regular product items - verify price from database
+          const product = await storage.getProduct(item.product.id);
+          if (product) {
+            subtotal += parseFloat(product.price) * item.quantity;
+          } else {
+            console.warn(`Product ${item.product.id} not found, using client price`);
+            subtotal += parseFloat(item.product.price || "0") * item.quantity;
+          }
+        } else if (item.configId && item.quantity) {
+          // Custom bracelet/necklace items - recalculate price from configuration
+          const braceletConfig = await storage.getCustomBraceletConfiguration(item.configId);
+          if (braceletConfig) {
+            // Get template for base price
+            const template = await storage.getBraceletTemplate(braceletConfig.templateId);
+            let itemPrice = template ? parseFloat(template.basePrice) : 0;
+            
+            // Parse and add charm prices from database
+            try {
+              const charmIds = JSON.parse(braceletConfig.selectedCharms || "[]");
+              if (Array.isArray(charmIds)) {
+                for (const charmId of charmIds) {
+                  const charm = await storage.getCharm(charmId);
+                  if (charm) {
+                    itemPrice += parseFloat(charm.price);
+                  }
+                }
+              }
+            } catch (e) {
+              console.warn("Error parsing selected charms:", e);
+            }
+            
+            // Parse and add bead prices from database
+            try {
+              const beadIds = JSON.parse(braceletConfig.selectedBeads || "[]");
+              if (Array.isArray(beadIds)) {
+                for (const beadId of beadIds) {
+                  const bead = await storage.getBraceletBead(beadId);
+                  if (bead) {
+                    itemPrice += parseFloat(bead.price);
+                  }
+                }
+              }
+            } catch (e) {
+              console.warn("Error parsing selected beads:", e);
+            }
+            
+            subtotal += itemPrice * item.quantity;
+          } else {
+            // Try as necklace configuration
+            const necklaceConfig = await storage.getCustomNecklaceConfiguration(item.configId);
+            if (necklaceConfig) {
+              // Get template for base price
+              const template = await storage.getNecklaceTemplate(necklaceConfig.templateId);
+              let itemPrice = template ? parseFloat(template.basePrice) : 0;
+              
+              // Parse and add charm prices from database
+              try {
+                const charmIds = JSON.parse(necklaceConfig.selectedCharms || "[]");
+                if (Array.isArray(charmIds)) {
+                  for (const charmId of charmIds) {
+                    const charm = await storage.getCharm(charmId);
+                    if (charm) {
+                      itemPrice += parseFloat(charm.price);
+                    }
+                  }
+                }
+              } catch (e) {
+                console.warn("Error parsing selected charms:", e);
+              }
+              
+              subtotal += itemPrice * item.quantity;
+            } else {
+              console.warn(`Configuration ${item.configId} not found, using client price`);
+              subtotal += parseFloat(item.price || "0") * item.quantity;
+            }
+          }
         }
       }
 

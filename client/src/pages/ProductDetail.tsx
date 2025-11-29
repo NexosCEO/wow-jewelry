@@ -40,7 +40,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
     );
   }
 
-  const images = [product.imageUrl, product.imageUrl2].filter(Boolean);
+  const images = [product.imageUrl, product.imageUrl2].filter((img): img is string => Boolean(img));
   const encodedImages = images.map(img => encodeURI(img));
 
   return (
