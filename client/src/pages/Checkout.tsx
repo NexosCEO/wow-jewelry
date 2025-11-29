@@ -372,6 +372,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const [isCreatingPaymentIntent, setIsCreatingPaymentIntent] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [stripeOrderSuccess, setStripeOrderSuccess] = useState(false);
   const [customerAddress, setCustomerAddress] = useState({
     name: "",
     address: "",
@@ -583,17 +584,42 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
 
   const handleSuccess = () => {
     onClearCart();
-    setTimeout(() => {
-      setLocation("/");
-    }, 2000);
+    setStripeOrderSuccess(true);
   };
 
-  const handleZelleCashSuccess = () => {
-    onClearCart();
-    setTimeout(() => {
-      setLocation("/");
-    }, 3000);
+  const handleContinueShopping = () => {
+    setLocation("/");
   };
+
+  if (stripeOrderSuccess) {
+    return (
+      <div className="min-h-screen bg-background py-12">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <div className="bg-card border border-card-border rounded-lg p-8">
+            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h1 className="font-serif text-3xl font-bold mb-4">Thank You for Your Order!</h1>
+            <div className="space-y-4">
+              <p className="text-lg">Your payment was successful and your order is confirmed.</p>
+              <p className="text-muted-foreground">
+                You'll receive an email confirmation shortly with your order details.
+              </p>
+              <p className="text-muted-foreground">
+                We appreciate your business and hope you enjoy your beautiful new jewelry!
+              </p>
+            </div>
+            <Button
+              onClick={handleContinueShopping}
+              className="mt-6"
+              size="lg"
+              data-testid="button-continue-shopping-success"
+            >
+              Continue Shopping
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (orderPlaced) {
     return (
@@ -633,7 +659,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
             )}
             
             <Button
-              onClick={handleZelleCashSuccess}
+              onClick={handleContinueShopping}
               className="mt-6"
               size="lg"
               data-testid="button-continue-shopping"
