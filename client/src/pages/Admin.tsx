@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Package, Printer, Mail, ExternalLink, Lock, LogOut, PackageOpen, Plus, Minus, Edit, Check, X, Ticket, Calendar, Percent, DollarSign, Hash, Trash2 } from "lucide-react";
+import { Loader2, Package, Printer, Mail, ExternalLink, Lock, LogOut, PackageOpen, Plus, Minus, Edit, Check, X, Ticket, Calendar, Percent, DollarSign, Hash, Trash2, CreditCard, Phone, Banknote, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -293,6 +293,41 @@ export default function Admin() {
       toast({
         title: "Error",
         description: error.message || "Failed to send notification",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const confirmPaymentMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      setProcessingOrderId(orderId);
+      const token = getAdminToken();
+      const response = await fetch(`/api/orders/${orderId}/confirm-payment`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to confirm payment");
+      }
+      return await response.json();
+    },
+    onSuccess: () => {
+      setProcessingOrderId(null);
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({
+        title: "Payment Confirmed!",
+        description: "Order payment has been confirmed and the order is now ready to process.",
+      });
+    },
+    onError: (error) => {
+      setProcessingOrderId(null);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to confirm payment",
         variant: "destructive",
       });
     },
@@ -594,10 +629,39 @@ export default function Admin() {
                         {format(new Date(order.createdAt), "MMM d, yyyy 'at' h:mm a")}
                       </p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       <Badge data-testid={`badge-status-${order.id}`}>
                         {order.status}
                       </Badge>
+                      {order.paymentMethod && order.paymentMethod !== "stripe" && (
+                        <Badge 
+                          variant="outline" 
+                          className="flex items-center gap-1"
+                          data-testid={`badge-payment-method-${order.id}`}
+                        >
+                          {order.paymentMethod === "zelle" && <Phone className="w-3 h-3" />}
+                          {order.paymentMethod === "cash" && <Banknote className="w-3 h-3" />}
+                          {order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}
+                        </Badge>
+                      )}
+                      {order.paymentStatus === "pending_payment" && (
+                        <Badge 
+                          variant="destructive"
+                          data-testid={`badge-payment-pending-${order.id}`}
+                        >
+                          Awaiting Payment
+                        </Badge>
+                      )}
+                      {order.paymentStatus === "paid" && order.paymentMethod !== "stripe" && (
+                        <Badge 
+                          variant="outline"
+                          className="border-green-500 text-green-600 flex items-center gap-1"
+                          data-testid={`badge-payment-confirmed-${order.id}`}
+                        >
+                          <CheckCircle className="w-3 h-3" />
+                          Payment Confirmed
+                        </Badge>
+                      )}
                       {hasLabel && (
                         <Badge variant="outline" data-testid={`badge-label-${order.id}`}>
                           Label Created
@@ -707,6 +771,41 @@ export default function Admin() {
                             View Label
                           </Button>
                         )}
+                      </div>
+                    </div>
+                  )}
+
+                  {order.paymentStatus === "pending_payment" && (
+                    <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                      <div className="flex items-center justify-between gap-4 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          {order.paymentMethod === "zelle" && <Phone className="w-4 h-4 text-yellow-600" />}
+                          {order.paymentMethod === "cash" && <Banknote className="w-4 h-4 text-yellow-600" />}
+                          <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
+                            {order.paymentMethod === "zelle" 
+                              ? "Awaiting Zelle payment - Check your Zelle for payment from this customer" 
+                              : "Awaiting cash payment on pickup"}
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={() => confirmPaymentMutation.mutate(order.id)}
+                          disabled={processingOrderId === order.id}
+                          className="bg-green-600 hover:bg-green-700"
+                          data-testid={`button-confirm-payment-${order.id}`}
+                        >
+                          {processingOrderId === order.id && confirmPaymentMutation.isPending ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Confirming...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Confirm Payment Received
+                            </>
+                          )}
+                        </Button>
                       </div>
                     </div>
                   )}

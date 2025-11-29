@@ -7,12 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Lock, Shield, CreditCard } from "lucide-react";
+import { Loader2, Lock, Shield, CreditCard, Phone, Banknote, CheckCircle } from "lucide-react";
 import { useLocation } from "wouter";
 
 type UnifiedCartItem = CartItem | CustomBraceletCartItem | CustomNecklaceCartItem;
 
-// Try production key first, then testing key as fallback
+type PaymentMethod = "stripe" | "zelle" | "cash";
+
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY || import.meta.env.VITE_TESTING_STRIPE_PUBLIC_KEY;
 const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
 
@@ -110,6 +111,8 @@ function CheckoutForm({ cart, onSuccess, shippingMethod, setShippingMethod, subt
             shippingMethod: shippingMethod,
             shippingFee: shippingFee.toString(),
             status: "completed",
+            paymentMethod: "stripe",
+            paymentStatus: "paid",
             stripePaymentIntentId: paymentIntent.id,
             couponCode: appliedCoupon,
             discountAmount: couponDiscount.toString(),
@@ -350,10 +353,13 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const [, setLocation] = useLocation();
   const [clientSecret, setClientSecret] = useState("");
   const [shippingMethod, setShippingMethod] = useState<"standard" | "local_pickup">("standard");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
   const [calculatedTax, setCalculatedTax] = useState<number>(0);
   const [calculatedTotal, setCalculatedTotal] = useState<number>(0);
   const [addressComplete, setAddressComplete] = useState(false);
   const [isCreatingPaymentIntent, setIsCreatingPaymentIntent] = useState(false);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
   const [customerAddress, setCustomerAddress] = useState({
     name: "",
     address: "",
@@ -382,6 +388,13 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const calculatedTaxAmount = (discountedSubtotal + shippingFee) * taxRate;
   const baseTotal = discountedSubtotal + shippingFee + calculatedTaxAmount;
 
+  // Reset payment method to stripe if switching away from local pickup
+  useEffect(() => {
+    if (shippingMethod !== "local_pickup" && paymentMethod === "cash") {
+      setPaymentMethod("stripe");
+    }
+  }, [shippingMethod, paymentMethod]);
+
   const handleApplyCoupon = async () => {
     const couponUpper = couponCode.toUpperCase().trim();
     
@@ -392,7 +405,6 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
       if (result.valid && result.coupon) {
         const { discountType, discountValue, minimumPurchase } = result.coupon;
         
-        // Check minimum purchase requirement
         if (minimumPurchase && subtotal < parseFloat(minimumPurchase)) {
           toast({
             title: "Minimum Purchase Not Met",
@@ -453,6 +465,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
     setAddressComplete(isComplete);
   }, [customerAddress]);
 
+  // Only create payment intent for Stripe payments
   useEffect(() => {
     if (cart.length === 0) {
       setLocation("/");
@@ -460,15 +473,15 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
     }
 
     if (!stripePromise) {
-      toast({
-        title: "Payment Not Available",
-        description: "Stripe payment processing is not configured. Please contact support.",
-        variant: "destructive",
-      });
       return;
     }
 
     if (!addressComplete) {
+      return;
+    }
+
+    // Only create payment intent if Stripe is selected
+    if (paymentMethod !== "stripe") {
       return;
     }
 
@@ -484,10 +497,8 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
       .then((res) => res.json())
       .then((data) => {
         setClientSecret(data.clientSecret);
-        // Use server-calculated values
         setCalculatedTax(data.taxAmount || 0);
         setCalculatedTotal(data.totalAmount || baseTotal);
-        // Update discount amount from server validation
         if (data.discountAmount !== undefined) {
           setCouponDiscount(data.discountAmount);
         }
@@ -502,7 +513,61 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           variant: "destructive",
         });
       });
-  }, [cart, shippingMethod, addressComplete, appliedCoupon]); // Only recreate when cart, shipping, address completeness, or coupon changes
+  }, [cart, shippingMethod, addressComplete, appliedCoupon, paymentMethod]);
+
+  const handleZelleOrCashOrder = async () => {
+    if (!customerAddress.name || !customerEmail || !customerAddress.address || !customerAddress.city || !customerAddress.state || !customerAddress.zipCode) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all shipping details and email",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsPlacingOrder(true);
+
+    try {
+      const orderData = {
+        customerName: customerAddress.name,
+        customerEmail: customerEmail,
+        shippingAddress: customerAddress.address,
+        city: customerAddress.city,
+        state: customerAddress.state,
+        zipCode: customerAddress.zipCode,
+        items: JSON.stringify(cart),
+        totalAmount: baseTotal.toString(),
+        taxAmount: calculatedTaxAmount.toString(),
+        shippingMethod: shippingMethod,
+        shippingFee: shippingFee.toString(),
+        status: "pending",
+        paymentMethod: paymentMethod,
+        paymentStatus: "pending_payment",
+        couponCode: appliedCoupon || null,
+        discountAmount: couponDiscount.toString(),
+      };
+
+      await apiRequest("POST", "/api/orders", orderData);
+      
+      setOrderPlaced(true);
+      
+      toast({
+        title: "Order Placed Successfully!",
+        description: paymentMethod === "zelle" 
+          ? "Please send your Zelle payment to complete your order." 
+          : "Your order is confirmed for pickup. Please bring cash payment.",
+      });
+
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to place order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPlacingOrder(false);
+    }
+  };
 
   const handleSuccess = () => {
     onClearCart();
@@ -511,14 +576,60 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
     }, 2000);
   };
 
-  if (!stripePromise) {
+  const handleZelleCashSuccess = () => {
+    onClearCart();
+    setTimeout(() => {
+      setLocation("/");
+    }, 3000);
+  };
+
+  if (orderPlaced) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <h2 className="font-serif text-2xl mb-4">Payment Not Available</h2>
-        <p className="text-muted-foreground text-center mb-6">
-          Stripe payment processing is not configured yet. You can browse products, but checkout is temporarily disabled.
-        </p>
-        <Button onClick={() => setLocation("/")}>Back to Shop</Button>
+      <div className="min-h-screen bg-background py-12">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <div className="bg-card border border-card-border rounded-lg p-8">
+            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h1 className="font-serif text-3xl font-bold mb-4">Order Confirmed!</h1>
+            
+            {paymentMethod === "zelle" ? (
+              <div className="space-y-4">
+                <p className="text-lg">Please send your payment via Zelle to complete your order:</p>
+                <div className="bg-primary/10 p-6 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 text-xl font-bold text-primary mb-2">
+                    <Phone className="w-6 h-6" />
+                    <span>201-908-1726</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Send exactly <strong>${baseTotal.toFixed(2)}</strong></p>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Your order will be processed once we confirm your Zelle payment. You'll receive an email confirmation shortly.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-lg">Your order is confirmed for local pickup!</p>
+                <div className="bg-primary/10 p-6 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 text-xl font-bold text-primary mb-2">
+                    <Banknote className="w-6 h-6" />
+                    <span>Cash Payment: ${baseTotal.toFixed(2)}</span>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  We'll contact you to arrange pickup. Please bring exact cash payment. You'll receive an email confirmation shortly.
+                </p>
+              </div>
+            )}
+            
+            <Button
+              onClick={handleZelleCashSuccess}
+              className="mt-6"
+              size="lg"
+              data-testid="button-continue-shopping"
+            >
+              Continue Shopping
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -558,7 +669,6 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
                 <span className="font-medium">${subtotal.toFixed(2)}</span>
               </div>
               
-              {/* Coupon Code Section */}
               {!appliedCoupon ? (
                 <div className="flex gap-2 items-end">
                   <div className="flex-1">
@@ -624,33 +734,8 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           </div>
         </div>
 
-        {isCreatingPaymentIntent ? (
-          <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
-            <p className="text-lg font-medium">Preparing secure payment...</p>
-            <p className="text-sm text-muted-foreground">Calculating tax and setting up payment</p>
-          </div>
-        ) : clientSecret ? (
-          <Elements stripe={stripePromise} options={{ clientSecret }} key={clientSecret}>
-            <CheckoutForm 
-              cart={cart} 
-              onSuccess={handleSuccess}
-              shippingMethod={shippingMethod}
-              setShippingMethod={setShippingMethod}
-              subtotal={subtotal}
-              shippingFee={shippingFee}
-              total={calculatedTotal > 0 ? calculatedTotal : baseTotal}
-              calculatedTax={calculatedTax}
-              customerAddress={customerAddress}
-              setCustomerAddress={setCustomerAddress}
-              setAddressComplete={setAddressComplete}
-              appliedCoupon={appliedCoupon}
-              couponDiscount={couponDiscount}
-              customerEmail={customerEmail}
-              setCustomerEmail={setCustomerEmail}
-            />
-          </Elements>
-        ) : (
+        {/* Payment method selection and form for non-Stripe payments */}
+        {paymentMethod !== "stripe" || !clientSecret ? (
           <div className="space-y-6">
             <div>
               <h2 className="font-serif text-2xl font-semibold mb-4">Shipping Information</h2>
@@ -782,13 +867,210 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
               </div>
             </div>
 
-            {addressComplete && (
+            <div>
+              <h2 className="font-serif text-2xl font-semibold mb-4">Payment Method</h2>
+              <div className="space-y-3">
+                <label 
+                  className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${
+                    paymentMethod === "stripe" 
+                      ? "border-primary bg-primary/5" 
+                      : "border-border hover-elevate"
+                  }`}
+                  data-testid="label-payment-stripe"
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="stripe"
+                      checked={paymentMethod === "stripe"}
+                      onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                      className="w-4 h-4"
+                      data-testid="radio-payment-stripe"
+                    />
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="w-5 h-5 text-primary" />
+                      <div>
+                        <div className="font-semibold">Credit/Debit Card</div>
+                        <div className="text-sm text-muted-foreground">Secure payment via Stripe</div>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <label 
+                  className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${
+                    paymentMethod === "zelle" 
+                      ? "border-primary bg-primary/5" 
+                      : "border-border hover-elevate"
+                  }`}
+                  data-testid="label-payment-zelle"
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="zelle"
+                      checked={paymentMethod === "zelle"}
+                      onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                      className="w-4 h-4"
+                      data-testid="radio-payment-zelle"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-5 h-5 text-primary" />
+                      <div>
+                        <div className="font-semibold">Zelle</div>
+                        <div className="text-sm text-muted-foreground">Send payment to 201-908-1726</div>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                {shippingMethod === "local_pickup" && (
+                  <label 
+                    className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${
+                      paymentMethod === "cash" 
+                        ? "border-primary bg-primary/5" 
+                        : "border-border hover-elevate"
+                    }`}
+                    data-testid="label-payment-cash"
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="cash"
+                        checked={paymentMethod === "cash"}
+                        onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                        className="w-4 h-4"
+                        data-testid="radio-payment-cash"
+                      />
+                      <div className="flex items-center gap-2">
+                        <Banknote className="w-5 h-5 text-primary" />
+                        <div>
+                          <div className="font-semibold">Cash on Pickup</div>
+                          <div className="text-sm text-muted-foreground">Pay when you pick up your order</div>
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                )}
+              </div>
+            </div>
+
+            {/* Zelle Payment Instructions */}
+            {paymentMethod === "zelle" && addressComplete && customerEmail && (
+              <div className="bg-card border border-card-border rounded-lg p-6">
+                <h3 className="font-semibold text-lg mb-3">Zelle Payment Instructions</h3>
+                <div className="bg-primary/10 p-4 rounded-lg mb-4">
+                  <div className="flex items-center gap-2 text-lg font-bold text-primary mb-1">
+                    <Phone className="w-5 h-5" />
+                    <span>201-908-1726</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Send exactly <strong>${baseTotal.toFixed(2)}</strong> via Zelle</p>
+                </div>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground mb-4">
+                  <li>Open your banking app and select Zelle</li>
+                  <li>Send <strong>${baseTotal.toFixed(2)}</strong> to <strong>201-908-1726</strong></li>
+                  <li>Place your order below - we'll confirm once payment is received</li>
+                </ol>
+                <Button
+                  onClick={handleZelleOrCashOrder}
+                  disabled={isPlacingOrder}
+                  className="w-full font-bold rounded-lg"
+                  size="lg"
+                  style={{ background: isPlacingOrder ? undefined : 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: isPlacingOrder ? undefined : '#2b211b' }}
+                  data-testid="button-place-zelle-order"
+                >
+                  {isPlacingOrder ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Placing Order...
+                    </>
+                  ) : (
+                    `Place Order - $${baseTotal.toFixed(2)}`
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {/* Cash Payment Instructions */}
+            {paymentMethod === "cash" && addressComplete && customerEmail && (
+              <div className="bg-card border border-card-border rounded-lg p-6">
+                <h3 className="font-semibold text-lg mb-3">Cash Payment on Pickup</h3>
+                <div className="bg-primary/10 p-4 rounded-lg mb-4">
+                  <div className="flex items-center gap-2 text-lg font-bold text-primary mb-1">
+                    <Banknote className="w-5 h-5" />
+                    <span>Total Due: ${baseTotal.toFixed(2)}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Please bring exact cash at pickup</p>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  After placing your order, we'll contact you via email to arrange a pickup time and location. Please bring the exact cash amount.
+                </p>
+                <Button
+                  onClick={handleZelleOrCashOrder}
+                  disabled={isPlacingOrder}
+                  className="w-full font-bold rounded-lg"
+                  size="lg"
+                  style={{ background: isPlacingOrder ? undefined : 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: isPlacingOrder ? undefined : '#2b211b' }}
+                  data-testid="button-place-cash-order"
+                >
+                  {isPlacingOrder ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Placing Order...
+                    </>
+                  ) : (
+                    `Place Order - $${baseTotal.toFixed(2)}`
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {/* Show message if Zelle/Cash selected but form incomplete */}
+            {(paymentMethod === "zelle" || paymentMethod === "cash") && (!addressComplete || !customerEmail) && (
+              <div className="bg-muted/50 border border-border rounded-lg p-4 text-center">
+                <p className="text-muted-foreground">Please complete all shipping information and provide your email to continue.</p>
+              </div>
+            )}
+
+            {/* Show Stripe loading state */}
+            {paymentMethod === "stripe" && addressComplete && isCreatingPaymentIntent && (
               <div className="flex items-center justify-center p-4">
                 <Loader2 className="w-6 h-6 animate-spin text-primary mr-2" />
                 <span className="text-muted-foreground">Preparing secure payment...</span>
               </div>
             )}
+
+            {/* Message if Stripe is selected but form not complete */}
+            {paymentMethod === "stripe" && !addressComplete && (
+              <div className="bg-muted/50 border border-border rounded-lg p-4 text-center">
+                <p className="text-muted-foreground">Please complete all shipping information to proceed with payment.</p>
+              </div>
+            )}
           </div>
+        ) : (
+          /* Stripe payment form */
+          <Elements stripe={stripePromise} options={{ clientSecret }} key={clientSecret}>
+            <CheckoutForm 
+              cart={cart} 
+              onSuccess={handleSuccess}
+              shippingMethod={shippingMethod}
+              setShippingMethod={setShippingMethod}
+              subtotal={subtotal}
+              shippingFee={shippingFee}
+              total={calculatedTotal > 0 ? calculatedTotal : baseTotal}
+              calculatedTax={calculatedTax}
+              customerAddress={customerAddress}
+              setCustomerAddress={setCustomerAddress}
+              setAddressComplete={setAddressComplete}
+              appliedCoupon={appliedCoupon}
+              couponDiscount={couponDiscount}
+              customerEmail={customerEmail}
+              setCustomerEmail={setCustomerEmail}
+            />
+          </Elements>
         )}
       </div>
     </div>

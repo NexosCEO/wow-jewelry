@@ -27,6 +27,7 @@ export interface IStorage {
   getOrder(id: string): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
+  updatePaymentStatus(id: string, paymentStatus: string): Promise<Order | undefined>;
   updateShippingLabel(
     id: string,
     trackingNumber: string,
@@ -288,6 +289,8 @@ export class MemStorage implements IStorage {
       shippingMethod: insertOrder.shippingMethod ?? "standard",
       shippingFee: insertOrder.shippingFee ?? "5.99",
       status: insertOrder.status ?? "pending",
+      paymentMethod: insertOrder.paymentMethod ?? "stripe",
+      paymentStatus: insertOrder.paymentStatus ?? "pending",
       stripePaymentIntentId: insertOrder.stripePaymentIntentId ?? null,
       trackingNumber: null,
       shippingLabelUrl: null,
@@ -305,6 +308,15 @@ export class MemStorage implements IStorage {
     if (!order) return undefined;
     
     const updatedOrder = { ...order, status };
+    this.orders.set(id, updatedOrder);
+    return updatedOrder;
+  }
+
+  async updatePaymentStatus(id: string, paymentStatus: string): Promise<Order | undefined> {
+    const order = this.orders.get(id);
+    if (!order) return undefined;
+    
+    const updatedOrder = { ...order, paymentStatus };
     this.orders.set(id, updatedOrder);
     return updatedOrder;
   }
@@ -541,6 +553,15 @@ export class DatabaseStorage implements IStorage {
     const [order] = await db
       .update(orders)
       .set({ status })
+      .where(eq(orders.id, id))
+      .returning();
+    return order || undefined;
+  }
+
+  async updatePaymentStatus(id: string, paymentStatus: string): Promise<Order | undefined> {
+    const [order] = await db
+      .update(orders)
+      .set({ paymentStatus })
       .where(eq(orders.id, id))
       .returning();
     return order || undefined;

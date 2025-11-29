@@ -6,7 +6,16 @@ WOW Jewelry (WOW by Dany) is a full-stack e-commerce platform for handmade artis
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (November 24, 2025)
+## Recent Changes (November 29, 2025)
+### Alternative Payment Methods (COMPLETED)
+- **Zelle Payment Option**: Customers can choose to pay via Zelle at checkout with instructions to send payment to phone number 201-908-1726
+- **Cash Payment Option**: Available only for Local Pickup orders, customers can pay in cash when picking up their order
+- **Payment Status Tracking**: New database fields `paymentMethod` (stripe/zelle/cash) and `paymentStatus` (pending/paid/pending_payment) track payment state
+- **Admin Payment Confirmation**: Admin dashboard shows pending payment orders with prominent "Confirm Payment Received" button
+- **Payment Method Badges**: Orders display payment method (Zelle/Cash icons) and payment status badges in admin dashboard
+- **Order Flow**: Zelle and Cash orders are created with "pending_payment" status, admin confirms when payment is received which updates status to "paid" and order status to "confirmed"
+
+## Previous Changes (November 24, 2025)
 ### Gmail Integration for Order Notifications (COMPLETED)
 - **Gmail API Integration**: Connected Gmail API to send order notifications directly from client's Gmail account
 - **Automatic Email Notifications**: Emails sent automatically when orders are placed through ANY payment method

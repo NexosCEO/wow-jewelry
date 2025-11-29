@@ -590,7 +590,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             zipCode: order.zipCode
           },
           shippingMethod: order.shippingMethod,
-          paymentMethod: 'Stripe',
+          paymentMethod: order.paymentMethod === 'stripe' ? 'Credit Card' : order.paymentMethod === 'zelle' ? 'Zelle' : 'Cash',
           couponCode: order.couponCode || undefined,
           discountAmount: order.discountAmount || undefined
         });
@@ -637,6 +637,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(order);
     } catch (error: any) {
       res.status(500).json({ message: "Error updating order: " + error.message });
+    }
+  });
+
+  app.patch("/api/orders/:id/confirm-payment", requireAdmin, async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      
+      // Get the order first to check if it exists
+      const existingOrder = await storage.getOrder(orderId);
+      if (!existingOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Update payment status to paid
+      const updatedOrder = await storage.updatePaymentStatus(orderId, "paid");
+      
+      // Also update order status to confirmed if it's still pending
+      if (updatedOrder && updatedOrder.status === "pending") {
+        await storage.updateOrderStatus(orderId, "confirmed");
+      }
+
+      // Get the final order state
+      const finalOrder = await storage.getOrder(orderId);
+      
+      res.json(finalOrder);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error confirming payment: " + error.message });
     }
   });
 
