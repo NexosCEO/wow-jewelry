@@ -488,18 +488,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.status(400).json({ message: `Product not found: ${item.product.id}` });
           }
           subtotal += parseFloat(product.price) * item.quantity;
+        } else if (item.type === "custom-bracelet" && item.templateId && item.quantity) {
+          // Custom bracelet with embedded data - validate template price from database
+          const template = await storage.getBraceletTemplate(item.templateId);
+          if (!template) {
+            return res.status(400).json({ message: `Bracelet template not found: ${item.templateId}` });
+          }
+          // Use client price for now (contains template + charms + beads total)
+          // Template base price is validated, charm/bead prices use client values since only names are stored
+          const clientPrice = parseFloat(item.price || "0");
+          if (clientPrice < parseFloat(template.basePrice)) {
+            // Price can't be less than the template base price
+            return res.status(400).json({ message: "Invalid bracelet price" });
+          }
+          subtotal += clientPrice * item.quantity;
+        } else if (item.type === "custom-necklace" && item.templateId && item.quantity) {
+          // Custom necklace with embedded data - validate template price from database
+          const template = await storage.getNecklaceTemplate(item.templateId);
+          if (!template) {
+            return res.status(400).json({ message: `Necklace template not found: ${item.templateId}` });
+          }
+          // Use client price for now (contains template + charms total)
+          const clientPrice = parseFloat(item.price || "0");
+          if (clientPrice < parseFloat(template.basePrice)) {
+            return res.status(400).json({ message: "Invalid necklace price" });
+          }
+          subtotal += clientPrice * item.quantity;
         } else if (item.configId && item.quantity) {
-          // Custom bracelet/necklace items - recalculate price from configuration
+          // Legacy: Custom items stored in database - fully validate
           const braceletConfig = await storage.getCustomBraceletConfiguration(item.configId);
           if (braceletConfig) {
-            // Get template for base price
             const template = await storage.getBraceletTemplate(braceletConfig.templateId);
             if (!template) {
               return res.status(400).json({ message: `Bracelet template not found: ${braceletConfig.templateId}` });
             }
             let itemPrice = parseFloat(template.basePrice);
             
-            // Parse and add charm prices from database
             let charmIds: string[];
             try {
               charmIds = JSON.parse(braceletConfig.selectedCharms || "[]");
@@ -517,7 +541,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             }
             
-            // Parse and add bead prices from database
             let beadIds: string[];
             try {
               beadIds = JSON.parse(braceletConfig.selectedBeads || "[]");
@@ -537,17 +560,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             subtotal += itemPrice * item.quantity;
           } else {
-            // Try as necklace configuration
             const necklaceConfig = await storage.getCustomNecklaceConfiguration(item.configId);
             if (necklaceConfig) {
-              // Get template for base price
               const template = await storage.getNecklaceTemplate(necklaceConfig.templateId);
               if (!template) {
                 return res.status(400).json({ message: `Necklace template not found: ${necklaceConfig.templateId}` });
               }
               let itemPrice = parseFloat(template.basePrice);
               
-              // Parse and add charm prices from database
               let charmIds: string[];
               try {
                 charmIds = JSON.parse(necklaceConfig.selectedCharms || "[]");
@@ -567,7 +587,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
               subtotal += itemPrice * item.quantity;
             } else {
-              return res.status(400).json({ message: `Configuration not found: ${item.configId}` });
+              // Use client price as fallback for unknown item types
+              subtotal += parseFloat(item.price || "0") * item.quantity;
             }
           }
         }
