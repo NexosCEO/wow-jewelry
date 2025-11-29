@@ -13,11 +13,18 @@ import { SiInstagram, SiTiktok } from "react-icons/si";
 type BuilderStep = "select-string" | "add-charms" | "review";
 
 type GoldBeadSize = "4mm" | "5mm" | "6mm";
+type SilverBeadSize = "4mm" | "5mm";
+type BeadSize = GoldBeadSize | SilverBeadSize;
 
 const GOLD_BEAD_PRICES: Record<GoldBeadSize, number> = {
   "4mm": 1.00,
   "5mm": 1.50,
   "6mm": 2.00,
+};
+
+const SILVER_BEAD_PRICES: Record<SilverBeadSize, number> = {
+  "4mm": 1.50,
+  "5mm": 2.00,
 };
 
 interface SelectedCharm {
@@ -28,7 +35,7 @@ interface SelectedCharm {
 interface SelectedBead {
   bead: BraceletBead;
   quantity: number;
-  size?: GoldBeadSize;
+  size?: BeadSize;
 }
 
 interface BraceletBuilderProps {
@@ -44,6 +51,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const [selectedBeads, setSelectedBeads] = useState<SelectedBead[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [goldBeadSize, setGoldBeadSize] = useState<GoldBeadSize>("6mm");
+  const [silverBeadSize, setSilverBeadSize] = useState<SilverBeadSize>("5mm");
 
   const { data: templates = [], isLoading: loadingTemplates } = useQuery<BraceletTemplate[]>({
     queryKey: ["/api/bracelet-templates"],
@@ -70,10 +78,15 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const isCharmLimitReached = totalCharmsSelected >= 3;
 
   const isBasicGoldBead = (bead: BraceletBead) => bead.name === "Basic Gold Bead";
+  const isBasicSilverBead = (bead: BraceletBead) => bead.name === "Basic Silver Bead";
+  const isSizeableBead = (bead: BraceletBead) => isBasicGoldBead(bead) || isBasicSilverBead(bead);
 
   const getBeadPrice = (sb: SelectedBead): number => {
     if (isBasicGoldBead(sb.bead) && sb.size) {
-      return GOLD_BEAD_PRICES[sb.size];
+      return GOLD_BEAD_PRICES[sb.size as GoldBeadSize];
+    }
+    if (isBasicSilverBead(sb.bead) && sb.size) {
+      return SILVER_BEAD_PRICES[sb.size as SilverBeadSize];
     }
     return parseFloat(sb.bead.price);
   };
@@ -142,7 +155,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     });
   };
 
-  const handleAddBead = (bead: BraceletBead, size?: GoldBeadSize) => {
+  const handleAddBead = (bead: BraceletBead, size?: BeadSize) => {
     if (remainingSlots <= 0) {
       toast({
         title: "Maximum Slots Reached",
@@ -152,7 +165,12 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
       return;
     }
 
-    const beadSize = isBasicGoldBead(bead) ? (size || goldBeadSize) : undefined;
+    let beadSize: BeadSize | undefined = undefined;
+    if (isBasicGoldBead(bead)) {
+      beadSize = (size as GoldBeadSize) || goldBeadSize;
+    } else if (isBasicSilverBead(bead)) {
+      beadSize = (size as SilverBeadSize) || silverBeadSize;
+    }
 
     setSelectedBeads((prev) => {
       // For gold beads, match by both id and size
@@ -170,7 +188,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     });
   };
 
-  const handleRemoveBead = (beadId: string, size?: GoldBeadSize) => {
+  const handleRemoveBead = (beadId: string, size?: BeadSize) => {
     setSelectedBeads((prev) => {
       const existing = prev.find((sb) => sb.bead.id === beadId && sb.size === size);
       if (!existing) return prev;
@@ -543,11 +561,17 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {beads.filter(b => b.inStock).map((bead) => {
               const isGoldBead = isBasicGoldBead(bead);
-              // For gold beads, check if the currently selected size is in cart
+              const isSilverBead = isBasicSilverBead(bead);
+              // For sizeable beads, check if the currently selected size is in cart
               // For other beads, check if the bead id is in cart
-              const selected = isGoldBead 
-                ? selectedBeads.find((sb) => sb.bead.id === bead.id && sb.size === goldBeadSize)
-                : selectedBeads.find((sb) => sb.bead.id === bead.id);
+              let selected;
+              if (isGoldBead) {
+                selected = selectedBeads.find((sb) => sb.bead.id === bead.id && sb.size === goldBeadSize);
+              } else if (isSilverBead) {
+                selected = selectedBeads.find((sb) => sb.bead.id === bead.id && sb.size === silverBeadSize);
+              } else {
+                selected = selectedBeads.find((sb) => sb.bead.id === bead.id);
+              }
               
               return (
                 <Card 
@@ -599,6 +623,35 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                         >
                           <Plus className="w-4 h-4 mr-1" />
                           Add {goldBeadSize}
+                        </Button>
+                      </>
+                    ) : isSilverBead ? (
+                      <>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-bold">${SILVER_BEAD_PRICES[silverBeadSize].toFixed(2)}</span>
+                          <Badge variant="outline" className="text-xs">{bead.color}</Badge>
+                        </div>
+                        <div className="mb-2">
+                          <p className="text-xs text-muted-foreground mb-1">Select your size:</p>
+                          <Select value={silverBeadSize} onValueChange={(v) => setSilverBeadSize(v as SilverBeadSize)}>
+                            <SelectTrigger className="w-full" data-testid="select-silver-bead-size">
+                              <SelectValue placeholder="Select size" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="5mm">5mm - $2.00</SelectItem>
+                              <SelectItem value="4mm">4mm - $1.50</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleAddBead(bead, silverBeadSize)}
+                          disabled={remainingSlots === 0}
+                          data-testid={`button-select-bead-${bead.id}`}
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add {silverBeadSize}
                         </Button>
                       </>
                     ) : (

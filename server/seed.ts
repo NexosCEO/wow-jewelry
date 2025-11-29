@@ -470,6 +470,24 @@ const realBraceletBeads: InsertBraceletBead[] = [
     inStock: true,
     stockQuantity: 100,
   },
+  {
+    name: "Basic Gold Bead",
+    description: "Classic gold bead available in multiple sizes for custom bracelet creation.",
+    price: "1.00",
+    imageUrl: "/attached_assets/50-GOLD  BASIC STYLE 6mm 5mm and 4mm_1764423795080.JPG",
+    color: "Gold",
+    inStock: true,
+    stockQuantity: 100,
+  },
+  {
+    name: "Basic Silver Bead",
+    description: "Classic silver bead available in multiple sizes for custom bracelet creation.",
+    price: "1.50",
+    imageUrl: "/attached_assets/50-SILVER  BASIC STYLE 5mm and 4mm_1764438866655.JPG",
+    color: "Silver",
+    inStock: true,
+    stockQuantity: 100,
+  },
 ];
 
 const realNecklaceTemplates: InsertNecklaceTemplate[] = [
