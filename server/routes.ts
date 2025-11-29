@@ -524,12 +524,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Parse order items to subtract inventory
       const items = JSON.parse(validatedData.items);
       
-      // Subtract inventory for each product in the order
+      // Subtract inventory for each item in the order
       for (const item of items) {
         if (item.product && item.product.id) {
-          // Only subtract inventory for regular products (not custom bracelets/necklaces)
+          // Subtract inventory for regular products
           const quantityToSubtract = -item.quantity; // Negative to subtract
           await storage.updateProductInventory(item.product.id, quantityToSubtract);
+        } else if (item.type === "custom-bracelet") {
+          // Subtract charm inventory for custom bracelets
+          if (item.charmNames && Array.isArray(item.charmNames)) {
+            for (const charmName of item.charmNames) {
+              const charm = await storage.getCharmByName(charmName);
+              if (charm) {
+                await storage.updateCharmInventory(charm.id, -item.quantity);
+              }
+            }
+          }
+          // Subtract bead inventory for custom bracelets
+          if (item.beadNames && Array.isArray(item.beadNames)) {
+            for (const beadName of item.beadNames) {
+              const bead = await storage.getBeadByName(beadName);
+              if (bead) {
+                await storage.updateBeadInventory(bead.id, -item.quantity);
+              }
+            }
+          }
+        } else if (item.type === "custom-necklace") {
+          // Subtract charm inventory for custom necklaces
+          if (item.charmNames && Array.isArray(item.charmNames)) {
+            for (const charmName of item.charmNames) {
+              const charm = await storage.getCharmByName(charmName);
+              if (charm) {
+                await storage.updateCharmInventory(charm.id, -item.quantity);
+              }
+            }
+          }
         }
       }
       
@@ -1064,6 +1093,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
             message: "Missing required order information",
             details: "Customer name or total amount is missing"
           });
+        }
+
+        // Subtract inventory for items in the order (webhook path)
+        try {
+          const items = JSON.parse(orderData.items);
+          for (const item of items) {
+            if (item.product && item.product.id) {
+              // Subtract inventory for regular products
+              await storage.updateProductInventory(item.product.id, -item.quantity);
+            } else if (item.type === "custom-bracelet") {
+              // Subtract charm inventory for custom bracelets
+              if (item.charmNames && Array.isArray(item.charmNames)) {
+                for (const charmName of item.charmNames) {
+                  const charm = await storage.getCharmByName(charmName);
+                  if (charm) {
+                    await storage.updateCharmInventory(charm.id, -item.quantity);
+                  }
+                }
+              }
+              // Subtract bead inventory for custom bracelets
+              if (item.beadNames && Array.isArray(item.beadNames)) {
+                for (const beadName of item.beadNames) {
+                  const bead = await storage.getBeadByName(beadName);
+                  if (bead) {
+                    await storage.updateBeadInventory(bead.id, -item.quantity);
+                  }
+                }
+              }
+            } else if (item.type === "custom-necklace") {
+              // Subtract charm inventory for custom necklaces
+              if (item.charmNames && Array.isArray(item.charmNames)) {
+                for (const charmName of item.charmNames) {
+                  const charm = await storage.getCharmByName(charmName);
+                  if (charm) {
+                    await storage.updateCharmInventory(charm.id, -item.quantity);
+                  }
+                }
+              }
+            }
+          }
+          console.log("📦 Inventory updated for order items");
+        } catch (inventoryError) {
+          console.error("Failed to update inventory:", inventoryError);
+          // Continue with order creation even if inventory update fails
         }
 
         const order = await storage.createOrder(orderData as any);
