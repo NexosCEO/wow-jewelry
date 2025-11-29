@@ -681,9 +681,6 @@ export default function Admin() {
                 )}
               </Button>
             </form>
-            <p className="text-xs text-muted-foreground text-center mt-4">
-              Session will timeout after 2 minutes of inactivity
-            </p>
           </CardContent>
         </Card>
       </div>
@@ -711,10 +708,6 @@ export default function Admin() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-md" data-testid="session-timer">
-              <Clock className="w-4 h-4" />
-              <span>Session: {formatRemainingTime(remainingTime)}</span>
-            </div>
             <Button
               variant="outline"
               onClick={handleLogout}
