@@ -157,12 +157,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/charms/:id/inventory", requireAdmin, async (req, res) => {
+    try {
+      const { quantityChange } = req.body;
+      
+      if (typeof quantityChange !== 'number') {
+        return res.status(400).json({ message: "quantityChange must be a number" });
+      }
+
+      const charm = await storage.updateCharmInventory(req.params.id, quantityChange);
+      if (!charm) {
+        return res.status(404).json({ message: "Charm not found" });
+      }
+      res.json(charm);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating charm inventory: " + error.message });
+    }
+  });
+
   app.get("/api/bracelet-beads", async (req, res) => {
     try {
       const beads = await storage.getAllBraceletBeads();
       res.json(beads);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching bracelet beads: " + error.message });
+    }
+  });
+
+  app.patch("/api/bracelet-beads/:id/inventory", requireAdmin, async (req, res) => {
+    try {
+      const { quantityChange } = req.body;
+      
+      if (typeof quantityChange !== 'number') {
+        return res.status(400).json({ message: "quantityChange must be a number" });
+      }
+
+      const bead = await storage.updateBeadInventory(req.params.id, quantityChange);
+      if (!bead) {
+        return res.status(404).json({ message: "Bead not found" });
+      }
+      res.json(bead);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating bead inventory: " + error.message });
     }
   });
 
