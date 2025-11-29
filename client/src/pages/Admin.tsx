@@ -581,6 +581,94 @@ export default function Admin() {
     },
   });
 
+  const updateCharmPriceMutation = useMutation({
+    mutationFn: async ({ charmId, price }: { charmId: string; price: string }) => {
+      setProcessingCharmIds(prev => new Set(prev).add(charmId));
+      const token = getAdminToken();
+      const response = await fetch(`/api/charms/${charmId}/price`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ price }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update charm price");
+      }
+      return await response.json();
+    },
+    onSuccess: (data, variables) => {
+      setProcessingCharmIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.charmId);
+        return next;
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/charms"] });
+      toast({
+        title: "Price Updated!",
+        description: "Charm price has been updated",
+      });
+    },
+    onError: (error, variables) => {
+      setProcessingCharmIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.charmId);
+        return next;
+      });
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update charm price",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateBeadPriceMutation = useMutation({
+    mutationFn: async ({ beadId, price }: { beadId: string; price: string }) => {
+      setProcessingBeadIds(prev => new Set(prev).add(beadId));
+      const token = getAdminToken();
+      const response = await fetch(`/api/bracelet-beads/${beadId}/price`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ price }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update bead price");
+      }
+      return await response.json();
+    },
+    onSuccess: (data, variables) => {
+      setProcessingBeadIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.beadId);
+        return next;
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/bracelet-beads"] });
+      toast({
+        title: "Price Updated!",
+        description: "Bead price has been updated",
+      });
+    },
+    onError: (error, variables) => {
+      setProcessingBeadIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.beadId);
+        return next;
+      });
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update bead price",
+        variant: "destructive",
+      });
+    },
+  });
+
   const updatePriceMutation = useMutation({
     mutationFn: async ({ productId, price }: { productId: string; price: number }) => {
       setProcessingProductIds(prev => new Set(prev).add(productId));
