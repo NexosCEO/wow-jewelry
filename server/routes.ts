@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
 import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema, insertCustomNecklaceConfigurationSchema, insertCouponSchema } from "@shared/schema";
-import { requireAdmin } from "./auth-middleware";
+import { requireAdmin, verifyAdminPassword, createAdminSession, invalidateAdminSession } from "./auth-middleware";
 import PDFDocument from "pdfkit";
 import { sendOrderNotification, sendTestEmail } from './emailService';
 
@@ -23,6 +23,46 @@ if (stripeSecretKey) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Admin authentication endpoints
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { password } = req.body;
+      
+      if (!password) {
+        return res.status(400).json({ message: "Password is required" });
+      }
+      
+      if (!verifyAdminPassword(password)) {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+      
+      const token = createAdminSession();
+      res.json({ token, expiresIn: 120 }); // 2 minutes
+    } catch (error: any) {
+      res.status(500).json({ message: "Login error: " + error.message });
+    }
+  });
+  
+  app.post("/api/admin/logout", requireAdmin, async (req, res) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (token) {
+        invalidateAdminSession(token);
+      }
+      res.json({ message: "Logged out successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Logout error: " + error.message });
+    }
+  });
+  
+  app.post("/api/admin/refresh", requireAdmin, async (req, res) => {
+    try {
+      res.json({ expiresIn: 120 }); // Session was refreshed by requireAdmin middleware
+    } catch (error: any) {
+      res.status(500).json({ message: "Session refresh error: " + error.message });
+    }
+  });
   
   app.get("/api/products", async (req, res) => {
     try {

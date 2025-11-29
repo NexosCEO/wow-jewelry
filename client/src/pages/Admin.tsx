@@ -6,17 +6,74 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Package, Printer, Mail, ExternalLink, Lock, LogOut, PackageOpen, Plus, Minus, Edit, Check, X, Ticket, Calendar, Percent, DollarSign, Hash, Trash2, CreditCard, Phone, Banknote, CheckCircle } from "lucide-react";
+import { Loader2, Package, Printer, Mail, ExternalLink, Lock, LogOut, PackageOpen, Plus, Minus, Edit, Check, X, Ticket, Calendar, Percent, DollarSign, Hash, Trash2, CreditCard, Phone, Banknote, CheckCircle, Clock, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { getAdminToken, setAdminToken, isAdminAuthenticated, clearAdminToken } from "@/lib/adminAuth";
-import { useState } from "react";
+import { getAdminToken, setSession, isAdminAuthenticated, clearAdminToken, updateLastActivity, getRemainingSessionTime, isSessionExpired, refreshSessionExpiry } from "@/lib/adminAuth";
+import { useState, useEffect, useCallback } from "react";
 
 export default function Admin() {
   const { toast } = useToast();
-  const [accessKey, setAccessKey] = useState(getAdminToken() || "");
+  const [accessKey, setAccessKey] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(isAdminAuthenticated());
+  const [remainingTime, setRemainingTime] = useState(getRemainingSessionTime());
+  const [loginError, setLoginError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Track user activity to reset inactivity timer
+  const handleUserActivity = useCallback(() => {
+    if (isAuthenticated) {
+      updateLastActivity();
+      setRemainingTime(getRemainingSessionTime());
+    }
+  }, [isAuthenticated]);
+
+  // Set up activity listeners
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => {
+      window.addEventListener(event, handleUserActivity);
+    });
+
+    return () => {
+      events.forEach(event => {
+        window.removeEventListener(event, handleUserActivity);
+      });
+    };
+  }, [isAuthenticated, handleUserActivity]);
+
+  // Check session expiration every second
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const interval = setInterval(() => {
+      if (isSessionExpired()) {
+        clearAdminToken();
+        setIsAuthenticated(false);
+        setAccessKey("");
+        toast({
+          title: "Session Expired",
+          description: "You have been logged out due to inactivity. Please log in again.",
+          variant: "destructive",
+        });
+      } else {
+        setRemainingTime(getRemainingSessionTime());
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, toast]);
+
+  // Format remaining time as MM:SS
+  const formatRemainingTime = (ms: number) => {
+    const seconds = Math.floor(ms / 1000);
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const { data: orders, isLoading, error } = useQuery<Order[]>({
     queryKey: ["/api/orders"],
@@ -77,14 +134,67 @@ export default function Admin() {
     },
   });
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setAdminToken(accessKey);
-    setIsAuthenticated(true);
-    queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+    setLoginError("");
+    setIsLoggingIn(true);
+
+    try {
+      // Call login endpoint to verify password and get session token
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password: accessKey }),
+      });
+
+      if (response.status === 401) {
+        setLoginError("Invalid password. Please try again.");
+        setIsLoggingIn(false);
+        return;
+      }
+
+      if (!response.ok) {
+        const data = await response.json();
+        setLoginError(data.message || "Unable to verify credentials. Please try again.");
+        setIsLoggingIn(false);
+        return;
+      }
+
+      const { token, expiresIn } = await response.json();
+      
+      // Store session token (not password)
+      setSession(token, expiresIn);
+      setIsAuthenticated(true);
+      setRemainingTime(expiresIn * 1000);
+      setAccessKey(""); // Clear password from memory
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({
+        title: "Login Successful",
+        description: "Welcome to the admin dashboard.",
+      });
+    } catch (error) {
+      setLoginError("Connection error. Please try again.");
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      const token = getAdminToken();
+      if (token) {
+        await fetch("/api/admin/logout", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+      }
+    } catch (error) {
+      // Ignore logout errors, just clear local session
+    }
     clearAdminToken();
     setIsAuthenticated(false);
     setAccessKey("");
@@ -513,36 +623,61 @@ export default function Admin() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="w-5 h-5" />
-              Admin Access Required
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <Lock className="w-8 h-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl font-serif">
+              Admin Login
             </CardTitle>
+            <p className="text-muted-foreground text-sm mt-2">
+              Enter your admin password to access the dashboard
+            </p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label htmlFor="access-key" className="text-sm font-medium mb-2 block">
-                  Access Key
-                </label>
+                <Label htmlFor="access-key" className="text-sm font-medium mb-2 block">
+                  Password
+                </Label>
                 <Input
                   id="access-key"
                   type="password"
-                  placeholder="Enter admin access key"
+                  placeholder="Enter admin password"
                   value={accessKey}
-                  onChange={(e) => setAccessKey(e.target.value)}
+                  onChange={(e) => {
+                    setAccessKey(e.target.value);
+                    setLoginError("");
+                  }}
                   data-testid="input-admin-key"
+                  disabled={isLoggingIn}
                 />
               </div>
-              <Button type="submit" className="w-full" data-testid="button-admin-login">
-                Access Admin Dashboard
+              {loginError && (
+                <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 p-3 rounded-md" data-testid="text-auth-error">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  {loginError}
+                </div>
+              )}
+              <Button 
+                type="submit" 
+                className="w-full" 
+                data-testid="button-admin-login"
+                disabled={isLoggingIn || !accessKey}
+              >
+                {isLoggingIn ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  "Login"
+                )}
               </Button>
             </form>
-            {error && (
-              <p className="text-sm text-destructive mt-4" data-testid="text-auth-error">
-                Invalid access key. Please try again.
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground text-center mt-4">
+              Session will timeout after 2 minutes of inactivity
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -560,7 +695,7 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-8 flex items-start justify-between gap-4">
+        <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h1 className="font-serif text-4xl font-bold mb-2" data-testid="text-admin-title">
               Admin Dashboard
@@ -569,15 +704,21 @@ export default function Admin() {
               Manage orders, shipping labels, and product inventory
             </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={handleLogout}
-            className="flex items-center gap-2"
-            data-testid="button-logout"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </Button>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-md" data-testid="session-timer">
+              <Clock className="w-4 h-4" />
+              <span>Session: {formatRemainingTime(remainingTime)}</span>
+            </div>
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="flex items-center gap-2"
+              data-testid="button-logout"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="orders" className="w-full">
