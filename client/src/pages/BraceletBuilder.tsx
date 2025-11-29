@@ -4,12 +4,21 @@ import type { BraceletTemplate, Charm, BraceletBead } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Check, Plus, Minus, ShoppingCart, ArrowRight, ArrowLeft } from "lucide-react";
 import { useLocation, Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { SiInstagram, SiTiktok } from "react-icons/si";
 
 type BuilderStep = "select-string" | "add-charms" | "review";
+
+type GoldBeadSize = "4mm" | "5mm" | "6mm";
+
+const GOLD_BEAD_PRICES: Record<GoldBeadSize, number> = {
+  "4mm": 1.00,
+  "5mm": 1.50,
+  "6mm": 2.00,
+};
 
 interface SelectedCharm {
   charm: Charm;
@@ -19,6 +28,7 @@ interface SelectedCharm {
 interface SelectedBead {
   bead: BraceletBead;
   quantity: number;
+  size?: GoldBeadSize;
 }
 
 interface BraceletBuilderProps {
@@ -33,6 +43,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const [selectedCharms, setSelectedCharms] = useState<SelectedCharm[]>([]);
   const [selectedBeads, setSelectedBeads] = useState<SelectedBead[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [goldBeadSize, setGoldBeadSize] = useState<GoldBeadSize>("6mm");
 
   const { data: templates = [], isLoading: loadingTemplates } = useQuery<BraceletTemplate[]>({
     queryKey: ["/api/bracelet-templates"],
@@ -58,6 +69,15 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const remainingSlots = totalCharmSlots - usedSlots;
   const isCharmLimitReached = totalCharmsSelected >= 3;
 
+  const isBasicGoldBead = (bead: BraceletBead) => bead.name === "Basic Gold Bead";
+
+  const getBeadPrice = (sb: SelectedBead): number => {
+    if (isBasicGoldBead(sb.bead) && sb.size) {
+      return GOLD_BEAD_PRICES[sb.size];
+    }
+    return parseFloat(sb.bead.price);
+  };
+
   const calculateTotalPrice = () => {
     if (!selectedTemplate) return 0;
     const basePrice = parseFloat(selectedTemplate.basePrice);
@@ -66,7 +86,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
       0
     );
     const beadsPrice = selectedBeads.reduce(
-      (sum, sb) => sum + parseFloat(sb.bead.price) * sb.quantity,
+      (sum, sb) => sum + getBeadPrice(sb) * sb.quantity,
       0
     );
     return basePrice + charmsPrice + beadsPrice;
@@ -122,7 +142,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     });
   };
 
-  const handleAddBead = (bead: BraceletBead) => {
+  const handleAddBead = (bead: BraceletBead, size?: GoldBeadSize) => {
     if (remainingSlots <= 0) {
       toast({
         title: "Maximum Slots Reached",
@@ -132,28 +152,37 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
       return;
     }
 
+    const beadSize = isBasicGoldBead(bead) ? (size || goldBeadSize) : undefined;
+
     setSelectedBeads((prev) => {
-      const existing = prev.find((sb) => sb.bead.id === bead.id);
+      // For gold beads, match by both id and size
+      const existing = prev.find((sb) => 
+        sb.bead.id === bead.id && sb.size === beadSize
+      );
       if (existing) {
         return prev.map((sb) =>
-          sb.bead.id === bead.id ? { ...sb, quantity: sb.quantity + 1 } : sb
+          (sb.bead.id === bead.id && sb.size === beadSize) 
+            ? { ...sb, quantity: sb.quantity + 1 } 
+            : sb
         );
       }
-      return [...prev, { bead, quantity: 1 }];
+      return [...prev, { bead, quantity: 1, size: beadSize }];
     });
   };
 
-  const handleRemoveBead = (beadId: string) => {
+  const handleRemoveBead = (beadId: string, size?: GoldBeadSize) => {
     setSelectedBeads((prev) => {
-      const existing = prev.find((sb) => sb.bead.id === beadId);
+      const existing = prev.find((sb) => sb.bead.id === beadId && sb.size === size);
       if (!existing) return prev;
       
       if (existing.quantity === 1) {
-        return prev.filter((sb) => sb.bead.id !== beadId);
+        return prev.filter((sb) => !(sb.bead.id === beadId && sb.size === size));
       }
       
       return prev.map((sb) =>
-        sb.bead.id === beadId ? { ...sb, quantity: sb.quantity - 1 } : sb
+        (sb.bead.id === beadId && sb.size === size) 
+          ? { ...sb, quantity: sb.quantity - 1 } 
+          : sb
       );
     });
   };
@@ -179,7 +208,10 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
       templateId: selectedTemplate.id,
       templateName: selectedTemplate.name,
       charmNames: selectedCharms.map((sc) => `${sc.charm.name} (${sc.quantity})`),
-      beadNames: selectedBeads.map((sb) => `${sb.bead.name} (${sb.quantity})`),
+      beadNames: selectedBeads.map((sb) => {
+        const sizeSuffix = sb.size ? ` - ${sb.size}` : "";
+        return `${sb.bead.name}${sizeSuffix} (${sb.quantity})`;
+      }),
       price: calculateTotalPrice().toFixed(2),
       quantity: 1,
     };
@@ -396,43 +428,49 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                       </div>
                     </div>
                   ))}
-                  {selectedBeads.map((sb) => (
-                    <div key={sb.bead.id} className="flex items-center justify-between p-4 rounded-lg bg-muted">
-                      <div className="flex items-center gap-4">
-                        <img
-                          src={encodeURI(sb.bead.imageUrl)}
-                          alt={sb.bead.name}
-                          className="w-16 h-16 object-cover rounded-md"
-                        />
-                        <div>
-                          <p className="font-semibold">{sb.bead.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            ${parseFloat(sb.bead.price).toFixed(2)} each • Bead
-                          </p>
+                  {selectedBeads.map((sb) => {
+                    const beadPrice = getBeadPrice(sb);
+                    const beadKey = sb.size ? `${sb.bead.id}-${sb.size}` : sb.bead.id;
+                    const displayName = sb.size ? `${sb.bead.name} - ${sb.size}` : sb.bead.name;
+                    
+                    return (
+                      <div key={beadKey} className="flex items-center justify-between p-4 rounded-lg bg-muted">
+                        <div className="flex items-center gap-4">
+                          <img
+                            src={encodeURI(sb.bead.imageUrl)}
+                            alt={sb.bead.name}
+                            className="w-16 h-16 object-cover rounded-md"
+                          />
+                          <div>
+                            <p className="font-semibold">{displayName}</p>
+                            <p className="text-sm text-muted-foreground">
+                              ${beadPrice.toFixed(2)} each • Bead
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleRemoveBead(sb.bead.id, sb.size)}
+                            data-testid={`button-remove-bead-${beadKey}`}
+                          >
+                            <Minus className="w-4 h-4" />
+                          </Button>
+                          <span className="w-8 text-center font-semibold">{sb.quantity}</span>
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleAddBead(sb.bead, sb.size)}
+                            disabled={remainingSlots === 0}
+                            data-testid={`button-add-bead-${beadKey}`}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          onClick={() => handleRemoveBead(sb.bead.id)}
-                          data-testid={`button-remove-bead-${sb.bead.id}`}
-                        >
-                          <Minus className="w-4 h-4" />
-                        </Button>
-                        <span className="w-8 text-center font-semibold">{sb.quantity}</span>
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          onClick={() => handleAddBead(sb.bead)}
-                          disabled={remainingSlots === 0}
-                          data-testid={`button-add-bead-${sb.bead.id}`}
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div>
@@ -504,7 +542,13 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {beads.filter(b => b.inStock).map((bead) => {
-              const selected = selectedBeads.find((sb) => sb.bead.id === bead.id);
+              const isGoldBead = isBasicGoldBead(bead);
+              // For gold beads, check if the currently selected size is in cart
+              // For other beads, check if the bead id is in cart
+              const selected = isGoldBead 
+                ? selectedBeads.find((sb) => sb.bead.id === bead.id && sb.size === goldBeadSize)
+                : selectedBeads.find((sb) => sb.bead.id === bead.id);
+              
               return (
                 <Card 
                   key={bead.id} 
@@ -527,20 +571,53 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                     <CardTitle className="text-sm mt-2">{bead.name}</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold">${bead.price}</span>
-                      <Badge variant="outline" className="text-xs">{bead.color}</Badge>
-                    </div>
-                    <Button
-                      size="sm"
-                      className="w-full"
-                      onClick={() => handleAddBead(bead)}
-                      disabled={remainingSlots === 0}
-                      data-testid={`button-select-bead-${bead.id}`}
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      Add
-                    </Button>
+                    {isGoldBead ? (
+                      <>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-bold">${GOLD_BEAD_PRICES[goldBeadSize].toFixed(2)}</span>
+                          <Badge variant="outline" className="text-xs">{bead.color}</Badge>
+                        </div>
+                        <div className="mb-2">
+                          <Select value={goldBeadSize} onValueChange={(v) => setGoldBeadSize(v as GoldBeadSize)}>
+                            <SelectTrigger className="w-full" data-testid="select-gold-bead-size">
+                              <SelectValue placeholder="Select size" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="6mm">6mm - $2.00</SelectItem>
+                              <SelectItem value="5mm">5mm - $1.50</SelectItem>
+                              <SelectItem value="4mm">4mm - $1.00</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleAddBead(bead, goldBeadSize)}
+                          disabled={remainingSlots === 0}
+                          data-testid={`button-select-bead-${bead.id}`}
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add {goldBeadSize}
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-bold">${bead.price}</span>
+                          <Badge variant="outline" className="text-xs">{bead.color}</Badge>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleAddBead(bead)}
+                          disabled={remainingSlots === 0}
+                          data-testid={`button-select-bead-${bead.id}`}
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add
+                        </Button>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               );
@@ -600,20 +677,26 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                 <div>
                   <h3 className="font-semibold mb-2">Selected Beads ({selectedBeads.reduce((sum, sb) => sum + sb.quantity, 0)})</h3>
                   <div className="space-y-2">
-                    {selectedBeads.map((sb) => (
-                      <div key={sb.bead.id} className="flex items-center gap-3 bg-muted/30 p-3 rounded-md">
-                        <img
-                          src={encodeURI(sb.bead.imageUrl)}
-                          alt={sb.bead.name}
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium">{sb.bead.name}</p>
-                          <p className="text-sm text-muted-foreground">Quantity: {sb.quantity}</p>
+                    {selectedBeads.map((sb) => {
+                      const beadPrice = getBeadPrice(sb);
+                      const beadKey = sb.size ? `${sb.bead.id}-${sb.size}` : sb.bead.id;
+                      const displayName = sb.size ? `${sb.bead.name} - ${sb.size}` : sb.bead.name;
+                      
+                      return (
+                        <div key={beadKey} className="flex items-center gap-3 bg-muted/30 p-3 rounded-md">
+                          <img
+                            src={encodeURI(sb.bead.imageUrl)}
+                            alt={sb.bead.name}
+                            className="w-12 h-12 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium">{displayName}</p>
+                            <p className="text-sm text-muted-foreground">Quantity: {sb.quantity}</p>
+                          </div>
+                          <span className="font-bold">${(beadPrice * sb.quantity).toFixed(2)}</span>
                         </div>
-                        <span className="font-bold">${(parseFloat(sb.bead.price) * sb.quantity).toFixed(2)}</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -635,7 +718,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-muted-foreground">Beads ({selectedBeads.reduce((sum, sb) => sum + sb.quantity, 0)})</span>
                     <span>
-                      ${selectedBeads.reduce((sum, sb) => sum + parseFloat(sb.bead.price) * sb.quantity, 0).toFixed(2)}
+                      ${selectedBeads.reduce((sum, sb) => sum + getBeadPrice(sb) * sb.quantity, 0).toFixed(2)}
                     </span>
                   </div>
                 )}
