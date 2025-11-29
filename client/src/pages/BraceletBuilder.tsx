@@ -53,9 +53,10 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     : templates.filter(t => t.category === selectedCategory);
 
   const totalCharmSlots = selectedTemplate?.maxSlots || 0;
-  const usedSlots = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0) + 
-                     selectedBeads.reduce((sum, sb) => sum + sb.quantity, 0);
+  const totalCharmsSelected = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0);
+  const usedSlots = totalCharmsSelected + selectedBeads.reduce((sum, sb) => sum + sb.quantity, 0);
   const remainingSlots = totalCharmSlots - usedSlots;
+  const isCharmLimitReached = totalCharmsSelected >= 3;
 
   const calculateTotalPrice = () => {
     if (!selectedTemplate) return 0;
@@ -77,9 +78,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   };
 
   const handleAddCharm = (charm: Charm) => {
-    const totalCharms = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0);
-    
-    if (totalCharms >= 3) {
+    if (isCharmLimitReached) {
       toast({
         title: "Maximum Charms Reached",
         description: "You can only add up to 3 charms per bracelet.",
@@ -91,7 +90,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     if (remainingSlots <= 0) {
       toast({
         title: "Maximum Slots Reached",
-        description: `This bracelet can only hold ${totalCharmSlots} charms.`,
+        description: `This bracelet can only hold ${totalCharmSlots} items.`,
         variant: "destructive",
       });
       return;
@@ -389,7 +388,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                           size="icon"
                           variant="outline"
                           onClick={() => handleAddCharm(sc.charm)}
-                          disabled={remainingSlots === 0}
+                          disabled={remainingSlots === 0 || isCharmLimitReached}
                           data-testid={`button-add-charm-${sc.charm.id}`}
                         >
                           <Plus className="w-4 h-4" />
@@ -489,11 +488,11 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                       size="sm"
                       className="w-full"
                       onClick={() => handleAddCharm(charm)}
-                      disabled={remainingSlots === 0}
+                      disabled={remainingSlots === 0 || isCharmLimitReached}
                       data-testid={`button-select-charm-${charm.id}`}
                     >
                       <Plus className="w-4 h-4 mr-1" />
-                      Add
+                      {isCharmLimitReached ? "Max 3 Charms" : "Add"}
                     </Button>
                   </CardContent>
                 </Card>
