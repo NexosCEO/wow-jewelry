@@ -37,9 +37,11 @@ export interface IStorage {
   getAllCharms(): Promise<Charm[]>;
   getCharm(id: string): Promise<Charm | undefined>;
   createCharm(charm: InsertCharm): Promise<Charm>;
+  updateCharmInventory(id: string, quantityChange: number): Promise<Charm | undefined>;
   
   getAllBraceletBeads(): Promise<BraceletBead[]>;
   getBraceletBead(id: string): Promise<BraceletBead | undefined>;
+  updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined>;
   
   getAllBraceletTemplates(): Promise<BraceletTemplate[]>;
   getBraceletTemplate(id: string): Promise<BraceletTemplate | undefined>;
@@ -337,12 +339,20 @@ export class MemStorage implements IStorage {
     throw new Error("Not implemented in MemStorage");
   }
 
+  async updateCharmInventory(id: string, quantityChange: number): Promise<Charm | undefined> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
   async getAllBraceletBeads(): Promise<BraceletBead[]> {
     return [];
   }
 
   async getBraceletBead(id: string): Promise<BraceletBead | undefined> {
     return undefined;
+  }
+
+  async updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined> {
+    throw new Error("Not implemented in MemStorage");
   }
 
   async getAllBraceletTemplates(): Promise<BraceletTemplate[]> {
@@ -562,6 +572,22 @@ export class DatabaseStorage implements IStorage {
     return charm;
   }
 
+  async updateCharmInventory(id: string, quantityChange: number): Promise<Charm | undefined> {
+    const existingCharm = await this.getCharm(id);
+    if (!existingCharm) return undefined;
+
+    const newQuantity = Math.max(0, existingCharm.stockQuantity + quantityChange);
+    const [updatedCharm] = await db
+      .update(charms)
+      .set({
+        stockQuantity: newQuantity,
+        inStock: newQuantity > 0,
+      })
+      .where(eq(charms.id, id))
+      .returning();
+    return updatedCharm || undefined;
+  }
+
   async getAllBraceletBeads(): Promise<BraceletBead[]> {
     return await db.select().from(braceletBeads);
   }
@@ -569,6 +595,22 @@ export class DatabaseStorage implements IStorage {
   async getBraceletBead(id: string): Promise<BraceletBead | undefined> {
     const [bead] = await db.select().from(braceletBeads).where(eq(braceletBeads.id, id));
     return bead || undefined;
+  }
+
+  async updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined> {
+    const existingBead = await this.getBraceletBead(id);
+    if (!existingBead) return undefined;
+
+    const newQuantity = Math.max(0, existingBead.stockQuantity + quantityChange);
+    const [updatedBead] = await db
+      .update(braceletBeads)
+      .set({
+        stockQuantity: newQuantity,
+        inStock: newQuantity > 0,
+      })
+      .where(eq(braceletBeads.id, id))
+      .returning();
+    return updatedBead || undefined;
   }
 
   async getAllBraceletTemplates(): Promise<BraceletTemplate[]> {
