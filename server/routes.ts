@@ -761,20 +761,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const order = await storage.createOrder(validatedData);
       
-      // Send email notification for new order
+      // Send email notification for new order to admin
       try {
         const parsedItems = JSON.parse(order.items);
         await sendOrderNotification({
           orderId: order.id,
           customerName: order.customerName,
           customerEmail: order.customerEmail,
-          customerPhone: order.customerEmail, // Using email as phone is not in order
+          customerPhone: order.customerEmail,
           total: order.totalAmount,
-          items: parsedItems.map((item: any) => ({
-            name: item.product?.title || item.customBraceletConfiguration?.title || item.customNecklaceConfiguration?.title || 'Unknown Item',
-            quantity: item.quantity,
-            price: item.price
-          })),
+          items: parsedItems.map((item: any) => {
+            // Handle regular products
+            if (item.product) {
+              return {
+                name: item.product.name || 'Product',
+                quantity: item.quantity,
+                price: item.product.price
+              };
+            }
+            // Handle custom bracelets/necklaces
+            if (item.templateName) {
+              return {
+                name: `Custom ${item.templateName}`,
+                quantity: item.quantity,
+                price: item.price
+              };
+            }
+            return {
+              name: 'Item',
+              quantity: item.quantity || 1,
+              price: item.price || '0'
+            };
+          }),
           shippingAddress: {
             street: order.shippingAddress,
             city: order.city,
@@ -1301,20 +1319,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const order = await storage.createOrder(orderData as any);
         console.log(`✅ Order created: ${order.id} for payment ${paymentIntent.id}`);
         
-        // Send email notification for new order
+        // Send email notification for new order to admin
         try {
           const parsedItems = JSON.parse(order.items);
           await sendOrderNotification({
             orderId: order.id,
             customerName: order.customerName,
             customerEmail: order.customerEmail,
-            customerPhone: order.customerEmail, // Using email as phone is not in order
+            customerPhone: order.customerEmail,
             total: order.totalAmount,
-            items: parsedItems.map((item: any) => ({
-              name: item.product?.title || item.customBraceletConfiguration?.title || item.customNecklaceConfiguration?.title || 'Unknown Item',
-              quantity: item.quantity,
-              price: item.price
-            })),
+            items: parsedItems.map((item: any) => {
+              // Handle regular products
+              if (item.product) {
+                return {
+                  name: item.product.name || 'Product',
+                  quantity: item.quantity,
+                  price: item.product.price
+                };
+              }
+              // Handle custom bracelets/necklaces
+              if (item.templateName) {
+                return {
+                  name: `Custom ${item.templateName}`,
+                  quantity: item.quantity,
+                  price: item.price
+                };
+              }
+              return {
+                name: 'Item',
+                quantity: item.quantity || 1,
+                price: item.price || '0'
+              };
+            }),
             shippingAddress: {
               street: order.shippingAddress,
               city: order.city,
