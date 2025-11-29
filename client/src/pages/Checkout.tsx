@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useStripe, useElements, PaymentElement, Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { CartItem, CustomBraceletCartItem, CustomNecklaceCartItem } from "@shared/schema";
@@ -385,6 +385,10 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
   const [appliedCoupon, setAppliedCoupon] = useState<string>("");
   const [customerEmail, setCustomerEmail] = useState("");
   const { toast } = useToast();
+  
+  // Refs for debouncing and tracking payment intent
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const currentPaymentIntentRef = useRef<string | null>(null);
 
   const subtotal = cart.reduce((sum, item) => {
     if ("product" in item) {
@@ -478,8 +482,13 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
     setAddressComplete(isComplete);
   }, [customerAddress]);
 
-  // Only create payment intent for Stripe payments
+  // Only create payment intent for Stripe payments - with debouncing to prevent excessive creation
   useEffect(() => {
+    // Clear any pending debounce timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
     if (cart.length === 0) {
       setLocation("/");
       return;
@@ -495,20 +504,48 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
 
     // Only create payment intent if Stripe is selected
     if (paymentMethod !== "stripe") {
+      // If switching away from Stripe, cancel the current payment intent
+      if (currentPaymentIntentRef.current) {
+        apiRequest("POST", "/api/cancel-payment-intent", { 
+          paymentIntentId: currentPaymentIntentRef.current 
+        }).catch(() => {});
+        currentPaymentIntentRef.current = null;
+        setClientSecret("");
+      }
       return;
     }
 
-    setIsCreatingPaymentIntent(true);
-    setClientSecret("");
-    
-    apiRequest("POST", "/api/create-payment-intent", { 
-      customerAddress,
-      cart,
-      couponCode: appliedCoupon,
-      shippingMethod
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    // Debounce payment intent creation by 800ms to prevent rapid creation
+    debounceTimerRef.current = setTimeout(async () => {
+      setIsCreatingPaymentIntent(true);
+      
+      // Cancel previous payment intent if exists
+      if (currentPaymentIntentRef.current) {
+        try {
+          await apiRequest("POST", "/api/cancel-payment-intent", { 
+            paymentIntentId: currentPaymentIntentRef.current 
+          });
+        } catch (e) {
+          // Ignore cancellation errors
+        }
+      }
+      
+      setClientSecret("");
+      
+      try {
+        const res = await apiRequest("POST", "/api/create-payment-intent", { 
+          customerAddress,
+          cart,
+          couponCode: appliedCoupon,
+          shippingMethod
+        });
+        const data = await res.json();
+        
+        // Store the payment intent ID for potential cancellation
+        if (data.paymentIntentId) {
+          currentPaymentIntentRef.current = data.paymentIntentId;
+        }
+        
         setClientSecret(data.clientSecret);
         setCalculatedTax(data.taxAmount || 0);
         setCalculatedTotal(data.totalAmount || baseTotal);
@@ -516,8 +553,7 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           setCouponDiscount(data.discountAmount);
         }
         setIsCreatingPaymentIntent(false);
-      })
-      .catch((error) => {
+      } catch (error: any) {
         console.error("Payment intent creation failed:", error);
         setIsCreatingPaymentIntent(false);
         toast({
@@ -525,7 +561,15 @@ export default function Checkout({ cart, onClearCart }: CheckoutProps) {
           description: error.message || "Unable to initialize payment. Please try again.",
           variant: "destructive",
         });
-      });
+      }
+    }, 800);
+    
+    // Cleanup function to clear timeout
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
   }, [cart, shippingMethod, addressComplete, appliedCoupon, paymentMethod]);
 
   const handleZelleOrCashOrder = async () => {

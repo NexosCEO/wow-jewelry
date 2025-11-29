@@ -696,6 +696,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ 
         clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
         taxAmount: taxAmount,
         totalAmount: total,
         discountAmount: discountAmount,
@@ -706,6 +707,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Error creating payment intent: " + error.message,
         details: error.type || "unknown_error"
       });
+    }
+  });
+  
+  // Cancel payment intent to prevent "incomplete" payments in Stripe dashboard
+  app.post("/api/cancel-payment-intent", async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({ message: "Stripe not configured" });
+      }
+      
+      const { paymentIntentId } = req.body;
+      
+      if (!paymentIntentId) {
+        return res.status(400).json({ message: "Payment intent ID required" });
+      }
+      
+      try {
+        const paymentIntent = await stripe.paymentIntents.cancel(paymentIntentId);
+        console.log(`Payment intent cancelled: ${paymentIntentId}`);
+        res.json({ success: true, status: paymentIntent.status });
+      } catch (stripeError: any) {
+        // Payment intent may already be cancelled or succeeded - that's okay
+        if (stripeError.code === "payment_intent_unexpected_state") {
+          res.json({ success: true, status: "already_processed" });
+        } else {
+          throw stripeError;
+        }
+      }
+    } catch (error: any) {
+      console.error("Error cancelling payment intent:", error);
+      res.status(500).json({ message: "Error cancelling payment intent" });
     }
   });
 
