@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Plus, Minus, ShoppingCart, ArrowRight, ArrowLeft } from "lucide-react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { SiInstagram, SiTiktok } from "react-icons/si";
 
 type BuilderStep = "select-string" | "add-charms" | "review";
 
@@ -678,6 +679,56 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
           </div>
         </div>
       )}
+
+      {/* Footer - matching main page */}
+      <footer className="border-t border-border py-12 md:py-16 px-4 mt-16" style={{ background: '#0f0d0b', color: '#fff' }}>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+            <div>
+              <h3 className="font-serif text-xl font-bold mb-3">Follow Us on Social Media</h3>
+              <p className="mb-4 max-w-md" style={{ color: '#f0e7d6' }}>
+                Join our community for exclusive behind-the-scenes content, new collection launches, and special offers!
+              </p>
+              <div className="flex gap-4 mb-4">
+                <a 
+                  href="https://www.instagram.com/wow_bydany?igsh=MXFsZXZpbDVqaGp4dQ%3D%3D&utm_source=qr" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:opacity-80 transition-opacity"
+                  aria-label="Follow us on Instagram"
+                  data-testid="link-instagram-builder"
+                >
+                  <SiInstagram size={24} style={{ color: '#caa55b' }} />
+                </a>
+                <a 
+                  href="http://www.tiktok.com/@wow_bydany" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:opacity-80 transition-opacity"
+                  aria-label="Follow us on TikTok"
+                  data-testid="link-tiktok-builder"
+                >
+                  <SiTiktok size={24} style={{ color: '#caa55b' }} />
+                </a>
+              </div>
+              <p className="text-xs" style={{ color: '#c9c0b0' }}>
+                &copy; {new Date().getFullYear()} WOW by Dany. All rights reserved.
+              </p>
+            </div>
+            <div className="text-right">
+              <h3 className="font-serif text-xl font-bold mb-3">Quick Links</h3>
+              <div className="flex flex-col gap-2">
+                <Link href="/" className="hover:opacity-80 transition-opacity" style={{ color: '#f0e7d6' }}>
+                  Shop All Jewelry
+                </Link>
+                <Link href="/privacy" className="hover:opacity-80 transition-opacity" style={{ color: '#f0e7d6' }}>
+                  Privacy Policy
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
