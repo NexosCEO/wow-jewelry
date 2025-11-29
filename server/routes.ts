@@ -470,54 +470,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Cart is empty" });
       }
 
+      // Validate all quantities are positive integers
+      for (const item of cart) {
+        const qty = item.quantity;
+        if (!Number.isInteger(qty) || qty <= 0) {
+          return res.status(400).json({ message: "Invalid item quantity" });
+        }
+      }
+
       // Calculate subtotal server-side with validated prices from database
       let subtotal = 0;
       for (const item of cart) {
         if (item.product && item.product.id && item.quantity) {
           // Regular product items - verify price from database
           const product = await storage.getProduct(item.product.id);
-          if (product) {
-            subtotal += parseFloat(product.price) * item.quantity;
-          } else {
-            console.warn(`Product ${item.product.id} not found, using client price`);
-            subtotal += parseFloat(item.product.price || "0") * item.quantity;
+          if (!product) {
+            return res.status(400).json({ message: `Product not found: ${item.product.id}` });
           }
+          subtotal += parseFloat(product.price) * item.quantity;
         } else if (item.configId && item.quantity) {
           // Custom bracelet/necklace items - recalculate price from configuration
           const braceletConfig = await storage.getCustomBraceletConfiguration(item.configId);
           if (braceletConfig) {
             // Get template for base price
             const template = await storage.getBraceletTemplate(braceletConfig.templateId);
-            let itemPrice = template ? parseFloat(template.basePrice) : 0;
+            if (!template) {
+              return res.status(400).json({ message: `Bracelet template not found: ${braceletConfig.templateId}` });
+            }
+            let itemPrice = parseFloat(template.basePrice);
             
             // Parse and add charm prices from database
+            let charmIds: string[];
             try {
-              const charmIds = JSON.parse(braceletConfig.selectedCharms || "[]");
-              if (Array.isArray(charmIds)) {
-                for (const charmId of charmIds) {
-                  const charm = await storage.getCharm(charmId);
-                  if (charm) {
-                    itemPrice += parseFloat(charm.price);
-                  }
-                }
+              charmIds = JSON.parse(braceletConfig.selectedCharms || "[]");
+              if (!Array.isArray(charmIds)) {
+                return res.status(400).json({ message: "Invalid charm configuration" });
               }
             } catch (e) {
-              console.warn("Error parsing selected charms:", e);
+              return res.status(400).json({ message: "Corrupted charm configuration data" });
+            }
+            
+            for (const charmId of charmIds) {
+              const charm = await storage.getCharm(charmId);
+              if (charm) {
+                itemPrice += parseFloat(charm.price);
+              }
             }
             
             // Parse and add bead prices from database
+            let beadIds: string[];
             try {
-              const beadIds = JSON.parse(braceletConfig.selectedBeads || "[]");
-              if (Array.isArray(beadIds)) {
-                for (const beadId of beadIds) {
-                  const bead = await storage.getBraceletBead(beadId);
-                  if (bead) {
-                    itemPrice += parseFloat(bead.price);
-                  }
-                }
+              beadIds = JSON.parse(braceletConfig.selectedBeads || "[]");
+              if (!Array.isArray(beadIds)) {
+                return res.status(400).json({ message: "Invalid bead configuration" });
               }
             } catch (e) {
-              console.warn("Error parsing selected beads:", e);
+              return res.status(400).json({ message: "Corrupted bead configuration data" });
+            }
+            
+            for (const beadId of beadIds) {
+              const bead = await storage.getBraceletBead(beadId);
+              if (bead) {
+                itemPrice += parseFloat(bead.price);
+              }
             }
             
             subtotal += itemPrice * item.quantity;
@@ -527,27 +542,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
             if (necklaceConfig) {
               // Get template for base price
               const template = await storage.getNecklaceTemplate(necklaceConfig.templateId);
-              let itemPrice = template ? parseFloat(template.basePrice) : 0;
+              if (!template) {
+                return res.status(400).json({ message: `Necklace template not found: ${necklaceConfig.templateId}` });
+              }
+              let itemPrice = parseFloat(template.basePrice);
               
               // Parse and add charm prices from database
+              let charmIds: string[];
               try {
-                const charmIds = JSON.parse(necklaceConfig.selectedCharms || "[]");
-                if (Array.isArray(charmIds)) {
-                  for (const charmId of charmIds) {
-                    const charm = await storage.getCharm(charmId);
-                    if (charm) {
-                      itemPrice += parseFloat(charm.price);
-                    }
-                  }
+                charmIds = JSON.parse(necklaceConfig.selectedCharms || "[]");
+                if (!Array.isArray(charmIds)) {
+                  return res.status(400).json({ message: "Invalid charm configuration" });
                 }
               } catch (e) {
-                console.warn("Error parsing selected charms:", e);
+                return res.status(400).json({ message: "Corrupted charm configuration data" });
+              }
+              
+              for (const charmId of charmIds) {
+                const charm = await storage.getCharm(charmId);
+                if (charm) {
+                  itemPrice += parseFloat(charm.price);
+                }
               }
               
               subtotal += itemPrice * item.quantity;
             } else {
-              console.warn(`Configuration ${item.configId} not found, using client price`);
-              subtotal += parseFloat(item.price || "0") * item.quantity;
+              return res.status(400).json({ message: `Configuration not found: ${item.configId}` });
             }
           }
         }
