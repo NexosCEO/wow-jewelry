@@ -133,8 +133,8 @@ export async function sendOrderNotification(orderDetails: {
       `   • ${item.name} - Quantity: ${item.quantity} - $${item.price}`
     ).join('\n');
 
-    // Create email content
-    const subject = `🎉 New Order #${orderDetails.orderId} - WOW by Dany`;
+    // Create email content (no emojis - they cause encoding issues in plain text emails)
+    const subject = `New Order #${orderDetails.orderId} - WOW by Dany`;
     
     const messageBody = `
 You have received a new order!
@@ -156,7 +156,7 @@ SHIPPING ADDRESS:
 ${orderDetails.shippingAddress.street}
 ${orderDetails.shippingAddress.city}, ${orderDetails.shippingAddress.state} ${orderDetails.shippingAddress.zipCode}
 
-Shipping Method: ${orderDetails.shippingMethod === 'pickup' ? '📦 LOCAL PICKUP' : '🚚 STANDARD SHIPPING ($5.99)'}
+Shipping Method: ${orderDetails.shippingMethod === 'pickup' ? 'LOCAL PICKUP' : 'STANDARD SHIPPING ($5.99)'}
 
 ITEMS ORDERED:
 -------------
