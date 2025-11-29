@@ -578,6 +578,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                           <Badge variant="outline" className="text-xs">{bead.color}</Badge>
                         </div>
                         <div className="mb-2">
+                          <p className="text-xs text-muted-foreground mb-1">Select your size:</p>
                           <Select value={goldBeadSize} onValueChange={(v) => setGoldBeadSize(v as GoldBeadSize)}>
                             <SelectTrigger className="w-full" data-testid="select-gold-bead-size">
                               <SelectValue placeholder="Select size" />
