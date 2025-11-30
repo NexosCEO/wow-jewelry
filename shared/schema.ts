@@ -99,6 +99,7 @@ export const braceletBeads = pgTable("bracelet_beads", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   imageUrl: text("image_url").notNull(),
   color: text("color").notNull(),
+  size: text("size"), // Bead size like "4mm", "5mm", "6mm" - null for beads without size variants
   inStock: boolean("in_stock").notNull().default(true),
   stockQuantity: integer("stock_quantity").notNull().default(0),
 });
