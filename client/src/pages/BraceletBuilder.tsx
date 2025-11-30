@@ -12,20 +12,7 @@ import { SiInstagram, SiTiktok } from "react-icons/si";
 
 type BuilderStep = "select-string" | "add-charms" | "review";
 
-type GoldBeadSize = "4mm" | "5mm" | "6mm";
-type SilverBeadSize = "4mm" | "5mm";
-type BeadSize = GoldBeadSize | SilverBeadSize;
-
-const GOLD_BEAD_PRICES: Record<GoldBeadSize, number> = {
-  "4mm": 1.00,
-  "5mm": 1.50,
-  "6mm": 2.00,
-};
-
-const SILVER_BEAD_PRICES: Record<SilverBeadSize, number> = {
-  "4mm": 1.50,
-  "5mm": 2.00,
-};
+type BeadSize = string; // Sizes now come from database
 
 interface SelectedCharm {
   charm: Charm;
@@ -50,8 +37,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const [selectedCharms, setSelectedCharms] = useState<SelectedCharm[]>([]);
   const [selectedBeads, setSelectedBeads] = useState<SelectedBead[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [goldBeadSize, setGoldBeadSize] = useState<GoldBeadSize>("6mm");
-  const [silverBeadSize, setSilverBeadSize] = useState<SilverBeadSize>("5mm");
+  const [selectedBeadSizes, setSelectedBeadSizes] = useState<Record<string, string>>({}); // beadName -> selectedSize
 
   const { data: templates = [], isLoading: loadingTemplates } = useQuery<BraceletTemplate[]>({
     queryKey: ["/api/bracelet-templates"],
@@ -77,17 +63,47 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const remainingSlots = totalCharmSlots - usedSlots;
   const isCharmLimitReached = totalCharmsSelected >= 3;
 
-  const isBasicGoldBead = (bead: BraceletBead) => bead.name === "Basic Gold Bead";
-  const isBasicSilverBead = (bead: BraceletBead) => bead.name === "Basic Silver Bead";
-  const isSizeableBead = (bead: BraceletBead) => isBasicGoldBead(bead) || isBasicSilverBead(bead);
+  // Group beads by name to handle sized variants
+  const groupedBeads = beads.reduce((groups, bead) => {
+    if (!bead.inStock) return groups;
+    const key = `${bead.name}-${bead.color}`;
+    if (!groups[key]) {
+      groups[key] = [];
+    }
+    groups[key].push(bead);
+    return groups;
+  }, {} as Record<string, BraceletBead[]>);
+
+  // Check if a bead group has size variants
+  const hasSizeVariants = (beadGroup: BraceletBead[]) => beadGroup.some(b => b.size);
+
+  // Get the bead entry for a specific size, or the default bead if no size
+  const getBeadForSize = (beadGroup: BraceletBead[], size?: string): BraceletBead | undefined => {
+    if (size) {
+      return beadGroup.find(b => b.size === size);
+    }
+    return beadGroup.find(b => !b.size) || beadGroup[0];
+  };
+
+  // Get available sizes for a bead group, sorted
+  const getAvailableSizes = (beadGroup: BraceletBead[]): string[] => {
+    return beadGroup
+      .filter(b => b.size)
+      .map(b => b.size!)
+      .sort((a, b) => {
+        const sizeA = parseInt(a);
+        const sizeB = parseInt(b);
+        return sizeB - sizeA; // Sort descending (6mm, 5mm, 4mm)
+      });
+  };
+
+  // Get default selected size for a bead group
+  const getDefaultSize = (beadGroup: BraceletBead[]): string => {
+    const sizes = getAvailableSizes(beadGroup);
+    return sizes[0] || '';
+  };
 
   const getBeadPrice = (sb: SelectedBead): number => {
-    if (isBasicGoldBead(sb.bead) && sb.size) {
-      return GOLD_BEAD_PRICES[sb.size as GoldBeadSize];
-    }
-    if (isBasicSilverBead(sb.bead) && sb.size) {
-      return SILVER_BEAD_PRICES[sb.size as SilverBeadSize];
-    }
     return parseFloat(sb.bead.price);
   };
 
@@ -155,7 +171,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
     });
   };
 
-  const handleAddBead = (bead: BraceletBead, size?: BeadSize) => {
+  const handleAddBead = (bead: BraceletBead) => {
     if (remainingSlots <= 0) {
       toast({
         title: "Maximum Slots Reached",
@@ -165,42 +181,29 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
       return;
     }
 
-    let beadSize: BeadSize | undefined = undefined;
-    if (isBasicGoldBead(bead)) {
-      beadSize = (size as GoldBeadSize) || goldBeadSize;
-    } else if (isBasicSilverBead(bead)) {
-      beadSize = (size as SilverBeadSize) || silverBeadSize;
-    }
-
     setSelectedBeads((prev) => {
-      // For gold beads, match by both id and size
-      const existing = prev.find((sb) => 
-        sb.bead.id === bead.id && sb.size === beadSize
-      );
+      // Match by bead id (each size is now a separate bead entry)
+      const existing = prev.find((sb) => sb.bead.id === bead.id);
       if (existing) {
         return prev.map((sb) =>
-          (sb.bead.id === bead.id && sb.size === beadSize) 
-            ? { ...sb, quantity: sb.quantity + 1 } 
-            : sb
+          sb.bead.id === bead.id ? { ...sb, quantity: sb.quantity + 1 } : sb
         );
       }
-      return [...prev, { bead, quantity: 1, size: beadSize }];
+      return [...prev, { bead, quantity: 1, size: bead.size || undefined }];
     });
   };
 
-  const handleRemoveBead = (beadId: string, size?: BeadSize) => {
+  const handleRemoveBead = (beadId: string) => {
     setSelectedBeads((prev) => {
-      const existing = prev.find((sb) => sb.bead.id === beadId && sb.size === size);
+      const existing = prev.find((sb) => sb.bead.id === beadId);
       if (!existing) return prev;
       
       if (existing.quantity === 1) {
-        return prev.filter((sb) => !(sb.bead.id === beadId && sb.size === size));
+        return prev.filter((sb) => sb.bead.id !== beadId);
       }
       
       return prev.map((sb) =>
-        (sb.bead.id === beadId && sb.size === size) 
-          ? { ...sb, quantity: sb.quantity - 1 } 
-          : sb
+        sb.bead.id === beadId ? { ...sb, quantity: sb.quantity - 1 } : sb
       );
     });
   };
@@ -471,7 +474,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                           <Button
                             size="icon"
                             variant="outline"
-                            onClick={() => handleRemoveBead(sb.bead.id, sb.size)}
+                            onClick={() => handleRemoveBead(sb.bead.id)}
                             data-testid={`button-remove-bead-${beadKey}`}
                           >
                             <Minus className="w-4 h-4" />
@@ -480,7 +483,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                           <Button
                             size="icon"
                             variant="outline"
-                            onClick={() => handleAddBead(sb.bead, sb.size)}
+                            onClick={() => handleAddBead(sb.bead)}
                             disabled={remainingSlots === 0}
                             data-testid={`button-add-bead-${beadKey}`}
                           >
@@ -560,31 +563,28 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
           <h3 className="text-xl font-serif font-bold mt-12 mb-6 text-center">Add Beads</h3>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {beads.filter(b => b.inStock).map((bead) => {
-              const isGoldBead = isBasicGoldBead(bead);
-              const isSilverBead = isBasicSilverBead(bead);
-              // For sizeable beads, check if the currently selected size is in cart
-              // For other beads, check if the bead id is in cart
-              let selected;
-              if (isGoldBead) {
-                selected = selectedBeads.find((sb) => sb.bead.id === bead.id && sb.size === goldBeadSize);
-              } else if (isSilverBead) {
-                selected = selectedBeads.find((sb) => sb.bead.id === bead.id && sb.size === silverBeadSize);
-              } else {
-                selected = selectedBeads.find((sb) => sb.bead.id === bead.id);
-              }
+            {Object.entries(groupedBeads).map(([groupKey, beadGroup]) => {
+              const firstBead = beadGroup[0];
+              const hasSize = hasSizeVariants(beadGroup);
+              const availableSizes = getAvailableSizes(beadGroup);
+              const currentSize = selectedBeadSizes[groupKey] || (hasSize ? getDefaultSize(beadGroup) : '');
+              const currentBead = hasSize ? getBeadForSize(beadGroup, currentSize) : firstBead;
+              
+              if (!currentBead) return null;
+              
+              const selected = selectedBeads.find((sb) => sb.bead.id === currentBead.id);
               
               return (
                 <Card 
-                  key={bead.id} 
+                  key={groupKey} 
                   className={`hover-elevate ${selected ? "border-primary" : ""}`}
-                  data-testid={`card-bead-${bead.id}`}
+                  data-testid={`card-bead-${currentBead.id}`}
                 >
                   <CardHeader className="pb-3">
                     <div className="relative">
                       <img
-                        src={encodeURI(bead.imageUrl)}
-                        alt={bead.name}
+                        src={encodeURI(firstBead.imageUrl)}
+                        alt={firstBead.name}
                         className="w-full h-32 object-cover rounded-md"
                       />
                       {selected && (
@@ -593,80 +593,59 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                         </div>
                       )}
                     </div>
-                    <CardTitle className="text-sm mt-2">{bead.name}</CardTitle>
+                    <CardTitle className="text-sm mt-2">{firstBead.name}</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    {isGoldBead ? (
+                    {hasSize ? (
                       <>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-bold">${GOLD_BEAD_PRICES[goldBeadSize].toFixed(2)}</span>
-                          <Badge variant="outline" className="text-xs">{bead.color}</Badge>
+                          <span className="font-bold">${currentBead.price}</span>
+                          <Badge variant="outline" className="text-xs">{firstBead.color}</Badge>
                         </div>
                         <div className="mb-2">
                           <p className="text-xs text-muted-foreground mb-1">Select your size:</p>
-                          <Select value={goldBeadSize} onValueChange={(v) => setGoldBeadSize(v as GoldBeadSize)}>
-                            <SelectTrigger className="w-full" data-testid="select-gold-bead-size">
+                          <Select 
+                            value={currentSize} 
+                            onValueChange={(v) => setSelectedBeadSizes(prev => ({ ...prev, [groupKey]: v }))}
+                          >
+                            <SelectTrigger className="w-full" data-testid={`select-bead-size-${groupKey}`}>
                               <SelectValue placeholder="Select size" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="6mm">6mm - $2.00</SelectItem>
-                              <SelectItem value="5mm">5mm - $1.50</SelectItem>
-                              <SelectItem value="4mm">4mm - $1.00</SelectItem>
+                              {availableSizes.map(size => {
+                                const beadForSize = getBeadForSize(beadGroup, size);
+                                return (
+                                  <SelectItem key={size} value={size}>
+                                    {size} - ${beadForSize?.price || '0.00'}
+                                  </SelectItem>
+                                );
+                              })}
                             </SelectContent>
                           </Select>
                         </div>
                         <Button
                           size="sm"
                           className="w-full"
-                          onClick={() => handleAddBead(bead, goldBeadSize)}
+                          onClick={() => currentBead && handleAddBead(currentBead)}
                           disabled={remainingSlots === 0}
-                          data-testid={`button-select-bead-${bead.id}`}
+                          data-testid={`button-select-bead-${currentBead.id}`}
                         >
                           <Plus className="w-4 h-4 mr-1" />
-                          Add {goldBeadSize}
-                        </Button>
-                      </>
-                    ) : isSilverBead ? (
-                      <>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-bold">${SILVER_BEAD_PRICES[silverBeadSize].toFixed(2)}</span>
-                          <Badge variant="outline" className="text-xs">{bead.color}</Badge>
-                        </div>
-                        <div className="mb-2">
-                          <p className="text-xs text-muted-foreground mb-1">Select your size:</p>
-                          <Select value={silverBeadSize} onValueChange={(v) => setSilverBeadSize(v as SilverBeadSize)}>
-                            <SelectTrigger className="w-full" data-testid="select-silver-bead-size">
-                              <SelectValue placeholder="Select size" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="5mm">5mm - $2.00</SelectItem>
-                              <SelectItem value="4mm">4mm - $1.50</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <Button
-                          size="sm"
-                          className="w-full"
-                          onClick={() => handleAddBead(bead, silverBeadSize)}
-                          disabled={remainingSlots === 0}
-                          data-testid={`button-select-bead-${bead.id}`}
-                        >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Add {silverBeadSize}
+                          Add {currentSize}
                         </Button>
                       </>
                     ) : (
                       <>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-bold">${bead.price}</span>
-                          <Badge variant="outline" className="text-xs">{bead.color}</Badge>
+                          <span className="font-bold">${currentBead.price}</span>
+                          <Badge variant="outline" className="text-xs">{firstBead.color}</Badge>
                         </div>
                         <Button
                           size="sm"
                           className="w-full"
-                          onClick={() => handleAddBead(bead)}
+                          onClick={() => handleAddBead(currentBead)}
                           disabled={remainingSlots === 0}
-                          data-testid={`button-select-bead-${bead.id}`}
+                          data-testid={`button-select-bead-${currentBead.id}`}
                         >
                           <Plus className="w-4 h-4 mr-1" />
                           Add

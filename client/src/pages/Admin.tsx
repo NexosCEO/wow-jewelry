@@ -1457,9 +1457,9 @@ export default function Admin() {
                               />
                               <div className="flex-1 min-w-0">
                                 <h3 className="font-semibold text-lg mb-1" data-testid={`text-bead-name-${bead.id}`}>
-                                  {bead.name}
+                                  {bead.name}{bead.size ? ` - ${bead.size}` : ''}
                                 </h3>
-                                <p className="text-sm text-muted-foreground mb-2">{bead.color}</p>
+                                <p className="text-sm text-muted-foreground mb-2">{bead.color}{bead.size ? ` | Size: ${bead.size}` : ''}</p>
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm text-muted-foreground">Price:</span>
                                   {editingBeadPriceId === bead.id ? (
