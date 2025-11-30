@@ -6,7 +6,16 @@ WOW Jewelry (WOW by Dany) is a full-stack e-commerce platform for handmade artis
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (November 29, 2025)
+## Recent Changes (November 30, 2025)
+### Bead Size Management System (COMPLETED)
+- **Size Field in Database**: Added `size` field to bracelet_beads table to support multiple size variants per bead type
+- **Separate Size Entries**: Each bead size is a separate database entry with its own price and inventory (e.g., "Basic Gold Bead" with size="4mm" at $1.00, "5mm" at $1.50, "6mm" at $2.00)
+- **Admin Management**: Admin can edit prices and inventory for each bead size independently through the Inventory tab
+- **Dynamic Pricing**: BraceletBuilder pulls bead sizes and prices directly from the database instead of using hardcoded values
+- **Size Selector**: Beads are grouped by name/color with a dropdown to select size, showing price for each option
+- **Cart Integration**: Selected bead sizes are correctly added to cart with proper pricing
+
+## Previous Changes (November 29, 2025)
 ### Alternative Payment Methods (COMPLETED)
 - **Zelle Payment Option**: Customers can choose to pay via Zelle at checkout with instructions to send payment to phone number 201-908-1726
 - **Cash Payment Option**: Available only for Local Pickup orders, customers can pay in cash when picking up their order
