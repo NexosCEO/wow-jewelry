@@ -53,9 +53,14 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
 
   const availableCategories = ["All", "String", "Beaded"];
   
+  // Filter templates to only show in-stock ones
+  const availableTemplates = templates.filter(t => t.inStock);
   const filteredTemplates = selectedCategory === "All" 
-    ? templates 
-    : templates.filter(t => t.category === selectedCategory);
+    ? availableTemplates 
+    : availableTemplates.filter(t => t.category === selectedCategory);
+  
+  // Filter charms to only show in-stock ones with inventory
+  const availableCharms = charms.filter(c => c.inStock && c.stockQuantity > 0);
 
   const totalCharmSlots = selectedTemplate?.maxSlots || 0;
   const totalCharmsSelected = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0);
@@ -64,8 +69,9 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const isCharmLimitReached = totalCharmsSelected >= 3;
 
   // Group beads by name to handle sized variants
+  // Filter out beads that are out of stock or have zero inventory
   const groupedBeads = beads.reduce((groups, bead) => {
-    if (!bead.inStock) return groups;
+    if (!bead.inStock || bead.stockQuantity <= 0) return groups;
     const key = `${bead.name}-${bead.color}`;
     if (!groups[key]) {
       groups[key] = [];
@@ -516,7 +522,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
           )}
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {charms.map((charm) => {
+            {availableCharms.map((charm) => {
               const selected = selectedCharms.find((sc) => sc.charm.id === charm.id);
               return (
                 <Card 

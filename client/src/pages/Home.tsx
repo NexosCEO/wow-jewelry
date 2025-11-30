@@ -28,7 +28,8 @@ export default function Home({ onAddToCart }: HomeProps) {
     if (!products) return [];
 
     // First filter out sold out products - they should not show on the main app
-    let result = products.filter((p) => p.inStock);
+    // Hide items that are marked out of stock OR have zero inventory
+    let result = products.filter((p) => p.inStock && p.stockQuantity > 0);
 
     // Filter by type/category
     if (filterType !== "all") {
