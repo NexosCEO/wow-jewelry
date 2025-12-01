@@ -917,18 +917,49 @@ export default function Admin() {
                     <div>
                       <h4 className="font-semibold mb-2">Order Items</h4>
                       <div className="space-y-2">
-                        {items.map((item: any, index: number) => (
-                          <div 
-                            key={index} 
-                            className="flex justify-between text-sm" 
-                            data-testid={`order-item-${order.id}-${index}`}
-                          >
-                            <span>{item.product.name} x {item.quantity}</span>
-                            <span className="font-medium">
-                              ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
-                            </span>
-                          </div>
-                        ))}
+                        {items.map((item: any, index: number) => {
+                          // Handle custom bracelets/necklaces
+                          if (item.templateName || item.type === "custom-bracelet" || item.type === "custom-necklace") {
+                            const itemName = item.templateName ? `Custom ${item.templateName}` : item.name || 'Custom Bracelet';
+                            // Price can be in item.price (new format) or item.product.price (old format)
+                            const itemPrice = parseFloat(item.price || item.product?.price || '0') * (item.quantity || 1);
+                            return (
+                              <div 
+                                key={index} 
+                                className="text-sm border-l-2 border-primary pl-2" 
+                                data-testid={`order-item-${order.id}-${index}`}
+                              >
+                                <div className="flex justify-between">
+                                  <span className="font-medium">{itemName} x {item.quantity}</span>
+                                  <span className="font-medium">${itemPrice.toFixed(2)}</span>
+                                </div>
+                                {item.charmNames && item.charmNames.length > 0 && (
+                                  <div className="text-xs text-muted-foreground mt-1">
+                                    <span className="font-medium">Charms:</span> {item.charmNames.join(', ')}
+                                  </div>
+                                )}
+                                {item.beadNames && item.beadNames.length > 0 && (
+                                  <div className="text-xs text-muted-foreground">
+                                    <span className="font-medium">Beads:</span> {item.beadNames.join(', ')}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                          // Handle regular products
+                          const productName = item.product?.name || item.name || 'Product';
+                          const productPrice = parseFloat(item.product?.price || item.price || '0') * (item.quantity || 1);
+                          return (
+                            <div 
+                              key={index} 
+                              className="flex justify-between text-sm" 
+                              data-testid={`order-item-${order.id}-${index}`}
+                            >
+                              <span>{productName} x {item.quantity}</span>
+                              <span className="font-medium">${productPrice.toFixed(2)}</span>
+                            </div>
+                          );
+                        })}
                         <div className="pt-2 border-t border-border space-y-1">
                           {order.couponCode && (
                             <div className="flex justify-between text-sm">

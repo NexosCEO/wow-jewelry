@@ -107,7 +107,7 @@ export async function sendOrderNotification(orderDetails: {
   customerEmail: string;
   customerPhone: string;
   total: string;
-  items: Array<{ name: string; quantity: number; price: string }>;
+  items: Array<{ name: string; quantity: number; price: string; charmNames?: string[]; beadNames?: string[] }>;
   shippingAddress: {
     street: string;
     city: string;
@@ -128,10 +128,22 @@ export async function sendOrderNotification(orderDetails: {
       return false;
     }
 
-    // Format items list for email
-    const itemsList = orderDetails.items.map(item => 
-      `   • ${item.name} - Quantity: ${item.quantity} - $${item.price}`
-    ).join('\n');
+    // Format items list for email - include charm and bead details for custom bracelets
+    const itemsList = orderDetails.items.map(item => {
+      let itemText = `   * ${item.name} - Quantity: ${item.quantity} - $${item.price}`;
+      
+      // Add charm details for custom bracelets
+      if (item.charmNames && item.charmNames.length > 0) {
+        itemText += '\n      Charms: ' + item.charmNames.join(', ');
+      }
+      
+      // Add bead details for custom bracelets
+      if (item.beadNames && item.beadNames.length > 0) {
+        itemText += '\n      Beads: ' + item.beadNames.join(', ');
+      }
+      
+      return itemText;
+    }).join('\n');
 
     // Create email content (no emojis - they cause encoding issues in plain text emails)
     const subject = `New Order #${orderDetails.orderId} - WOW by Dany`;

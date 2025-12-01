@@ -811,12 +811,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 price: item.product.price
               };
             }
-            // Handle custom bracelets/necklaces
-            if (item.templateName) {
+            // Handle custom bracelets/necklaces - include charm and bead details
+            if (item.templateName || item.type === "custom-bracelet" || item.type === "custom-necklace") {
+              // Price can be in item.price (new format) or item.product.price (old format)
+              const itemPrice = item.price || item.product?.price || '0';
               return {
-                name: `Custom ${item.templateName}`,
+                name: item.templateName ? `Custom ${item.templateName}` : 'Custom Bracelet',
                 quantity: item.quantity,
-                price: item.price
+                price: itemPrice,
+                charmNames: item.charmNames || [],
+                beadNames: item.beadNames || []
               };
             }
             return {
@@ -1361,20 +1365,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
             customerPhone: order.customerEmail,
             total: order.totalAmount,
             items: parsedItems.map((item: any) => {
-              // Handle regular products
-              if (item.product) {
+              // Handle regular products (not custom bracelets)
+              if (item.product && !item.templateName && item.type !== "custom-bracelet" && item.type !== "custom-necklace") {
                 return {
                   name: item.product.name || 'Product',
                   quantity: item.quantity,
                   price: item.product.price
                 };
               }
-              // Handle custom bracelets/necklaces
-              if (item.templateName) {
+              // Handle custom bracelets/necklaces - include charm and bead details
+              if (item.templateName || item.type === "custom-bracelet" || item.type === "custom-necklace") {
+                // Price can be in item.price (new format) or item.product.price (old format)
+                const itemPrice = item.price || item.product?.price || '0';
                 return {
-                  name: `Custom ${item.templateName}`,
+                  name: item.templateName ? `Custom ${item.templateName}` : 'Custom Bracelet',
                   quantity: item.quantity,
-                  price: item.price
+                  price: itemPrice,
+                  charmNames: item.charmNames || [],
+                  beadNames: item.beadNames || []
                 };
               }
               return {
@@ -1430,6 +1438,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error: any) {
       res.status(500).json({ message: "Error sending test email: " + error.message });
+    }
+  });
+
+  // Admin - Resend order notification email
+  app.post("/api/orders/:id/resend-email", requireAdmin, async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const parsedItems = JSON.parse(order.items);
+      await sendOrderNotification({
+        orderId: order.id,
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        customerPhone: order.customerEmail, // Phone is stored as email in current schema
+        total: order.totalAmount,
+        items: parsedItems.map((item: any) => {
+          // Handle regular products (not custom bracelets)
+          if (item.product && !item.templateName && item.type !== "custom-bracelet" && item.type !== "custom-necklace") {
+            return {
+              name: item.product.name || 'Product',
+              quantity: item.quantity,
+              price: item.product.price
+            };
+          }
+          // Handle custom bracelets/necklaces - include charm and bead details
+          if (item.templateName || item.type === "custom-bracelet" || item.type === "custom-necklace") {
+            // Price can be in item.price (new format) or item.product.price (old format)
+            const itemPrice = item.price || item.product?.price || '0';
+            return {
+              name: item.templateName ? `Custom ${item.templateName}` : 'Custom Bracelet',
+              quantity: item.quantity,
+              price: itemPrice,
+              charmNames: item.charmNames || [],
+              beadNames: item.beadNames || []
+            };
+          }
+          return {
+            name: 'Item',
+            quantity: item.quantity || 1,
+            price: item.price || '0'
+          };
+        }),
+        shippingAddress: {
+          street: order.shippingAddress,
+          city: order.city,
+          state: order.state,
+          zipCode: order.zipCode
+        },
+        shippingMethod: order.shippingMethod,
+        paymentMethod: order.paymentMethod === 'stripe' ? 'Credit Card' : order.paymentMethod === 'zelle' ? 'Zelle' : 'Cash',
+        couponCode: order.couponCode || undefined,
+        discountAmount: order.discountAmount || undefined
+      });
+
+      res.json({ message: "Order notification email resent successfully!" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error resending email: " + error.message });
     }
   });
 
