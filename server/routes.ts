@@ -7,6 +7,44 @@ import { requireAdmin, verifyAdminPassword, createAdminSession, invalidateAdminS
 import PDFDocument from "pdfkit";
 import { sendOrderNotification, sendTestEmail, sendShippingNotification } from './emailService';
 
+// Helper function to parse charm name from format like "God Love (1)"
+// Returns { name: "God Love", quantity: 1 }
+function parseCharmName(charmNameWithQty: string): { name: string; quantity: number } {
+  const match = charmNameWithQty.match(/^(.+?)\s*\((\d+)\)$/);
+  if (match) {
+    return { name: match[1].trim(), quantity: parseInt(match[2], 10) };
+  }
+  // Fallback: return the whole string as name with quantity 1
+  return { name: charmNameWithQty.trim(), quantity: 1 };
+}
+
+// Helper function to parse bead name from format like "Basic Silver Bead - 5mm (1)"
+// Returns { name: "Basic Silver Bead", size: "5mm" | null, quantity: 1 }
+function parseBeadName(beadNameWithQty: string): { name: string; size: string | null; quantity: number } {
+  // Match pattern: "Name - Size (Qty)" or "Name (Qty)"
+  const matchWithSize = beadNameWithQty.match(/^(.+?)\s*-\s*(\d+mm)\s*\((\d+)\)$/);
+  if (matchWithSize) {
+    return { 
+      name: matchWithSize[1].trim(), 
+      size: matchWithSize[2], 
+      quantity: parseInt(matchWithSize[3], 10) 
+    };
+  }
+  
+  // Match pattern without size: "Name (Qty)"
+  const matchWithoutSize = beadNameWithQty.match(/^(.+?)\s*\((\d+)\)$/);
+  if (matchWithoutSize) {
+    return { 
+      name: matchWithoutSize[1].trim(), 
+      size: null, 
+      quantity: parseInt(matchWithoutSize[2], 10) 
+    };
+  }
+  
+  // Fallback: return the whole string as name with no size and quantity 1
+  return { name: beadNameWithQty.trim(), size: null, quantity: 1 };
+}
+
 let stripe: Stripe | null = null;
 
 // Try production key first, then testing key as fallback
@@ -754,32 +792,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Subtract inventory for regular products
           const quantityToSubtract = -item.quantity; // Negative to subtract
           await storage.updateProductInventory(item.product.id, quantityToSubtract);
+          console.log(`📦 Inventory updated: Product ${item.product.name} reduced by ${item.quantity}`);
         } else if (item.type === "custom-bracelet") {
           // Subtract charm inventory for custom bracelets
           if (item.charmNames && Array.isArray(item.charmNames)) {
-            for (const charmName of item.charmNames) {
-              const charm = await storage.getCharmByName(charmName);
+            for (const charmNameWithQty of item.charmNames) {
+              const { name, quantity } = parseCharmName(charmNameWithQty);
+              const charm = await storage.getCharmByName(name);
               if (charm) {
-                await storage.updateCharmInventory(charm.id, -item.quantity);
+                // Multiply by bracelet quantity in case customer ordered multiple of same custom bracelet
+                const totalToSubtract = quantity * item.quantity;
+                await storage.updateCharmInventory(charm.id, -totalToSubtract);
+                console.log(`📦 Inventory updated: Charm "${name}" reduced by ${totalToSubtract}`);
+              } else {
+                console.warn(`⚠️ Charm not found for inventory update: "${name}"`);
               }
             }
           }
           // Subtract bead inventory for custom bracelets
           if (item.beadNames && Array.isArray(item.beadNames)) {
-            for (const beadName of item.beadNames) {
-              const bead = await storage.getBeadByName(beadName);
+            for (const beadNameWithQty of item.beadNames) {
+              const { name, size, quantity } = parseBeadName(beadNameWithQty);
+              const bead = await storage.getBeadByNameAndSize(name, size);
               if (bead) {
-                await storage.updateBeadInventory(bead.id, -item.quantity);
+                // Multiply by bracelet quantity in case customer ordered multiple of same custom bracelet
+                const totalToSubtract = quantity * item.quantity;
+                await storage.updateBeadInventory(bead.id, -totalToSubtract);
+                console.log(`📦 Inventory updated: Bead "${name}" (${size || 'no size'}) reduced by ${totalToSubtract}`);
+              } else {
+                console.warn(`⚠️ Bead not found for inventory update: "${name}" size: ${size}`);
               }
             }
           }
         } else if (item.type === "custom-necklace") {
           // Subtract charm inventory for custom necklaces
           if (item.charmNames && Array.isArray(item.charmNames)) {
-            for (const charmName of item.charmNames) {
-              const charm = await storage.getCharmByName(charmName);
+            for (const charmNameWithQty of item.charmNames) {
+              const { name, quantity } = parseCharmName(charmNameWithQty);
+              const charm = await storage.getCharmByName(name);
               if (charm) {
-                await storage.updateCharmInventory(charm.id, -item.quantity);
+                const totalToSubtract = quantity * item.quantity;
+                await storage.updateCharmInventory(charm.id, -totalToSubtract);
+                console.log(`📦 Inventory updated: Charm "${name}" reduced by ${totalToSubtract}`);
+              } else {
+                console.warn(`⚠️ Charm not found for inventory update: "${name}"`);
               }
             }
           }
@@ -1315,38 +1371,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
             if (item.product && item.product.id) {
               // Subtract inventory for regular products
               await storage.updateProductInventory(item.product.id, -item.quantity);
+              console.log(`📦 Webhook: Product ${item.product.name} inventory reduced by ${item.quantity}`);
             } else if (item.type === "custom-bracelet") {
               // Subtract charm inventory for custom bracelets
               if (item.charmNames && Array.isArray(item.charmNames)) {
-                for (const charmName of item.charmNames) {
-                  const charm = await storage.getCharmByName(charmName);
+                for (const charmNameWithQty of item.charmNames) {
+                  const { name, quantity } = parseCharmName(charmNameWithQty);
+                  const charm = await storage.getCharmByName(name);
                   if (charm) {
-                    await storage.updateCharmInventory(charm.id, -item.quantity);
+                    const totalToSubtract = quantity * item.quantity;
+                    await storage.updateCharmInventory(charm.id, -totalToSubtract);
+                    console.log(`📦 Webhook: Charm "${name}" reduced by ${totalToSubtract}`);
+                  } else {
+                    console.warn(`⚠️ Webhook: Charm not found: "${name}"`);
                   }
                 }
               }
               // Subtract bead inventory for custom bracelets
               if (item.beadNames && Array.isArray(item.beadNames)) {
-                for (const beadName of item.beadNames) {
-                  const bead = await storage.getBeadByName(beadName);
+                for (const beadNameWithQty of item.beadNames) {
+                  const { name, size, quantity } = parseBeadName(beadNameWithQty);
+                  const bead = await storage.getBeadByNameAndSize(name, size);
                   if (bead) {
-                    await storage.updateBeadInventory(bead.id, -item.quantity);
+                    const totalToSubtract = quantity * item.quantity;
+                    await storage.updateBeadInventory(bead.id, -totalToSubtract);
+                    console.log(`📦 Webhook: Bead "${name}" (${size || 'no size'}) reduced by ${totalToSubtract}`);
+                  } else {
+                    console.warn(`⚠️ Webhook: Bead not found: "${name}" size: ${size}`);
                   }
                 }
               }
             } else if (item.type === "custom-necklace") {
               // Subtract charm inventory for custom necklaces
               if (item.charmNames && Array.isArray(item.charmNames)) {
-                for (const charmName of item.charmNames) {
-                  const charm = await storage.getCharmByName(charmName);
+                for (const charmNameWithQty of item.charmNames) {
+                  const { name, quantity } = parseCharmName(charmNameWithQty);
+                  const charm = await storage.getCharmByName(name);
                   if (charm) {
-                    await storage.updateCharmInventory(charm.id, -item.quantity);
+                    const totalToSubtract = quantity * item.quantity;
+                    await storage.updateCharmInventory(charm.id, -totalToSubtract);
+                    console.log(`📦 Webhook: Charm "${name}" reduced by ${totalToSubtract}`);
+                  } else {
+                    console.warn(`⚠️ Webhook: Charm not found: "${name}"`);
                   }
                 }
               }
             }
           }
-          console.log("📦 Inventory updated for order items");
+          console.log("📦 Inventory updated for order items (webhook)");
         } catch (inventoryError) {
           console.error("Failed to update inventory:", inventoryError);
           // Continue with order creation even if inventory update fails

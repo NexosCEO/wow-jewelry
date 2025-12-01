@@ -13,7 +13,7 @@ import {
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
-import { eq, desc, asc } from "drizzle-orm";
+import { eq, desc, asc, and, isNull } from "drizzle-orm";
 
 export interface IStorage {
   getAllProducts(): Promise<Product[]>;
@@ -45,6 +45,7 @@ export interface IStorage {
   getAllBraceletBeads(): Promise<BraceletBead[]>;
   getBraceletBead(id: string): Promise<BraceletBead | undefined>;
   getBeadByName(name: string): Promise<BraceletBead | undefined>;
+  getBeadByNameAndSize(name: string, size: string | null): Promise<BraceletBead | undefined>;
   updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined>;
   updateBeadPrice(id: string, price: string): Promise<BraceletBead | undefined>;
   
@@ -379,6 +380,10 @@ export class MemStorage implements IStorage {
     return undefined;
   }
 
+  async getBeadByNameAndSize(name: string, size: string | null): Promise<BraceletBead | undefined> {
+    return undefined;
+  }
+
   async updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined> {
     throw new Error("Not implemented in MemStorage");
   }
@@ -655,6 +660,18 @@ export class DatabaseStorage implements IStorage {
   async getBeadByName(name: string): Promise<BraceletBead | undefined> {
     const [bead] = await db.select().from(braceletBeads).where(eq(braceletBeads.name, name));
     return bead || undefined;
+  }
+
+  async getBeadByNameAndSize(name: string, size: string | null): Promise<BraceletBead | undefined> {
+    if (size) {
+      const [bead] = await db.select().from(braceletBeads)
+        .where(and(eq(braceletBeads.name, name), eq(braceletBeads.size, size)));
+      return bead || undefined;
+    } else {
+      const [bead] = await db.select().from(braceletBeads)
+        .where(and(eq(braceletBeads.name, name), isNull(braceletBeads.size)));
+      return bead || undefined;
+    }
   }
 
   async updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined> {
