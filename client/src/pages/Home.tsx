@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import heroImage from "@assets/IMG_3464_1761882788256.jpeg";
-import logoUrl from "@assets/IMG_3548_1761884766204.jpeg";
+import logoUrl from "@assets/Untitled Project (3)_1764567021014.png";
 import { SiInstagram, SiTiktok } from "react-icons/si";
 
 interface HomeProps {
