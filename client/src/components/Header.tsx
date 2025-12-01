@@ -18,12 +18,12 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
     <>
       <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm backdrop-blur-sm bg-card/95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center justify-between h-20 md:h-24">
             <Link href="/" className="flex items-center">
               <img 
                 src={logoUrl} 
                 alt="WOW by Dany logo" 
-                className="h-14 md:h-16 w-auto cursor-pointer hover:opacity-90 transition-opacity"
+                className="h-16 md:h-20 w-auto cursor-pointer hover:opacity-90 transition-opacity"
                 data-testid="link-home"
               />
             </Link>
