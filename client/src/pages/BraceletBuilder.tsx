@@ -66,7 +66,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const totalCharmsSelected = selectedCharms.reduce((sum, sc) => sum + sc.quantity, 0);
   const usedSlots = totalCharmsSelected + selectedBeads.reduce((sum, sb) => sum + sb.quantity, 0);
   const remainingSlots = totalCharmSlots - usedSlots;
-  const isCharmLimitReached = totalCharmsSelected >= 3;
+  const isCharmLimitReached = totalCharmsSelected >= 1;
 
   // Group beads by name to handle sized variants
   // Filter out beads that are out of stock or have zero inventory
@@ -135,8 +135,8 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
   const handleAddCharm = (charm: Charm) => {
     if (isCharmLimitReached) {
       toast({
-        title: "Maximum Charms Reached",
-        description: "You can only add up to 3 charms per bracelet.",
+        title: "Maximum Charm Reached",
+        description: "You can only add 1 charm per bracelet.",
         variant: "destructive",
       });
       return;
@@ -558,7 +558,7 @@ export default function BraceletBuilder({ onAddToCart }: BraceletBuilderProps) {
                       data-testid={`button-select-charm-${charm.id}`}
                     >
                       <Plus className="w-4 h-4 mr-1" />
-                      {isCharmLimitReached ? "Max 3 Charms" : "Add"}
+                      {isCharmLimitReached ? "Max 1 Charm" : "Add"}
                     </Button>
                   </CardContent>
                 </Card>
