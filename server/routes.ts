@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
-import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema, insertCustomNecklaceConfigurationSchema, insertCouponSchema } from "@shared/schema";
+import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurationSchema, insertCustomNecklaceConfigurationSchema, insertCouponSchema, insertPerfumeSchema } from "@shared/schema";
 import { requireAdmin, verifyAdminPassword, createAdminSession, invalidateAdminSession } from "./auth-middleware";
 import PDFDocument from "pdfkit";
 import { sendOrderNotification, sendTestEmail, sendShippingNotification } from './emailService';
@@ -494,6 +494,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Perfume routes
+  app.get("/api/perfumes", async (req, res) => {
+    try {
+      const perfumes = await storage.getAllPerfumes();
+      res.json(perfumes);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching perfumes: " + error.message });
+    }
+  });
+
+  app.get("/api/perfumes/:id", async (req, res) => {
+    try {
+      const perfume = await storage.getPerfume(req.params.id);
+      if (!perfume) {
+        return res.status(404).json({ message: "Perfume not found" });
+      }
+      res.json(perfume);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error fetching perfume: " + error.message });
+    }
+  });
+
+  app.post("/api/perfumes", requireAdmin, async (req, res) => {
+    try {
+      const validatedData = insertPerfumeSchema.parse(req.body);
+      const perfume = await storage.createPerfume(validatedData);
+      res.status(201).json(perfume);
+    } catch (error: any) {
+      res.status(400).json({ message: "Error creating perfume: " + error.message });
+    }
+  });
+
+  app.patch("/api/perfumes/:id", requireAdmin, async (req, res) => {
+    try {
+      const perfume = await storage.updatePerfume(req.params.id, req.body);
+      if (!perfume) {
+        return res.status(404).json({ message: "Perfume not found" });
+      }
+      res.json(perfume);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating perfume: " + error.message });
+    }
+  });
+
+  app.delete("/api/perfumes/:id", requireAdmin, async (req, res) => {
+    try {
+      const deleted = await storage.deletePerfume(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Perfume not found" });
+      }
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(500).json({ message: "Error deleting perfume: " + error.message });
+    }
+  });
+
+  app.patch("/api/perfumes/:id/inventory", requireAdmin, async (req, res) => {
+    try {
+      const { quantityChange } = req.body;
+      if (typeof quantityChange !== "number") {
+        return res.status(400).json({ message: "quantityChange must be a number" });
+      }
+      const perfume = await storage.updatePerfumeInventory(req.params.id, quantityChange);
+      if (!perfume) {
+        return res.status(404).json({ message: "Perfume not found" });
+      }
+      res.json(perfume);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating inventory: " + error.message });
+    }
+  });
+
   app.post("/api/create-payment-intent", async (req, res) => {
     try {
       if (!stripe) {
@@ -789,10 +861,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Subtract inventory for each item in the order
       for (const item of items) {
         if (item.product && item.product.id) {
-          // Subtract inventory for regular products
-          const quantityToSubtract = -item.quantity; // Negative to subtract
-          await storage.updateProductInventory(item.product.id, quantityToSubtract);
-          console.log(`📦 Inventory updated: Product ${item.product.name} reduced by ${item.quantity}`);
+          // Check if this is a perfume (added with category "Perfume")
+          if (item.product.category === "Perfume") {
+            // Subtract inventory for perfumes
+            const quantityToSubtract = -item.quantity;
+            await storage.updatePerfumeInventory(item.product.id, quantityToSubtract);
+            console.log(`🧴 Inventory updated: Perfume ${item.product.name} reduced by ${item.quantity}`);
+          } else {
+            // Subtract inventory for regular products
+            const quantityToSubtract = -item.quantity; // Negative to subtract
+            await storage.updateProductInventory(item.product.id, quantityToSubtract);
+            console.log(`📦 Inventory updated: Product ${item.product.name} reduced by ${item.quantity}`);
+          }
         } else if (item.type === "custom-bracelet") {
           // Subtract charm inventory for custom bracelets
           if (item.charmNames && Array.isArray(item.charmNames)) {
@@ -1369,9 +1449,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const items = JSON.parse(orderData.items);
           for (const item of items) {
             if (item.product && item.product.id) {
-              // Subtract inventory for regular products
-              await storage.updateProductInventory(item.product.id, -item.quantity);
-              console.log(`📦 Webhook: Product ${item.product.name} inventory reduced by ${item.quantity}`);
+              // Check if this is a perfume (added with category "Perfume")
+              if (item.product.category === "Perfume") {
+                await storage.updatePerfumeInventory(item.product.id, -item.quantity);
+                console.log(`🧴 Webhook: Perfume ${item.product.name} inventory reduced by ${item.quantity}`);
+              } else {
+                // Subtract inventory for regular products
+                await storage.updateProductInventory(item.product.id, -item.quantity);
+                console.log(`📦 Webhook: Product ${item.product.name} inventory reduced by ${item.quantity}`);
+              }
             } else if (item.type === "custom-bracelet") {
               // Subtract charm inventory for custom bracelets
               if (item.charmNames && Array.isArray(item.charmNames)) {

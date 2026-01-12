@@ -7,9 +7,10 @@ import {
   type CustomBraceletConfiguration, type InsertCustomBraceletConfiguration,
   type NecklaceTemplate, type InsertNecklaceTemplate,
   type CustomNecklaceConfiguration, type InsertCustomNecklaceConfiguration,
+  type Perfume, type InsertPerfume,
   type Coupon, type InsertCoupon,
   products, orders, charms, braceletBeads, braceletTemplates, customBraceletConfigurations,
-  necklaceTemplates, customNecklaceConfigurations, coupons
+  necklaceTemplates, customNecklaceConfigurations, perfumes, coupons
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -62,6 +63,13 @@ export interface IStorage {
   
   createCustomNecklaceConfiguration(config: InsertCustomNecklaceConfiguration): Promise<CustomNecklaceConfiguration>;
   getCustomNecklaceConfiguration(id: string): Promise<CustomNecklaceConfiguration | undefined>;
+  
+  getAllPerfumes(): Promise<Perfume[]>;
+  getPerfume(id: string): Promise<Perfume | undefined>;
+  createPerfume(perfume: InsertPerfume): Promise<Perfume>;
+  updatePerfume(id: string, perfume: Partial<InsertPerfume>): Promise<Perfume | undefined>;
+  deletePerfume(id: string): Promise<boolean>;
+  updatePerfumeInventory(id: string, quantityChange: number): Promise<Perfume | undefined>;
   
   getAllCoupons(): Promise<Coupon[]>;
   getCoupon(id: string): Promise<Coupon | undefined>;
@@ -495,6 +503,30 @@ export class MemStorage implements IStorage {
     this.coupons.set(coupon.id, updatedCoupon);
     return updatedCoupon;
   }
+
+  async getAllPerfumes(): Promise<Perfume[]> {
+    return [];
+  }
+
+  async getPerfume(id: string): Promise<Perfume | undefined> {
+    return undefined;
+  }
+
+  async createPerfume(perfume: InsertPerfume): Promise<Perfume> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async updatePerfume(id: string, perfume: Partial<InsertPerfume>): Promise<Perfume | undefined> {
+    return undefined;
+  }
+
+  async deletePerfume(id: string): Promise<boolean> {
+    return false;
+  }
+
+  async updatePerfumeInventory(id: string, quantityChange: number): Promise<Perfume | undefined> {
+    return undefined;
+  }
 }
 
 // Database-backed storage implementation
@@ -815,6 +847,53 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return updatedCoupon || undefined;
+  }
+
+  async getAllPerfumes(): Promise<Perfume[]> {
+    return await db.select().from(perfumes);
+  }
+
+  async getPerfume(id: string): Promise<Perfume | undefined> {
+    const [perfume] = await db.select().from(perfumes).where(eq(perfumes.id, id));
+    return perfume || undefined;
+  }
+
+  async createPerfume(insertPerfume: InsertPerfume): Promise<Perfume> {
+    const [perfume] = await db
+      .insert(perfumes)
+      .values(insertPerfume)
+      .returning();
+    return perfume;
+  }
+
+  async updatePerfume(id: string, updates: Partial<InsertPerfume>): Promise<Perfume | undefined> {
+    const [perfume] = await db
+      .update(perfumes)
+      .set(updates)
+      .where(eq(perfumes.id, id))
+      .returning();
+    return perfume || undefined;
+  }
+
+  async deletePerfume(id: string): Promise<boolean> {
+    const result = await db.delete(perfumes).where(eq(perfumes.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async updatePerfumeInventory(id: string, quantityChange: number): Promise<Perfume | undefined> {
+    const existingPerfume = await this.getPerfume(id);
+    if (!existingPerfume) return undefined;
+
+    const newQuantity = Math.max(0, existingPerfume.stockQuantity + quantityChange);
+    const [updatedPerfume] = await db
+      .update(perfumes)
+      .set({
+        stockQuantity: newQuantity,
+        inStock: newQuantity > 0,
+      })
+      .where(eq(perfumes.id, id))
+      .returning();
+    return updatedPerfume || undefined;
   }
 }
 

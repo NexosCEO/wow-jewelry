@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Order, Product, Charm, BraceletBead } from "@shared/schema";
+import { Order, Product, Charm, BraceletBead, Perfume } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -132,6 +132,11 @@ export default function Admin() {
       }
       return response.json();
     },
+  });
+
+  const { data: perfumes, isLoading: perfumesLoading } = useQuery<Perfume[]>({
+    queryKey: ["/api/perfumes"],
+    enabled: isAuthenticated,
   });
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -331,6 +336,11 @@ export default function Admin() {
   const [editingBeadStockId, setEditingBeadStockId] = useState<string | null>(null);
   const [tempStock, setTempStock] = useState<string>("");
   
+  // Perfume management state
+  const [processingPerfumeIds, setProcessingPerfumeIds] = useState<Set<string>>(new Set());
+  const [editingPerfumePriceId, setEditingPerfumePriceId] = useState<string | null>(null);
+  const [editingPerfumeStockId, setEditingPerfumeStockId] = useState<string | null>(null);
+  
   // Coupon form state
   const [showCouponForm, setShowCouponForm] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<any>(null);
@@ -345,6 +355,140 @@ export default function Admin() {
     expiresAt: "",
     isActive: true,
   });
+
+  // Perfume form state
+  const [showPerfumeForm, setShowPerfumeForm] = useState(false);
+  const [editingPerfume, setEditingPerfume] = useState<Perfume | null>(null);
+  const [savingPerfume, setSavingPerfume] = useState(false);
+  const [deletingPerfumeId, setDeletingPerfumeId] = useState<string | null>(null);
+  const [perfumeForm, setPerfumeForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    regularPrice: "",
+    imageUrl: "",
+    imageUrl2: "",
+    category: "",
+    size: "",
+    stockQuantity: "0",
+  });
+
+  const handlePerfumeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingPerfume(true);
+
+    try {
+      const data = {
+        name: perfumeForm.name,
+        description: perfumeForm.description,
+        price: perfumeForm.price,
+        regularPrice: perfumeForm.regularPrice || null,
+        imageUrl: perfumeForm.imageUrl || "/placeholder-perfume.jpg",
+        imageUrl2: perfumeForm.imageUrl2 || null,
+        category: perfumeForm.category,
+        size: perfumeForm.size,
+        inStock: true,
+        stockQuantity: parseInt(perfumeForm.stockQuantity) || 0,
+      };
+
+      const token = getAdminToken();
+      const url = editingPerfume ? `/api/perfumes/${editingPerfume.id}` : "/api/perfumes";
+      const method = editingPerfume ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to save perfume");
+      }
+
+      toast({
+        title: editingPerfume ? "Perfume Updated" : "Perfume Created",
+        description: `${perfumeForm.name} has been ${editingPerfume ? "updated" : "created"} successfully`,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["/api/perfumes"] });
+      setShowPerfumeForm(false);
+      setEditingPerfume(null);
+      setPerfumeForm({
+        name: "",
+        description: "",
+        price: "",
+        regularPrice: "",
+        imageUrl: "",
+        imageUrl2: "",
+        category: "",
+        size: "",
+        stockQuantity: "0",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save perfume",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingPerfume(false);
+    }
+  };
+
+  const handleEditPerfume = (perfume: Perfume) => {
+    setEditingPerfume(perfume);
+    setPerfumeForm({
+      name: perfume.name,
+      description: perfume.description || "",
+      price: perfume.price,
+      regularPrice: perfume.regularPrice || "",
+      imageUrl: perfume.imageUrl,
+      imageUrl2: perfume.imageUrl2 || "",
+      category: perfume.category || "",
+      size: perfume.size || "",
+      stockQuantity: perfume.stockQuantity.toString(),
+    });
+    setShowPerfumeForm(true);
+  };
+
+  const handleDeletePerfume = async (perfumeId: string) => {
+    if (!confirm("Are you sure you want to delete this perfume?")) return;
+    
+    setDeletingPerfumeId(perfumeId);
+    try {
+      const token = getAdminToken();
+      const response = await fetch(`/api/perfumes/${perfumeId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete perfume");
+      }
+
+      toast({
+        title: "Perfume Deleted",
+        description: "The perfume has been deleted successfully",
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["/api/perfumes"] });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete perfume",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingPerfumeId(null);
+    }
+  };
 
   const generateLabelMutation = useMutation({
     mutationFn: async (orderId: string) => {
@@ -671,6 +815,94 @@ export default function Admin() {
     },
   });
 
+  const updatePerfumeInventoryMutation = useMutation({
+    mutationFn: async ({ perfumeId, quantityChange }: { perfumeId: string; quantityChange: number }) => {
+      setProcessingPerfumeIds(prev => new Set(prev).add(perfumeId));
+      const token = getAdminToken();
+      const response = await fetch(`/api/perfumes/${perfumeId}/inventory`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ quantityChange }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update perfume inventory");
+      }
+      return await response.json();
+    },
+    onSuccess: (data, variables) => {
+      setProcessingPerfumeIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.perfumeId);
+        return next;
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/perfumes"] });
+      toast({
+        title: "Perfume Inventory Updated!",
+        description: "Perfume stock has been updated",
+      });
+    },
+    onError: (error, variables) => {
+      setProcessingPerfumeIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.perfumeId);
+        return next;
+      });
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update perfume inventory",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updatePerfumePriceMutation = useMutation({
+    mutationFn: async ({ perfumeId, price }: { perfumeId: string; price: string }) => {
+      setProcessingPerfumeIds(prev => new Set(prev).add(perfumeId));
+      const token = getAdminToken();
+      const response = await fetch(`/api/perfumes/${perfumeId}`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ price }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update perfume price");
+      }
+      return await response.json();
+    },
+    onSuccess: (data, variables) => {
+      setProcessingPerfumeIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.perfumeId);
+        return next;
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/perfumes"] });
+      toast({
+        title: "Price Updated!",
+        description: "Perfume price has been updated",
+      });
+    },
+    onError: (error, variables) => {
+      setProcessingPerfumeIds(prev => {
+        const next = new Set(prev);
+        next.delete(variables.perfumeId);
+        return next;
+      });
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update perfume price",
+        variant: "destructive",
+      });
+    },
+  });
+
   const updatePriceMutation = useMutation({
     mutationFn: async ({ productId, price }: { productId: string; price: number }) => {
       setProcessingProductIds(prev => new Set(prev).add(productId));
@@ -811,7 +1043,7 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4 mb-6">
+          <TabsList className="grid w-full max-w-3xl grid-cols-5 mb-6">
             <TabsTrigger value="orders" data-testid="tab-orders">
               <Package className="w-4 h-4 mr-2" />
               Orders
@@ -823,6 +1055,10 @@ export default function Admin() {
             <TabsTrigger value="charms-beads" data-testid="tab-charms-beads">
               <PackageOpen className="w-4 h-4 mr-2" />
               Charms & Beads
+            </TabsTrigger>
+            <TabsTrigger value="perfumes" data-testid="tab-perfumes">
+              <Package className="w-4 h-4 mr-2" />
+              Perfumes
             </TabsTrigger>
             <TabsTrigger value="coupons" data-testid="tab-coupons">
               <Ticket className="w-4 h-4 mr-2" />
@@ -1897,6 +2133,368 @@ export default function Admin() {
                   ))}
                 </div>
               )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="perfumes" className="mt-0">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Perfume Inventory</h3>
+                <Button
+                  onClick={() => {
+                    setEditingPerfume(null);
+                    setPerfumeForm({
+                      name: "",
+                      description: "",
+                      price: "",
+                      regularPrice: "",
+                      imageUrl: "",
+                      imageUrl2: "",
+                      category: "",
+                      size: "",
+                      stockQuantity: "0",
+                    });
+                    setShowPerfumeForm(true);
+                  }}
+                  data-testid="button-add-perfume"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Perfume
+                </Button>
+              </div>
+
+              {showPerfumeForm && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      {editingPerfume ? 'Edit Perfume' : 'Create New Perfume'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handlePerfumeSubmit} className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="perfume-name">Name *</Label>
+                          <Input
+                            id="perfume-name"
+                            placeholder="Rose Gold Essence"
+                            value={perfumeForm.name}
+                            onChange={(e) => setPerfumeForm({ ...perfumeForm, name: e.target.value })}
+                            required
+                            data-testid="input-perfume-name"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="perfume-category">Category</Label>
+                          <Input
+                            id="perfume-category"
+                            placeholder="Eau de Parfum"
+                            value={perfumeForm.category}
+                            onChange={(e) => setPerfumeForm({ ...perfumeForm, category: e.target.value })}
+                            data-testid="input-perfume-category"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="perfume-price">Price ($) *</Label>
+                          <Input
+                            id="perfume-price"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="49.99"
+                            value={perfumeForm.price}
+                            onChange={(e) => setPerfumeForm({ ...perfumeForm, price: e.target.value })}
+                            required
+                            data-testid="input-perfume-price"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="perfume-regular-price">Regular Price ($)</Label>
+                          <Input
+                            id="perfume-regular-price"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="59.99"
+                            value={perfumeForm.regularPrice}
+                            onChange={(e) => setPerfumeForm({ ...perfumeForm, regularPrice: e.target.value })}
+                            data-testid="input-perfume-regular-price"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="perfume-size">Size</Label>
+                          <Input
+                            id="perfume-size"
+                            placeholder="50ml"
+                            value={perfumeForm.size}
+                            onChange={(e) => setPerfumeForm({ ...perfumeForm, size: e.target.value })}
+                            data-testid="input-perfume-size"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="perfume-stock">Stock Quantity</Label>
+                          <Input
+                            id="perfume-stock"
+                            type="number"
+                            min="0"
+                            placeholder="10"
+                            value={perfumeForm.stockQuantity}
+                            onChange={(e) => setPerfumeForm({ ...perfumeForm, stockQuantity: e.target.value })}
+                            data-testid="input-perfume-stock"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="perfume-description">Description *</Label>
+                        <Input
+                          id="perfume-description"
+                          placeholder="A luxurious floral fragrance..."
+                          value={perfumeForm.description}
+                          onChange={(e) => setPerfumeForm({ ...perfumeForm, description: e.target.value })}
+                          required
+                          data-testid="input-perfume-description"
+                        />
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="perfume-image">Image URL</Label>
+                          <Input
+                            id="perfume-image"
+                            placeholder="/images/perfume.jpg"
+                            value={perfumeForm.imageUrl}
+                            onChange={(e) => setPerfumeForm({ ...perfumeForm, imageUrl: e.target.value })}
+                            data-testid="input-perfume-image"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="perfume-image2">Secondary Image URL</Label>
+                          <Input
+                            id="perfume-image2"
+                            placeholder="/images/perfume-alt.jpg"
+                            value={perfumeForm.imageUrl2}
+                            onChange={(e) => setPerfumeForm({ ...perfumeForm, imageUrl2: e.target.value })}
+                            data-testid="input-perfume-image2"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setShowPerfumeForm(false);
+                            setEditingPerfume(null);
+                          }}
+                          data-testid="button-cancel-perfume"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="submit"
+                          disabled={savingPerfume}
+                          data-testid="button-save-perfume"
+                        >
+                          {savingPerfume ? (
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          ) : null}
+                          {editingPerfume ? 'Update Perfume' : 'Create Perfume'}
+                        </Button>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              )}
+
+              {perfumesLoading ? (
+                <div className="flex items-center justify-center py-16">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : !perfumes || perfumes.length === 0 ? (
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-16">
+                    <Package className="w-16 h-16 text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">No perfumes found</p>
+                    <p className="text-sm text-muted-foreground mt-2">Click "Add Perfume" to create your first fragrance</p>
+                  </CardContent>
+                </Card>
+              ) : (
+              <div className="grid gap-4">
+                {perfumes.map((perfume) => (
+                  <Card key={perfume.id} data-testid={`card-perfume-${perfume.id}`}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
+                        <img
+                          src={encodeURI(perfume.imageUrl)}
+                          alt={perfume.name}
+                          className="w-20 h-20 object-cover rounded-md border border-card-border"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-lg mb-1" data-testid={`text-perfume-name-${perfume.id}`}>
+                            {perfume.name}
+                          </h3>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                            <span>{perfume.category}</span>
+                            {perfume.size && (
+                              <>
+                                <span>•</span>
+                                <span>{perfume.size}</span>
+                              </>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {editingPerfumePriceId === perfume.id ? (
+                              <>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-lg font-bold">$</span>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={tempPrice}
+                                    onChange={(e) => setTempPrice(e.target.value)}
+                                    className="w-24 h-8 text-lg font-bold"
+                                    data-testid={`input-perfume-price-${perfume.id}`}
+                                    autoFocus
+                                  />
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => {
+                                    const price = parseFloat(tempPrice);
+                                    if (!isNaN(price) && price >= 0) {
+                                      updatePerfumePriceMutation.mutate({ perfumeId: perfume.id, price: price.toFixed(2) });
+                                      setEditingPerfumePriceId(null);
+                                      setTempPrice("");
+                                    }
+                                  }}
+                                  disabled={processingPerfumeIds.has(perfume.id)}
+                                  data-testid={`button-save-perfume-price-${perfume.id}`}
+                                >
+                                  <Check className="w-4 h-4 text-green-600" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => {
+                                    setEditingPerfumePriceId(null);
+                                    setTempPrice("");
+                                  }}
+                                  data-testid={`button-cancel-perfume-price-${perfume.id}`}
+                                >
+                                  <X className="w-4 h-4 text-destructive" />
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-lg font-bold" data-testid={`text-perfume-price-${perfume.id}`}>
+                                  ${parseFloat(perfume.price).toFixed(2)}
+                                </p>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => {
+                                    setEditingPerfumePriceId(perfume.id);
+                                    setTempPrice(parseFloat(perfume.price).toFixed(2));
+                                  }}
+                                  data-testid={`button-edit-perfume-price-${perfume.id}`}
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-center">
+                            <p className="text-sm text-muted-foreground mb-2">Stock</p>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => updatePerfumeInventoryMutation.mutate({ perfumeId: perfume.id, quantityChange: -1 })}
+                                disabled={perfume.stockQuantity === 0 || processingPerfumeIds.has(perfume.id)}
+                                data-testid={`button-decrease-perfume-stock-${perfume.id}`}
+                              >
+                                <Minus className="w-4 h-4" />
+                              </Button>
+                              <div className="min-w-[60px] text-center">
+                                {editingPerfumeStockId === perfume.id ? (
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    value={tempStock}
+                                    onChange={(e) => setTempStock(e.target.value)}
+                                    onBlur={() => {
+                                      const newStock = parseInt(tempStock);
+                                      if (!isNaN(newStock) && newStock >= 0) {
+                                        const change = newStock - perfume.stockQuantity;
+                                        if (change !== 0) {
+                                          updatePerfumeInventoryMutation.mutate({ perfumeId: perfume.id, quantityChange: change });
+                                        }
+                                      }
+                                      setEditingPerfumeStockId(null);
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        const newStock = parseInt(tempStock);
+                                        if (!isNaN(newStock) && newStock >= 0) {
+                                          const change = newStock - perfume.stockQuantity;
+                                          if (change !== 0) {
+                                            updatePerfumeInventoryMutation.mutate({ perfumeId: perfume.id, quantityChange: change });
+                                          }
+                                        }
+                                        setEditingPerfumeStockId(null);
+                                      } else if (e.key === 'Escape') {
+                                        setEditingPerfumeStockId(null);
+                                      }
+                                    }}
+                                    className="w-16 h-8 text-center text-lg font-bold"
+                                    autoFocus
+                                    data-testid={`input-perfume-stock-${perfume.id}`}
+                                  />
+                                ) : (
+                                  <span 
+                                    className={`text-xl font-bold cursor-pointer hover:text-primary transition-colors ${perfume.stockQuantity === 0 ? 'text-destructive' : ''}`}
+                                    onClick={() => {
+                                      setEditingPerfumeStockId(perfume.id);
+                                      setTempStock(perfume.stockQuantity.toString());
+                                    }}
+                                    title="Click to edit stock"
+                                    data-testid={`text-perfume-stock-${perfume.id}`}
+                                  >
+                                    {perfume.stockQuantity}
+                                  </span>
+                                )}
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => updatePerfumeInventoryMutation.mutate({ perfumeId: perfume.id, quantityChange: 1 })}
+                                disabled={processingPerfumeIds.has(perfume.id)}
+                                data-testid={`button-increase-perfume-stock-${perfume.id}`}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            {perfume.stockQuantity === 0 ? (
+                              <Badge variant="destructive" className="mt-2 text-xs">Out of Stock</Badge>
+                            ) : perfume.stockQuantity <= 5 ? (
+                              <Badge variant="secondary" className="mt-2 text-xs bg-yellow-500/20 text-yellow-600 border-yellow-500/30">Low Stock</Badge>
+                            ) : (
+                              <Badge variant="secondary" className="mt-2 text-xs bg-green-500/20 text-green-600 border-green-500/30">In Stock</Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
             </div>
           </TabsContent>
         </Tabs>

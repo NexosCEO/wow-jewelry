@@ -1,12 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@shared/schema";
+import { Product, Perfume } from "@shared/schema";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShoppingBag } from "lucide-react";
 import { useState, useMemo } from "react";
+import { useToast } from "@/hooks/use-toast";
 import heroImage from "@assets/IMG_3464_1761882788256.jpeg";
 import logoUrl from "@assets/Untitled Project (3)_1764567021014.png";
 import { SiInstagram, SiTiktok } from "react-icons/si";
@@ -16,9 +19,41 @@ interface HomeProps {
 }
 
 export default function Home({ onAddToCart }: HomeProps) {
+  const { toast } = useToast();
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const { data: perfumes, isLoading: perfumesLoading } = useQuery<Perfume[]>({
+    queryKey: ["/api/perfumes"],
+  });
+
+  // Filter perfumes to only show in-stock ones
+  const availablePerfumes = useMemo(() => {
+    if (!perfumes) return [];
+    return perfumes.filter((p) => p.inStock && p.stockQuantity > 0);
+  }, [perfumes]);
+
+  // Convert perfume to product-like object for cart compatibility
+  const handleAddPerfumeToCart = (perfume: Perfume) => {
+    const productLike: Product = {
+      id: perfume.id,
+      name: perfume.name,
+      description: perfume.description,
+      price: perfume.price,
+      regularPrice: perfume.regularPrice,
+      imageUrl: perfume.imageUrl,
+      imageUrl2: perfume.imageUrl2,
+      category: "Perfume",
+      inStock: perfume.inStock,
+      stockQuantity: perfume.stockQuantity,
+    };
+    onAddToCart(productLike);
+    toast({
+      title: "Added to cart",
+      description: `${perfume.name} has been added to your bag`,
+    });
+  };
 
   const [filterType, setFilterType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("featured");
@@ -208,6 +243,88 @@ export default function Home({ onAddToCart }: HomeProps) {
           )}
         </div>
       </section>
+
+      {/* Perfumes Section - Only show if there are perfumes available */}
+      {availablePerfumes.length > 0 && (
+        <section id="perfumes" className="bg-card py-16 md:py-24 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4" data-testid="text-perfumes-title">
+                Fragrances
+              </h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Discover our exclusive collection of luxurious fragrances
+              </p>
+            </div>
+
+            {perfumesLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                {availablePerfumes.map((perfume) => (
+                  <Card 
+                    key={perfume.id} 
+                    className="group overflow-hidden hover-elevate"
+                    data-testid={`card-perfume-${perfume.id}`}
+                  >
+                    <CardHeader className="p-0">
+                      <div className="relative aspect-square overflow-hidden">
+                        <img
+                          src={encodeURI(perfume.imageUrl)}
+                          alt={perfume.name}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        {perfume.regularPrice && parseFloat(perfume.regularPrice) > parseFloat(perfume.price) && (
+                          <Badge 
+                            className="absolute top-3 left-3"
+                            style={{ background: 'var(--gold)', color: 'var(--warm-charcoal)' }}
+                          >
+                            Sale
+                          </Badge>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                      <CardTitle className="text-lg font-semibold mb-1 line-clamp-1" data-testid={`text-perfume-name-${perfume.id}`}>
+                        {perfume.name}
+                      </CardTitle>
+                      {perfume.size && (
+                        <p className="text-sm text-muted-foreground mb-2">{perfume.size}</p>
+                      )}
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {perfume.description}
+                      </p>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-bold" data-testid={`text-perfume-price-${perfume.id}`}>
+                            ${perfume.price}
+                          </span>
+                          {perfume.regularPrice && parseFloat(perfume.regularPrice) > parseFloat(perfume.price) && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              ${perfume.regularPrice}
+                            </span>
+                          )}
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => handleAddPerfumeToCart(perfume)}
+                          className="gap-1"
+                          data-testid={`button-add-perfume-${perfume.id}`}
+                        >
+                          <ShoppingBag className="w-4 h-4" />
+                          Add
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <section id="about" className="bg-card py-16 md:py-24 px-4">
         <div className="max-w-4xl mx-auto">

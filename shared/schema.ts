@@ -104,6 +104,20 @@ export const braceletBeads = pgTable("bracelet_beads", {
   stockQuantity: integer("stock_quantity").notNull().default(0),
 });
 
+export const perfumes = pgTable("perfumes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  regularPrice: decimal("regular_price", { precision: 10, scale: 2 }),
+  imageUrl: text("image_url").notNull(),
+  imageUrl2: text("image_url_2"),
+  category: text("category").notNull(),
+  size: text("size"), // e.g., "50ml", "100ml"
+  inStock: boolean("in_stock").notNull().default(true),
+  stockQuantity: integer("stock_quantity").notNull().default(0),
+});
+
 export const coupons = pgTable("coupons", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   code: text("code").notNull().unique(),
@@ -154,6 +168,10 @@ export const insertBraceletBeadSchema = createInsertSchema(braceletBeads).omit({
   id: true,
 });
 
+export const insertPerfumeSchema = createInsertSchema(perfumes).omit({
+  id: true,
+});
+
 export const insertCouponSchema = createInsertSchema(coupons).omit({
   id: true,
   createdAt: true,
@@ -176,6 +194,8 @@ export type CustomNecklaceConfiguration = typeof customNecklaceConfigurations.$i
 export type InsertCustomNecklaceConfiguration = z.infer<typeof insertCustomNecklaceConfigurationSchema>;
 export type BraceletBead = typeof braceletBeads.$inferSelect;
 export type InsertBraceletBead = z.infer<typeof insertBraceletBeadSchema>;
+export type Perfume = typeof perfumes.$inferSelect;
+export type InsertPerfume = z.infer<typeof insertPerfumeSchema>;
 export type Coupon = typeof coupons.$inferSelect;
 export type InsertCoupon = z.infer<typeof insertCouponSchema>;
 
