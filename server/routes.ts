@@ -6,6 +6,7 @@ import { insertProductSchema, insertOrderSchema, insertCustomBraceletConfigurati
 import { requireAdmin, verifyAdminPassword, createAdminSession, invalidateAdminSession } from "./auth-middleware";
 import PDFDocument from "pdfkit";
 import { sendOrderNotification, sendTestEmail, sendShippingNotification } from './emailService';
+import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 
 // Helper function to parse charm name from format like "God Love (1)"
 // Returns { name: "God Love", quantity: 1 }
@@ -61,6 +62,9 @@ if (stripeSecretKey) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Register object storage routes for file uploads
+  registerObjectStorageRoutes(app);
   
   // Admin authentication endpoints
   app.post("/api/admin/login", async (req, res) => {

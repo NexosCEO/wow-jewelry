@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getAdminToken, setSession, isAdminAuthenticated, clearAdminToken, updateLastActivity, getRemainingSessionTime, isSessionExpired, refreshSessionExpiry } from "@/lib/adminAuth";
 import { useState, useEffect, useCallback } from "react";
+import { ImageUpload } from "@/components/ImageUpload";
 
 export default function Admin() {
   const { toast } = useToast();
@@ -373,6 +374,46 @@ export default function Admin() {
     stockQuantity: "0",
   });
 
+  // Product form state
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [savingProduct, setSavingProduct] = useState(false);
+  const [productForm, setProductForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    regularPrice: "",
+    imageUrl: "",
+    imageUrl2: "",
+    category: "",
+    stockQuantity: "0",
+  });
+
+  // Charm form state  
+  const [showCharmForm, setShowCharmForm] = useState(false);
+  const [editingCharm, setEditingCharm] = useState<Charm | null>(null);
+  const [savingCharm, setSavingCharm] = useState(false);
+  const [charmForm, setCharmForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    imageUrl: "",
+    stockQuantity: "0",
+  });
+
+  // Bead form state
+  const [showBeadForm, setShowBeadForm] = useState(false);
+  const [editingBead, setEditingBead] = useState<BraceletBead | null>(null);
+  const [savingBead, setSavingBead] = useState(false);
+  const [beadForm, setBeadForm] = useState({
+    name: "",
+    color: "",
+    price: "",
+    imageUrl: "",
+    size: "",
+    stockQuantity: "0",
+  });
+
   const handlePerfumeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingPerfume(true);
@@ -488,6 +529,231 @@ export default function Admin() {
     } finally {
       setDeletingPerfumeId(null);
     }
+  };
+
+  // Product handlers
+  const handleProductSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingProduct(true);
+
+    try {
+      const data = {
+        name: productForm.name,
+        description: productForm.description,
+        price: productForm.price,
+        regularPrice: productForm.regularPrice || null,
+        imageUrl: productForm.imageUrl || "/placeholder.jpg",
+        imageUrl2: productForm.imageUrl2 || null,
+        category: productForm.category,
+        inStock: true,
+        stockQuantity: parseInt(productForm.stockQuantity) || 0,
+      };
+
+      const token = getAdminToken();
+      const url = editingProduct ? `/api/products/${editingProduct.id}` : "/api/products";
+      const method = editingProduct ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to save product");
+      }
+
+      toast({
+        title: editingProduct ? "Product Updated" : "Product Created",
+        description: `${productForm.name} has been ${editingProduct ? "updated" : "created"} successfully`,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      setShowProductForm(false);
+      setEditingProduct(null);
+      setProductForm({
+        name: "",
+        description: "",
+        price: "",
+        regularPrice: "",
+        imageUrl: "",
+        imageUrl2: "",
+        category: "",
+        stockQuantity: "0",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save product",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingProduct(false);
+    }
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setProductForm({
+      name: product.name,
+      description: product.description || "",
+      price: product.price,
+      regularPrice: product.regularPrice || "",
+      imageUrl: product.imageUrl,
+      imageUrl2: product.imageUrl2 || "",
+      category: product.category || "",
+      stockQuantity: product.stockQuantity.toString(),
+    });
+    setShowProductForm(true);
+  };
+
+  // Charm handlers
+  const handleCharmSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingCharm(true);
+
+    try {
+      const data = {
+        name: charmForm.name,
+        description: charmForm.description || null,
+        price: charmForm.price,
+        imageUrl: charmForm.imageUrl || "/placeholder.jpg",
+        inStock: true,
+        stockQuantity: parseInt(charmForm.stockQuantity) || 0,
+      };
+
+      const token = getAdminToken();
+      const url = editingCharm ? `/api/charms/${editingCharm.id}` : "/api/charms";
+      const method = editingCharm ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to save charm");
+      }
+
+      toast({
+        title: editingCharm ? "Charm Updated" : "Charm Created",
+        description: `${charmForm.name} has been ${editingCharm ? "updated" : "created"} successfully`,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["/api/charms"] });
+      setShowCharmForm(false);
+      setEditingCharm(null);
+      setCharmForm({
+        name: "",
+        description: "",
+        price: "",
+        imageUrl: "",
+        stockQuantity: "0",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save charm",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingCharm(false);
+    }
+  };
+
+  const handleEditCharm = (charm: Charm) => {
+    setEditingCharm(charm);
+    setCharmForm({
+      name: charm.name,
+      description: charm.description || "",
+      price: charm.price,
+      imageUrl: charm.imageUrl,
+      stockQuantity: charm.stockQuantity.toString(),
+    });
+    setShowCharmForm(true);
+  };
+
+  // Bead handlers
+  const handleBeadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingBead(true);
+
+    try {
+      const data = {
+        name: beadForm.name,
+        color: beadForm.color || null,
+        price: beadForm.price,
+        imageUrl: beadForm.imageUrl || "/placeholder.jpg",
+        size: beadForm.size || null,
+        inStock: true,
+        stockQuantity: parseInt(beadForm.stockQuantity) || 0,
+      };
+
+      const token = getAdminToken();
+      const url = editingBead ? `/api/bracelet-beads/${editingBead.id}` : "/api/bracelet-beads";
+      const method = editingBead ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to save bead");
+      }
+
+      toast({
+        title: editingBead ? "Bead Updated" : "Bead Created",
+        description: `${beadForm.name} has been ${editingBead ? "updated" : "created"} successfully`,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["/api/bracelet-beads"] });
+      setShowBeadForm(false);
+      setEditingBead(null);
+      setBeadForm({
+        name: "",
+        color: "",
+        price: "",
+        imageUrl: "",
+        size: "",
+        stockQuantity: "0",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save bead",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingBead(false);
+    }
+  };
+
+  const handleEditBead = (bead: BraceletBead) => {
+    setEditingBead(bead);
+    setBeadForm({
+      name: bead.name,
+      color: bead.color || "",
+      price: bead.price,
+      imageUrl: bead.imageUrl,
+      size: bead.size || "",
+      stockQuantity: bead.stockQuantity.toString(),
+    });
+    setShowBeadForm(true);
   };
 
   const generateLabelMutation = useMutation({
@@ -1357,18 +1623,170 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="inventory" className="mt-0">
-            {productsLoading ? (
-              <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Product Inventory</h3>
+                <Button
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setProductForm({
+                      name: "",
+                      description: "",
+                      price: "",
+                      regularPrice: "",
+                      imageUrl: "",
+                      imageUrl2: "",
+                      category: "",
+                      stockQuantity: "0",
+                    });
+                    setShowProductForm(true);
+                  }}
+                  data-testid="button-add-product"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Product
+                </Button>
               </div>
-            ) : !products || products.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-16">
-                  <PackageOpen className="w-16 h-16 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No products found</p>
-                </CardContent>
-              </Card>
-            ) : (
+
+              {showProductForm && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      {editingProduct ? 'Edit Product' : 'Create New Product'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleProductSubmit} className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="product-name">Name *</Label>
+                          <Input
+                            id="product-name"
+                            placeholder="Gold Bracelet"
+                            value={productForm.name}
+                            onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                            required
+                            data-testid="input-product-name"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="product-category">Category</Label>
+                          <Input
+                            id="product-category"
+                            placeholder="Bracelets"
+                            value={productForm.category}
+                            onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                            data-testid="input-product-category"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="product-price">Price ($) *</Label>
+                          <Input
+                            id="product-price"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="29.99"
+                            value={productForm.price}
+                            onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                            required
+                            data-testid="input-product-price"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="product-regular-price">Regular Price ($)</Label>
+                          <Input
+                            id="product-regular-price"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="39.99"
+                            value={productForm.regularPrice}
+                            onChange={(e) => setProductForm({ ...productForm, regularPrice: e.target.value })}
+                            data-testid="input-product-regular-price"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="product-stock">Stock Quantity</Label>
+                          <Input
+                            id="product-stock"
+                            type="number"
+                            min="0"
+                            placeholder="10"
+                            value={productForm.stockQuantity}
+                            onChange={(e) => setProductForm({ ...productForm, stockQuantity: e.target.value })}
+                            data-testid="input-product-stock"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="product-description">Description *</Label>
+                        <Input
+                          id="product-description"
+                          placeholder="A beautiful handmade bracelet..."
+                          value={productForm.description}
+                          onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                          required
+                          data-testid="input-product-description"
+                        />
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <ImageUpload
+                          label="Image (click upload icon to add)"
+                          value={productForm.imageUrl}
+                          onChange={(url) => setProductForm({ ...productForm, imageUrl: url })}
+                          placeholder="Upload an image or paste URL"
+                          testId="input-product-image"
+                        />
+                        <ImageUpload
+                          label="Secondary Image (optional)"
+                          value={productForm.imageUrl2}
+                          onChange={(url) => setProductForm({ ...productForm, imageUrl2: url })}
+                          placeholder="Upload an image or paste URL"
+                          testId="input-product-image2"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setShowProductForm(false);
+                            setEditingProduct(null);
+                          }}
+                          data-testid="button-cancel-product"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="submit"
+                          disabled={savingProduct}
+                          data-testid="button-save-product"
+                        >
+                          {savingProduct ? (
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          ) : null}
+                          {editingProduct ? 'Update Product' : 'Create Product'}
+                        </Button>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              )}
+
+              {productsLoading ? (
+                <div className="flex items-center justify-center py-16">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : !products || products.length === 0 ? (
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-16">
+                    <PackageOpen className="w-16 h-16 text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">No products found</p>
+                    <p className="text-sm text-muted-foreground mt-2">Click "Add Product" to create your first product</p>
+                  </CardContent>
+                </Card>
+              ) : (
               <div className="grid gap-4">
                 {products.map((product) => (
                   <Card key={product.id} data-testid={`card-product-${product.id}`}>
@@ -1380,10 +1798,23 @@ export default function Admin() {
                           className="w-20 h-20 object-cover rounded-md border border-card-border"
                         />
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-lg mb-1" data-testid={`text-product-name-${product.id}`}>
-                            {product.name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-semibold text-lg mb-1" data-testid={`text-product-name-${product.id}`}>
+                                {product.name}
+                              </h3>
+                              <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditProduct(product)}
+                              data-testid={`button-edit-product-${product.id}`}
+                            >
+                              <Edit className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
+                          </div>
                           <div className="flex items-center gap-2">
                             {editingPriceId === product.id ? (
                               <>
@@ -1534,6 +1965,7 @@ export default function Admin() {
                 ))}
               </div>
             )}
+            </div>
           </TabsContent>
 
           <TabsContent value="charms-beads" className="mt-0">
@@ -2256,26 +2688,20 @@ export default function Admin() {
                         />
                       </div>
                       <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="perfume-image">Image URL</Label>
-                          <Input
-                            id="perfume-image"
-                            placeholder="/images/perfume.jpg"
-                            value={perfumeForm.imageUrl}
-                            onChange={(e) => setPerfumeForm({ ...perfumeForm, imageUrl: e.target.value })}
-                            data-testid="input-perfume-image"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="perfume-image2">Secondary Image URL</Label>
-                          <Input
-                            id="perfume-image2"
-                            placeholder="/images/perfume-alt.jpg"
-                            value={perfumeForm.imageUrl2}
-                            onChange={(e) => setPerfumeForm({ ...perfumeForm, imageUrl2: e.target.value })}
-                            data-testid="input-perfume-image2"
-                          />
-                        </div>
+                        <ImageUpload
+                          label="Image (click upload icon to add)"
+                          value={perfumeForm.imageUrl}
+                          onChange={(url) => setPerfumeForm({ ...perfumeForm, imageUrl: url })}
+                          placeholder="Upload an image or paste URL"
+                          testId="input-perfume-image"
+                        />
+                        <ImageUpload
+                          label="Secondary Image (optional)"
+                          value={perfumeForm.imageUrl2}
+                          onChange={(url) => setPerfumeForm({ ...perfumeForm, imageUrl2: url })}
+                          placeholder="Upload an image or paste URL"
+                          testId="input-perfume-image2"
+                        />
                       </div>
                       <div className="flex gap-2">
                         <Button
