@@ -1977,7 +1977,122 @@ export default function Admin() {
               <div className="space-y-8">
                 {/* Charms Section */}
                 <div>
-                  <h2 className="text-2xl font-bold mb-4">Charms Inventory</h2>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold">Charms Inventory</h2>
+                    <Button
+                      onClick={() => {
+                        setEditingCharm(null);
+                        setCharmForm({
+                          name: "",
+                          description: "",
+                          price: "",
+                          imageUrl: "",
+                          stockQuantity: "0",
+                        });
+                        setShowCharmForm(true);
+                      }}
+                      data-testid="button-add-charm"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Charm
+                    </Button>
+                  </div>
+
+                  {showCharmForm && (
+                    <Card className="mb-4">
+                      <CardHeader>
+                        <CardTitle>
+                          {editingCharm ? 'Edit Charm' : 'Create New Charm'}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <form onSubmit={handleCharmSubmit} className="space-y-4">
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="charm-name">Name *</Label>
+                              <Input
+                                id="charm-name"
+                                placeholder="Heart Charm"
+                                value={charmForm.name}
+                                onChange={(e) => setCharmForm({ ...charmForm, name: e.target.value })}
+                                required
+                                data-testid="input-charm-name"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="charm-price">Price ($) *</Label>
+                              <Input
+                                id="charm-price"
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                placeholder="5.00"
+                                value={charmForm.price}
+                                onChange={(e) => setCharmForm({ ...charmForm, price: e.target.value })}
+                                required
+                                data-testid="input-charm-price"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="charm-stock">Stock Quantity</Label>
+                              <Input
+                                id="charm-stock"
+                                type="number"
+                                min="0"
+                                placeholder="10"
+                                value={charmForm.stockQuantity}
+                                onChange={(e) => setCharmForm({ ...charmForm, stockQuantity: e.target.value })}
+                                data-testid="input-charm-stock"
+                              />
+                            </div>
+                            <div className="col-span-2">
+                              <ImageUpload
+                                label="Image"
+                                value={charmForm.imageUrl}
+                                onChange={(url) => setCharmForm({ ...charmForm, imageUrl: url })}
+                                placeholder="Upload or enter image URL"
+                                testId="input-charm-image"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="charm-description">Description</Label>
+                            <Input
+                              id="charm-description"
+                              placeholder="A beautiful charm..."
+                              value={charmForm.description}
+                              onChange={(e) => setCharmForm({ ...charmForm, description: e.target.value })}
+                              data-testid="input-charm-description"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                setShowCharmForm(false);
+                                setEditingCharm(null);
+                              }}
+                              data-testid="button-cancel-charm"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              type="submit"
+                              disabled={savingCharm}
+                              data-testid="button-save-charm"
+                            >
+                              {savingCharm ? (
+                                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                              ) : null}
+                              {editingCharm ? 'Update Charm' : 'Create Charm'}
+                            </Button>
+                          </div>
+                        </form>
+                      </CardContent>
+                    </Card>
+                  )}
+
                   {!charms || charms.length === 0 ? (
                     <Card>
                       <CardContent className="flex flex-col items-center justify-center py-16">
@@ -1997,10 +2112,23 @@ export default function Admin() {
                                 className="w-20 h-20 object-cover rounded-md border border-card-border"
                               />
                               <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-lg mb-1" data-testid={`text-charm-name-${charm.id}`}>
-                                  {charm.name}
-                                </h3>
-                                <p className="text-sm text-muted-foreground mb-2">{charm.category}</p>
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h3 className="font-semibold text-lg mb-1" data-testid={`text-charm-name-${charm.id}`}>
+                                      {charm.name}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground mb-2">{charm.category}</p>
+                                  </div>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleEditCharm(charm)}
+                                    data-testid={`button-edit-charm-${charm.id}`}
+                                  >
+                                    <Edit className="w-4 h-4 mr-1" />
+                                    Edit
+                                  </Button>
+                                </div>
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm text-muted-foreground">Price:</span>
                                   {editingCharmPriceId === charm.id ? (
@@ -2135,7 +2263,133 @@ export default function Admin() {
 
                 {/* Beads Section */}
                 <div>
-                  <h2 className="text-2xl font-bold mb-4">Beads Inventory</h2>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold">Beads Inventory</h2>
+                    <Button
+                      onClick={() => {
+                        setEditingBead(null);
+                        setBeadForm({
+                          name: "",
+                          color: "",
+                          price: "",
+                          imageUrl: "",
+                          size: "",
+                          stockQuantity: "0",
+                        });
+                        setShowBeadForm(true);
+                      }}
+                      data-testid="button-add-bead"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Bead
+                    </Button>
+                  </div>
+
+                  {showBeadForm && (
+                    <Card className="mb-4">
+                      <CardHeader>
+                        <CardTitle>
+                          {editingBead ? 'Edit Bead' : 'Create New Bead'}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <form onSubmit={handleBeadSubmit} className="space-y-4">
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="bead-name">Name *</Label>
+                              <Input
+                                id="bead-name"
+                                placeholder="Gold Bead"
+                                value={beadForm.name}
+                                onChange={(e) => setBeadForm({ ...beadForm, name: e.target.value })}
+                                required
+                                data-testid="input-bead-name"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="bead-color">Color</Label>
+                              <Input
+                                id="bead-color"
+                                placeholder="Gold"
+                                value={beadForm.color}
+                                onChange={(e) => setBeadForm({ ...beadForm, color: e.target.value })}
+                                data-testid="input-bead-color"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="bead-size">Size</Label>
+                              <Input
+                                id="bead-size"
+                                placeholder="4mm"
+                                value={beadForm.size}
+                                onChange={(e) => setBeadForm({ ...beadForm, size: e.target.value })}
+                                data-testid="input-bead-size"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="bead-price">Price ($) *</Label>
+                              <Input
+                                id="bead-price"
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                placeholder="1.00"
+                                value={beadForm.price}
+                                onChange={(e) => setBeadForm({ ...beadForm, price: e.target.value })}
+                                required
+                                data-testid="input-bead-price"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="bead-stock">Stock Quantity</Label>
+                              <Input
+                                id="bead-stock"
+                                type="number"
+                                min="0"
+                                placeholder="100"
+                                value={beadForm.stockQuantity}
+                                onChange={(e) => setBeadForm({ ...beadForm, stockQuantity: e.target.value })}
+                                data-testid="input-bead-stock"
+                              />
+                            </div>
+                            <div className="col-span-2">
+                              <ImageUpload
+                                label="Image"
+                                value={beadForm.imageUrl}
+                                onChange={(url) => setBeadForm({ ...beadForm, imageUrl: url })}
+                                placeholder="Upload or enter image URL"
+                                testId="input-bead-image"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                setShowBeadForm(false);
+                                setEditingBead(null);
+                              }}
+                              data-testid="button-cancel-bead"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              type="submit"
+                              disabled={savingBead}
+                              data-testid="button-save-bead"
+                            >
+                              {savingBead ? (
+                                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                              ) : null}
+                              {editingBead ? 'Update Bead' : 'Create Bead'}
+                            </Button>
+                          </div>
+                        </form>
+                      </CardContent>
+                    </Card>
+                  )}
+
                   {!beads || beads.length === 0 ? (
                     <Card>
                       <CardContent className="flex flex-col items-center justify-center py-16">
@@ -2155,10 +2409,23 @@ export default function Admin() {
                                 className="w-20 h-20 object-cover rounded-md border border-card-border"
                               />
                               <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-lg mb-1" data-testid={`text-bead-name-${bead.id}`}>
-                                  {bead.name}{bead.size ? ` - ${bead.size}` : ''}
-                                </h3>
-                                <p className="text-sm text-muted-foreground mb-2">{bead.color}{bead.size ? ` | Size: ${bead.size}` : ''}</p>
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h3 className="font-semibold text-lg mb-1" data-testid={`text-bead-name-${bead.id}`}>
+                                      {bead.name}{bead.size ? ` - ${bead.size}` : ''}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground mb-2">{bead.color}{bead.size ? ` | Size: ${bead.size}` : ''}</p>
+                                  </div>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleEditBead(bead)}
+                                    data-testid={`button-edit-bead-${bead.id}`}
+                                  >
+                                    <Edit className="w-4 h-4 mr-1" />
+                                    Edit
+                                  </Button>
+                                </div>
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm text-muted-foreground">Price:</span>
                                   {editingBeadPriceId === bead.id ? (
@@ -2755,17 +3022,30 @@ export default function Admin() {
                           className="w-20 h-20 object-cover rounded-md border border-card-border"
                         />
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-lg mb-1" data-testid={`text-perfume-name-${perfume.id}`}>
-                            {perfume.name}
-                          </h3>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                            <span>{perfume.category}</span>
-                            {perfume.size && (
-                              <>
-                                <span>•</span>
-                                <span>{perfume.size}</span>
-                              </>
-                            )}
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-semibold text-lg mb-1" data-testid={`text-perfume-name-${perfume.id}`}>
+                                {perfume.name}
+                              </h3>
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                                <span>{perfume.category}</span>
+                                {perfume.size && (
+                                  <>
+                                    <span>•</span>
+                                    <span>{perfume.size}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditPerfume(perfume)}
+                              data-testid={`button-edit-perfume-${perfume.id}`}
+                            >
+                              <Edit className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
                           </div>
                           <div className="flex items-center gap-2">
                             {editingPerfumePriceId === perfume.id ? (
