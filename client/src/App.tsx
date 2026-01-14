@@ -11,6 +11,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 type UnifiedCartItem = CartItem | CustomBraceletCartItem | CustomNecklaceCartItem;
 import Home from "@/pages/Home";
 import ProductDetail from "@/pages/ProductDetail";
+import PerfumeDetail from "@/pages/PerfumeDetail";
 import BraceletBuilder from "@/pages/BraceletBuilder";
 import NecklaceBuilder from "@/pages/NecklaceBuilder";
 import Checkout from "@/pages/Checkout";
@@ -158,6 +159,9 @@ function Router() {
         </Route>
         <Route path="/product/:id">
           <ProductDetail onAddToCart={handleAddToCart} />
+        </Route>
+        <Route path="/perfume/:id">
+          <PerfumeDetail onAddToCart={handleAddToCart} />
         </Route>
         <Route path="/bracelet-builder">
           <BraceletBuilder onAddToCart={handleAddToCart} />

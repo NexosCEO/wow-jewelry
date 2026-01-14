@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 import heroImage from "@assets/IMG_3464_1761882788256.jpeg";
 import logoUrl from "@assets/Untitled Project (3)_1764567021014.png";
 import { SiInstagram, SiTiktok } from "react-icons/si";
@@ -269,27 +270,31 @@ export default function Home({ onAddToCart }: HomeProps) {
                     className="group overflow-hidden hover-elevate"
                     data-testid={`card-perfume-${perfume.id}`}
                   >
-                    <CardHeader className="p-0">
-                      <div className="relative aspect-square overflow-hidden">
-                        <img
-                          src={encodeURI(perfume.imageUrl)}
-                          alt={perfume.name}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                        {perfume.regularPrice && parseFloat(perfume.regularPrice) > parseFloat(perfume.price) && (
-                          <Badge 
-                            className="absolute top-3 left-3"
-                            style={{ background: 'var(--gold)', color: 'var(--warm-charcoal)' }}
-                          >
-                            Sale
-                          </Badge>
-                        )}
-                      </div>
-                    </CardHeader>
+                    <Link href={`/perfume/${perfume.id}`}>
+                      <CardHeader className="p-0 cursor-pointer">
+                        <div className="relative aspect-square overflow-hidden">
+                          <img
+                            src={encodeURI(perfume.imageUrl)}
+                            alt={perfume.name}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                          {perfume.regularPrice && parseFloat(perfume.regularPrice) > parseFloat(perfume.price) && (
+                            <Badge 
+                              className="absolute top-3 left-3"
+                              style={{ background: 'var(--gold)', color: 'var(--warm-charcoal)' }}
+                            >
+                              Sale
+                            </Badge>
+                          )}
+                        </div>
+                      </CardHeader>
+                    </Link>
                     <CardContent className="p-4">
-                      <CardTitle className="text-lg font-semibold mb-1 line-clamp-1" data-testid={`text-perfume-name-${perfume.id}`}>
-                        {perfume.name}
-                      </CardTitle>
+                      <Link href={`/perfume/${perfume.id}`}>
+                        <CardTitle className="text-lg font-semibold mb-1 line-clamp-1 cursor-pointer hover:text-primary transition-colors" data-testid={`text-perfume-name-${perfume.id}`}>
+                          {perfume.name}
+                        </CardTitle>
+                      </Link>
                       {perfume.size && (
                         <p className="text-sm text-muted-foreground mb-2">{perfume.size}</p>
                       )}
@@ -309,7 +314,10 @@ export default function Home({ onAddToCart }: HomeProps) {
                         </div>
                         <Button
                           size="sm"
-                          onClick={() => handleAddPerfumeToCart(perfume)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddPerfumeToCart(perfume);
+                          }}
                           className="gap-1"
                           data-testid={`button-add-perfume-${perfume.id}`}
                         >
