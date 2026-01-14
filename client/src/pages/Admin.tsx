@@ -407,6 +407,7 @@ export default function Admin() {
   const [savingBead, setSavingBead] = useState(false);
   const [beadForm, setBeadForm] = useState({
     name: "",
+    description: "",
     color: "",
     price: "",
     imageUrl: "",
@@ -690,6 +691,7 @@ export default function Admin() {
     try {
       const data = {
         name: beadForm.name,
+        description: beadForm.description || beadForm.name,
         color: beadForm.color || null,
         price: beadForm.price,
         imageUrl: beadForm.imageUrl || "/placeholder.jpg",
@@ -726,6 +728,7 @@ export default function Admin() {
       setEditingBead(null);
       setBeadForm({
         name: "",
+        description: "",
         color: "",
         price: "",
         imageUrl: "",
@@ -747,6 +750,7 @@ export default function Admin() {
     setEditingBead(bead);
     setBeadForm({
       name: bead.name,
+      description: bead.description || "",
       color: bead.color || "",
       price: bead.price,
       imageUrl: bead.imageUrl,
@@ -2270,6 +2274,7 @@ export default function Admin() {
                         setEditingBead(null);
                         setBeadForm({
                           name: "",
+                          description: "",
                           color: "",
                           price: "",
                           imageUrl: "",
@@ -2314,6 +2319,16 @@ export default function Admin() {
                                 value={beadForm.color}
                                 onChange={(e) => setBeadForm({ ...beadForm, color: e.target.value })}
                                 data-testid="input-bead-color"
+                              />
+                            </div>
+                            <div className="col-span-2">
+                              <Label htmlFor="bead-description">Description</Label>
+                              <Input
+                                id="bead-description"
+                                placeholder="A beautiful bead for your bracelet..."
+                                value={beadForm.description}
+                                onChange={(e) => setBeadForm({ ...beadForm, description: e.target.value })}
+                                data-testid="input-bead-description"
                               />
                             </div>
                             <div>
