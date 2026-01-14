@@ -1288,51 +1288,52 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
+    <div className="min-h-screen bg-background py-6 sm:py-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="font-serif text-4xl font-bold mb-2" data-testid="text-admin-title">
+            <h1 className="font-serif text-2xl sm:text-4xl font-bold mb-1 sm:mb-2" data-testid="text-admin-title">
               Admin Dashboard
             </h1>
-            <p className="text-muted-foreground" data-testid="text-admin-subtitle">
-              Manage orders, shipping labels, and product inventory
+            <p className="text-sm sm:text-base text-muted-foreground" data-testid="text-admin-subtitle">
+              Manage orders, shipping, and inventory
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button
               variant="outline"
+              size="sm"
               onClick={handleLogout}
               className="flex items-center gap-2"
               data-testid="button-logout"
             >
               <LogOut className="w-4 h-4" />
-              Logout
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </div>
 
         <Tabs defaultValue="orders" className="w-full">
-          <TabsList className="grid w-full max-w-3xl grid-cols-5 mb-6">
-            <TabsTrigger value="orders" data-testid="tab-orders">
-              <Package className="w-4 h-4 mr-2" />
-              Orders
+          <TabsList className="flex w-full overflow-x-auto gap-1 mb-4 sm:mb-6 h-auto flex-wrap sm:flex-nowrap">
+            <TabsTrigger value="orders" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2" data-testid="tab-orders">
+              <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <span className="truncate">Orders</span>
             </TabsTrigger>
-            <TabsTrigger value="inventory" data-testid="tab-inventory">
-              <PackageOpen className="w-4 h-4 mr-2" />
-              Inventory
+            <TabsTrigger value="inventory" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2" data-testid="tab-inventory">
+              <PackageOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <span className="truncate">Inventory</span>
             </TabsTrigger>
-            <TabsTrigger value="charms-beads" data-testid="tab-charms-beads">
-              <PackageOpen className="w-4 h-4 mr-2" />
-              Charms & Beads
+            <TabsTrigger value="charms-beads" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2" data-testid="tab-charms-beads">
+              <PackageOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <span className="truncate">Charms</span>
             </TabsTrigger>
-            <TabsTrigger value="perfumes" data-testid="tab-perfumes">
-              <Package className="w-4 h-4 mr-2" />
-              Perfumes
+            <TabsTrigger value="perfumes" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2" data-testid="tab-perfumes">
+              <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <span className="truncate">Perfumes</span>
             </TabsTrigger>
-            <TabsTrigger value="coupons" data-testid="tab-coupons">
-              <Ticket className="w-4 h-4 mr-2" />
-              Coupons
+            <TabsTrigger value="coupons" className="flex-1 min-w-0 text-xs sm:text-sm px-2 sm:px-3 py-2" data-testid="tab-coupons">
+              <Ticket className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <span className="truncate">Coupons</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1628,9 +1629,10 @@ export default function Admin() {
 
           <TabsContent value="inventory" className="mt-0">
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Product Inventory</h3>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-semibold">Product Inventory</h3>
                 <Button
+                  size="sm"
                   onClick={() => {
                     setEditingProduct(null);
                     setProductForm({
@@ -1647,7 +1649,7 @@ export default function Admin() {
                   }}
                   data-testid="button-add-product"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                   Add Product
                 </Button>
               </div>
@@ -1981,9 +1983,10 @@ export default function Admin() {
               <div className="space-y-8">
                 {/* Charms Section */}
                 <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold">Charms Inventory</h2>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
+                    <h2 className="text-xl sm:text-2xl font-bold">Charms Inventory</h2>
                     <Button
+                      size="sm"
                       onClick={() => {
                         setEditingCharm(null);
                         setCharmForm({
@@ -1997,7 +2000,7 @@ export default function Admin() {
                       }}
                       data-testid="button-add-charm"
                     >
-                      <Plus className="w-4 h-4 mr-2" />
+                      <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                       Add Charm
                     </Button>
                   </div>
@@ -2267,9 +2270,10 @@ export default function Admin() {
 
                 {/* Beads Section */}
                 <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold">Beads Inventory</h2>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
+                    <h2 className="text-xl sm:text-2xl font-bold">Beads Inventory</h2>
                     <Button
+                      size="sm"
                       onClick={() => {
                         setEditingBead(null);
                         setBeadForm({
@@ -2285,7 +2289,7 @@ export default function Admin() {
                       }}
                       data-testid="button-add-bead"
                     >
-                      <Plus className="w-4 h-4 mr-2" />
+                      <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                       Add Bead
                     </Button>
                   </div>
@@ -2852,9 +2856,10 @@ export default function Admin() {
 
           <TabsContent value="perfumes" className="mt-0">
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Perfume Inventory</h3>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-semibold">Perfume Inventory</h3>
                 <Button
+                  size="sm"
                   onClick={() => {
                     setEditingPerfume(null);
                     setPerfumeForm({
@@ -2872,7 +2877,7 @@ export default function Admin() {
                   }}
                   data-testid="button-add-perfume"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                   Add Perfume
                 </Button>
               </div>
