@@ -35,32 +35,19 @@ export function ImageUpload({ label, value, onChange, placeholder, testId }: Ima
     setError(null);
 
     try {
-      const response = await fetch("/api/uploads/request-url", {
+      // Upload directly to server (avoids CORS issues with GCS)
+      const response = await fetch("/api/uploads/upload", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: file.name,
-          size: file.size,
-          contentType: file.type,
-        }),
+        headers: { "Content-Type": file.type },
+        body: file,
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get upload URL");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to upload file");
       }
 
-      const { uploadURL, objectPath } = await response.json();
-
-      const uploadResponse = await fetch(uploadURL, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type },
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload file");
-      }
-
+      const { objectPath } = await response.json();
       onChange(objectPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
