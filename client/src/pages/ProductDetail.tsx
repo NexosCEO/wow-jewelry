@@ -108,7 +108,7 @@ export default function ProductDetail({ onAddToCart }: ProductDetailProps) {
             </div>
 
             <div className="prose prose-sm max-w-none">
-              <p className="text-muted-foreground" data-testid="text-description">
+              <p className="text-muted-foreground whitespace-pre-line" data-testid="text-description">
                 {product.description}
               </p>
             </div>
