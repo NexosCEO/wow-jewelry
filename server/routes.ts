@@ -239,6 +239,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/charms", requireAdmin, async (req, res) => {
+    try {
+      const charm = await storage.createCharm(req.body);
+      res.status(201).json(charm);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error creating charm: " + error.message });
+    }
+  });
+
+  app.patch("/api/charms/:id", requireAdmin, async (req, res) => {
+    try {
+      const charm = await storage.updateCharm(req.params.id, req.body);
+      if (!charm) {
+        return res.status(404).json({ message: "Charm not found" });
+      }
+      res.json(charm);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating charm: " + error.message });
+    }
+  });
+
+  app.delete("/api/charms/:id", requireAdmin, async (req, res) => {
+    try {
+      const deleted = await storage.deleteCharm(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Charm not found" });
+      }
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(500).json({ message: "Error deleting charm: " + error.message });
+    }
+  });
+
   app.patch("/api/charms/:id/inventory", requireAdmin, async (req, res) => {
     try {
       const { quantityChange } = req.body;
@@ -281,6 +314,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(beads);
     } catch (error: any) {
       res.status(500).json({ message: "Error fetching bracelet beads: " + error.message });
+    }
+  });
+
+  app.post("/api/bracelet-beads", requireAdmin, async (req, res) => {
+    try {
+      const bead = await storage.createBraceletBead(req.body);
+      res.status(201).json(bead);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error creating bead: " + error.message });
+    }
+  });
+
+  app.patch("/api/bracelet-beads/:id", requireAdmin, async (req, res) => {
+    try {
+      const bead = await storage.updateBead(req.params.id, req.body);
+      if (!bead) {
+        return res.status(404).json({ message: "Bead not found" });
+      }
+      res.json(bead);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating bead: " + error.message });
+    }
+  });
+
+  app.delete("/api/bracelet-beads/:id", requireAdmin, async (req, res) => {
+    try {
+      const deleted = await storage.deleteBead(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Bead not found" });
+      }
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(500).json({ message: "Error deleting bead: " + error.message });
     }
   });
 
