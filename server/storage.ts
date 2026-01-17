@@ -40,6 +40,8 @@ export interface IStorage {
   getCharm(id: string): Promise<Charm | undefined>;
   getCharmByName(name: string): Promise<Charm | undefined>;
   createCharm(charm: InsertCharm): Promise<Charm>;
+  updateCharm(id: string, charm: Partial<InsertCharm>): Promise<Charm | undefined>;
+  deleteCharm(id: string): Promise<boolean>;
   updateCharmInventory(id: string, quantityChange: number): Promise<Charm | undefined>;
   updateCharmPrice(id: string, price: string): Promise<Charm | undefined>;
   
@@ -47,6 +49,9 @@ export interface IStorage {
   getBraceletBead(id: string): Promise<BraceletBead | undefined>;
   getBeadByName(name: string): Promise<BraceletBead | undefined>;
   getBeadByNameAndSize(name: string, size: string | null): Promise<BraceletBead | undefined>;
+  createBraceletBead(bead: InsertBraceletBead): Promise<BraceletBead>;
+  updateBead(id: string, bead: Partial<InsertBraceletBead>): Promise<BraceletBead | undefined>;
+  deleteBead(id: string): Promise<boolean>;
   updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined>;
   updateBeadPrice(id: string, price: string): Promise<BraceletBead | undefined>;
   
@@ -368,6 +373,14 @@ export class MemStorage implements IStorage {
     throw new Error("Not implemented in MemStorage");
   }
 
+  async updateCharm(id: string, charm: Partial<InsertCharm>): Promise<Charm | undefined> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async deleteCharm(id: string): Promise<boolean> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
   async updateCharmInventory(id: string, quantityChange: number): Promise<Charm | undefined> {
     throw new Error("Not implemented in MemStorage");
   }
@@ -390,6 +403,18 @@ export class MemStorage implements IStorage {
 
   async getBeadByNameAndSize(name: string, size: string | null): Promise<BraceletBead | undefined> {
     return undefined;
+  }
+
+  async createBraceletBead(bead: InsertBraceletBead): Promise<BraceletBead> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async updateBead(id: string, bead: Partial<InsertBraceletBead>): Promise<BraceletBead | undefined> {
+    throw new Error("Not implemented in MemStorage");
+  }
+
+  async deleteBead(id: string): Promise<boolean> {
+    throw new Error("Not implemented in MemStorage");
   }
 
   async updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined> {
@@ -655,6 +680,20 @@ export class DatabaseStorage implements IStorage {
     return charm;
   }
 
+  async updateCharm(id: string, updates: Partial<InsertCharm>): Promise<Charm | undefined> {
+    const [charm] = await db
+      .update(charms)
+      .set(updates)
+      .where(eq(charms.id, id))
+      .returning();
+    return charm || undefined;
+  }
+
+  async deleteCharm(id: string): Promise<boolean> {
+    const result = await db.delete(charms).where(eq(charms.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
   async updateCharmInventory(id: string, quantityChange: number): Promise<Charm | undefined> {
     const existingCharm = await this.getCharm(id);
     if (!existingCharm) return undefined;
@@ -704,6 +743,28 @@ export class DatabaseStorage implements IStorage {
         .where(and(eq(braceletBeads.name, name), isNull(braceletBeads.size)));
       return bead || undefined;
     }
+  }
+
+  async createBraceletBead(insertBead: InsertBraceletBead): Promise<BraceletBead> {
+    const [bead] = await db
+      .insert(braceletBeads)
+      .values(insertBead)
+      .returning();
+    return bead;
+  }
+
+  async updateBead(id: string, updates: Partial<InsertBraceletBead>): Promise<BraceletBead | undefined> {
+    const [bead] = await db
+      .update(braceletBeads)
+      .set(updates)
+      .where(eq(braceletBeads.id, id))
+      .returning();
+    return bead || undefined;
+  }
+
+  async deleteBead(id: string): Promise<boolean> {
+    const result = await db.delete(braceletBeads).where(eq(braceletBeads.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   async updateBeadInventory(id: string, quantityChange: number): Promise<BraceletBead | undefined> {
