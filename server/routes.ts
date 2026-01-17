@@ -241,7 +241,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/charms", requireAdmin, async (req, res) => {
     try {
-      const charm = await storage.createCharm(req.body);
+      const data = {
+        ...req.body,
+        category: req.body.category || "Charms",
+        description: req.body.description || req.body.name || "Charm",
+        imageUrl: req.body.imageUrl || "/placeholder.jpg",
+        inStock: req.body.inStock !== undefined ? req.body.inStock : true,
+        stockQuantity: req.body.stockQuantity || 0,
+      };
+      const charm = await storage.createCharm(data);
       res.status(201).json(charm);
     } catch (error: any) {
       res.status(500).json({ message: "Error creating charm: " + error.message });
@@ -319,7 +327,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/bracelet-beads", requireAdmin, async (req, res) => {
     try {
-      const bead = await storage.createBraceletBead(req.body);
+      const data = {
+        ...req.body,
+        color: req.body.color || "Default",
+        description: req.body.description || req.body.name || "Bead",
+        imageUrl: req.body.imageUrl || "/placeholder.jpg",
+        inStock: req.body.inStock !== undefined ? req.body.inStock : true,
+        stockQuantity: req.body.stockQuantity || 0,
+      };
+      const bead = await storage.createBraceletBead(data);
       res.status(201).json(bead);
     } catch (error: any) {
       res.status(500).json({ message: "Error creating bead: " + error.message });

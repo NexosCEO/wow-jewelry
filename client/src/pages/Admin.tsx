@@ -620,9 +620,10 @@ export default function Admin() {
     try {
       const data = {
         name: charmForm.name,
-        description: charmForm.description || null,
+        description: charmForm.description || charmForm.name,
         price: charmForm.price,
         imageUrl: charmForm.imageUrl || "/placeholder.jpg",
+        category: "Charms",
         inStock: true,
         stockQuantity: parseInt(charmForm.stockQuantity) || 0,
       };
@@ -692,7 +693,7 @@ export default function Admin() {
       const data = {
         name: beadForm.name,
         description: beadForm.description || beadForm.name,
-        color: beadForm.color || null,
+        color: beadForm.color || "Default",
         price: beadForm.price,
         imageUrl: beadForm.imageUrl || "/placeholder.jpg",
         size: beadForm.size || null,
