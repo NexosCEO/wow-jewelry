@@ -7,9 +7,18 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Validate required environment variables at startup
+const requiredEnvVars = ['DATABASE_URL', 'ADMIN_PASSWORD'];
+const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+if (missingVars.length > 0) {
+  console.error(`Missing required environment variables: ${missingVars.join(', ')}`);
+  process.exit(1);
+}
+
 const app = express();
 
-// Trust proxy for rate limiting (required for Replit environment)
+// Trust proxy for rate limiting (required behind load balancer / reverse proxy)
 app.set('trust proxy', 1);
 
 // Security headers middleware
@@ -109,7 +118,7 @@ app.use((req, res, next) => {
     const message = err.message || "Internal Server Error";
 
     res.status(status).json({ message });
-    throw err;
+    console.error(err);
   });
 
   // importantly only setup vite in development and after
