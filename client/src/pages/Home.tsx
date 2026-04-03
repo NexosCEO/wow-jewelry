@@ -7,13 +7,177 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, ShoppingBag } from "lucide-react";
-import { useState, useMemo } from "react";
+import { Loader2, ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
-import heroImage from "@assets/IMG_3464_1761882788256.jpeg";
+import { motion, AnimatePresence } from "framer-motion";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import heroImage1 from "@assets/IMG_3453_1761882788256.jpeg";
+import heroImage2 from "@assets/IMG_3454_1761882788256.jpeg";
+import heroImage3 from "@assets/IMG_3456_1761882788256.jpeg";
+import heroImage4 from "@assets/IMG_3464_1761882788256.jpeg";
 import logoUrl from "@assets/Untitled Project (3)_1764567021014.png";
 import { SiInstagram, SiTiktok } from "react-icons/si";
+
+const heroSlides = [
+  {
+    image: heroImage1,
+    title: "Jewelry That Tells Your Story",
+    subtitle: "Each piece is thoughtfully crafted by hand — made to be worn every day and treasured for years.",
+  },
+  {
+    image: heroImage2,
+    title: "Handcrafted With Love",
+    subtitle: "Premium finishes with luxurious 24k gold plating and durable 18k gold lamination.",
+  },
+  {
+    image: heroImage3,
+    title: "24K Gold Plated Elegance",
+    subtitle: "Unique pieces that reflect the uniqueness in you — designed to make you shine.",
+  },
+  {
+    image: heroImage4,
+    title: "Shop the Collection",
+    subtitle: "Discover our carefully curated selection of handmade artisan jewelry.",
+  },
+];
+
+function HeroCarousel() {
+  const autoplayPlugin = useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
+  );
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [autoplayPlugin.current]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setActiveIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    return () => { emblaApi.off("select", onSelect); };
+  }, [emblaApi, onSelect]);
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback((i: number) => emblaApi?.scrollTo(i), [emblaApi]);
+
+  return (
+    <section className="relative min-h-[75vh] md:min-h-[85vh] overflow-hidden">
+      <div ref={emblaRef} className="h-full">
+        <div className="flex h-full">
+          {heroSlides.map((slide, index) => (
+            <div key={index} className="relative min-h-[75vh] md:min-h-[85vh] flex-[0_0_100%] min-w-0">
+              {/* Background image */}
+              <div className="absolute inset-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#e8d5c4] to-[#f0e5d8]" />
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="w-full h-full object-cover opacity-25"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#e8d5c4]/80 via-[#e8d5c4]/40 to-transparent" />
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10 h-full flex items-center">
+                <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-16">
+                  <div className="max-w-2xl">
+                    <AnimatePresence mode="wait">
+                      {activeIndex === index && (
+                        <motion.div key={`slide-content-${index}`}>
+                          <motion.h1
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+                          >
+                            {slide.title}
+                          </motion.h1>
+                          <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+                            className="text-lg md:text-xl text-foreground/80 mb-8 leading-relaxed"
+                          >
+                            {slide.subtitle}
+                          </motion.p>
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+                            className="flex flex-wrap gap-4"
+                          >
+                            <Button
+                              asChild
+                              size="lg"
+                              className="text-base px-10 h-14 shadow-lg hover:shadow-xl transition-all font-bold rounded-full"
+                              style={{ background: 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: '#2b211b' }}
+                            >
+                              <a href="#products">Shop Collection</a>
+                            </Button>
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="lg"
+                              className="text-base px-10 h-14 backdrop-blur-sm bg-background/30 hover:bg-background/50 border-2 font-bold rounded-full"
+                            >
+                              <a href="#about">Learn More</a>
+                            </Button>
+                          </motion.div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Navigation arrows */}
+      <button
+        onClick={scrollPrev}
+        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/40 backdrop-blur-sm border border-border/50 flex items-center justify-center hover:bg-background/60 transition-all"
+        aria-label="Previous slide"
+      >
+        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
+      </button>
+      <button
+        onClick={scrollNext}
+        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/40 backdrop-blur-sm border border-border/50 flex items-center justify-center hover:bg-background/60 transition-all"
+        aria-label="Next slide"
+      >
+        <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
+      </button>
+
+      {/* Dot indicators */}
+      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2.5">
+        {heroSlides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => scrollTo(index)}
+            className={`h-2.5 rounded-full transition-all duration-300 ${
+              activeIndex === index
+                ? "w-8 bg-foreground/80"
+                : "w-2.5 bg-foreground/30 hover:bg-foreground/50"
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 interface HomeProps {
   onAddToCart: (product: Product) => void;
@@ -110,57 +274,26 @@ export default function Home({ onAddToCart }: HomeProps) {
 
   return (
     <div className="min-h-screen">
-      <section className="relative min-h-[75vh] md:min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-br from-[#e8d5c4] to-[#f0e5d8]">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroImage}
-            alt="Elegant jewelry hero"
-            className="w-full h-full object-cover opacity-20"
-          />
-        </div>
-        
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-16">
-          <div className="max-w-2xl">
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight" data-testid="text-hero-title">
-              Jewelry That Tells Your Story
-            </h1>
-            <p className="text-lg md:text-xl text-foreground/80 mb-8 leading-relaxed" data-testid="text-hero-subtitle">
-              Each piece is thoughtfully crafted by hand — made to be worn every day and treasured for years.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button 
-                asChild 
-                size="lg" 
-                className="text-base px-10 h-14 shadow-lg hover:shadow-xl transition-all font-bold rounded-full"
-                style={{ background: 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: '#2b211b' }}
-                data-testid="button-shop-collection"
-              >
-                <a href="#products">Shop Collection</a>
-              </Button>
-              <Button 
-                asChild 
-                variant="outline"
-                size="lg" 
-                className="text-base px-10 h-14 backdrop-blur-sm bg-background/30 hover:bg-background/50 border-2 font-bold rounded-full"
-                data-testid="button-learn-more"
-              >
-                <a href="#about">Learn More</a>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Carousel */}
+      <HeroCarousel />
+
 
       <section id="products" className="py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8 md:mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-8 md:mb-12"
+          >
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
               All Products
             </h2>
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Discover our carefully curated selection of handcrafted jewelry
             </p>
-          </div>
+          </motion.div>
 
           <div className="mb-8 p-6 bg-card rounded-lg border border-border shadow-sm">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
@@ -226,12 +359,19 @@ export default function Home({ onAddToCart }: HomeProps) {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-            {filteredAndSortedProducts.map((product) => (
-              <ProductCard
+            {filteredAndSortedProducts.map((product, index) => (
+              <motion.div
                 key={product.id}
-                product={product}
-                onAddToCart={onAddToCart}
-              />
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{ duration: 0.5, delay: index % 4 * 0.1, ease: "easeOut" }}
+              >
+                <ProductCard
+                  product={product}
+                  onAddToCart={onAddToCart}
+                />
+              </motion.div>
             ))}
           </div>
 
@@ -249,14 +389,20 @@ export default function Home({ onAddToCart }: HomeProps) {
       {availablePerfumes.length > 0 && (
         <section id="perfumes" className="bg-card py-16 md:py-24 px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="text-center mb-12"
+            >
               <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4" data-testid="text-perfumes-title">
                 Fragrances
               </h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Discover our exclusive collection of luxurious fragrances
               </p>
-            </div>
+            </motion.div>
 
             {perfumesLoading ? (
               <div className="flex items-center justify-center py-16">
@@ -337,7 +483,12 @@ export default function Home({ onAddToCart }: HomeProps) {
       <section id="about" className="bg-card py-16 md:py-24 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+            >
               <h2 className="font-serif text-3xl md:text-4xl font-bold mb-6">
                 WOW by Dany
               </h2>
@@ -353,14 +504,20 @@ export default function Home({ onAddToCart }: HomeProps) {
               <p className="text-base text-muted-foreground leading-relaxed">
                 Thank you for making this journey shine brighter!
               </p>
-            </div>
-            <div className="relative h-64 md:h-96 rounded-lg overflow-hidden shadow-lg flex items-center justify-center bg-gradient-to-br from-[#e8d5c4] to-[#f0e5d8]">
-              <img 
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+              className="relative h-64 md:h-96 rounded-lg overflow-hidden shadow-lg flex items-center justify-center bg-gradient-to-br from-[#e8d5c4] to-[#f0e5d8]"
+            >
+              <img
                 src={logoUrl}
                 alt="WOW by Dany logo"
                 className="max-h-full max-w-full object-contain p-8"
               />
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
