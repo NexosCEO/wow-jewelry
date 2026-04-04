@@ -1,21 +1,14 @@
 #!/bin/bash
-# Custom deployment script that includes assets
+# Deploy to Lightsail
+set -e
 
-echo "=== Starting build process ==="
+SERVER="ubuntu@34.202.32.194"
+KEY="/tmp/lightsail-key.pem"
+APP_DIR="/home/ubuntu/wow-jewelry"
 
-# Build frontend
-echo "Building frontend with Vite..."
-vite build
+echo "=== Deploying WOW Jewelry ==="
 
-# Build backend
-echo "Building backend with esbuild..."
-esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+ssh -i $KEY $SERVER "cd $APP_DIR && git pull origin main && npm ci && npm run build && sudo systemctl restart wow-jewelry"
 
-# Copy assets to dist folder
-echo "Copying attached_assets to dist..."
-mkdir -p dist/attached_assets
-cp -r attached_assets/* dist/attached_assets/
-
-echo "=== Build complete! ==="
-echo "Assets location: dist/attached_assets"
-ls -la dist/ | grep attached
+echo "=== Deploy complete ==="
+echo "Site: https://wowbydany.com"
