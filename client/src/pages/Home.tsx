@@ -19,7 +19,12 @@ import heroImage2 from "@assets/IMG_3454_1761882788256.jpeg";
 import heroImage3 from "@assets/IMG_3456_1761882788256.jpeg";
 import heroImage4 from "@assets/IMG_3464_1761882788256.jpeg";
 import logoUrl from "@assets/Untitled Project (3)_1764567021014.png";
+import collectionSets from "@assets/IMG_3455_1761882788256.jpeg";
+import collectionNecklaces from "@assets/IMG_3457_1761882788256.jpeg";
+import collectionEarrings from "@assets/IMG_3458_1761882788256.jpeg";
+import collectionBracelets from "@assets/IMG_3462_1761882788256.jpeg";
 import { SiInstagram, SiTiktok } from "react-icons/si";
+import { Star, Send } from "lucide-react";
 
 const heroSlides = [
   {
@@ -277,6 +282,60 @@ export default function Home({ onAddToCart }: HomeProps) {
       {/* Hero Carousel */}
       <HeroCarousel />
 
+      {/* Featured Collections */}
+      <section className="py-16 md:py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-10 md:mb-14"
+          >
+            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              Shop by Collection
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Explore our handcrafted categories, each made with love and attention to detail
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {[
+              { name: "Sets", image: collectionSets, filter: "sets" },
+              { name: "Earrings", image: collectionEarrings, filter: "earrings" },
+              { name: "Necklaces", image: collectionNecklaces, filter: "necklaces" },
+              { name: "Bracelets", image: collectionBracelets, filter: "bracelets" },
+            ].map((collection, index) => (
+              <motion.a
+                key={collection.name}
+                href="#products"
+                onClick={() => setFilterType(collection.filter)}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
+                className="group relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer"
+              >
+                <img
+                  src={collection.image}
+                  alt={collection.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity duration-300" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                  <h3 className="font-serif text-xl md:text-2xl font-bold text-white mb-1">
+                    {collection.name}
+                  </h3>
+                  <span className="text-sm text-white/80 group-hover:text-white transition-colors">
+                    Shop Now &rarr;
+                  </span>
+                </div>
+              </motion.a>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section id="products" className="py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
@@ -520,6 +579,105 @@ export default function Home({ onAddToCart }: HomeProps) {
             </motion.div>
           </div>
         </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-16 md:py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-10 md:mb-14"
+          >
+            <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">
+              What Our Customers Say
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Real reviews from real people who love their WOW pieces
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {[
+              {
+                name: "Maria L.",
+                text: "Absolutely in love with my Blue Butterfly set! The quality is amazing and the gold plating is so beautiful. I get compliments every time I wear it.",
+                rating: 5,
+              },
+              {
+                name: "Jessica R.",
+                text: "I ordered the custom bracelet builder and it was such a fun experience. The charms are so detailed and cute. Perfect gift for my daughter!",
+                rating: 5,
+              },
+              {
+                name: "Ana G.",
+                text: "The Isabellina necklace is stunning. You can tell it's handmade with care. Shipping was fast and the packaging was gorgeous. Will definitely order again!",
+                rating: 5,
+              },
+            ].map((review, index) => (
+              <motion.div
+                key={review.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
+                className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-sm"
+              >
+                <div className="flex gap-1 mb-4">
+                  {Array.from({ length: review.rating }).map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-current" style={{ color: 'var(--gold)' }} />
+                  ))}
+                </div>
+                <p className="text-foreground/80 mb-6 leading-relaxed italic">
+                  "{review.text}"
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: '#2b211b' }}>
+                    {review.name.charAt(0)}
+                  </div>
+                  <span className="font-semibold">{review.name}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Signup */}
+      <section className="py-16 md:py-24 px-4" style={{ background: 'linear-gradient(135deg, #e8d5c4 0%, #f0e5d8 50%, #e8d5c4 100%)' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="max-w-2xl mx-auto text-center"
+        >
+          <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">
+            Stay in the Loop
+          </h2>
+          <p className="text-base md:text-lg text-foreground/80 mb-8">
+            Be the first to know about new collections, exclusive deals, and behind-the-scenes content.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              className="h-12 bg-background/80 backdrop-blur-sm border-border/50"
+            />
+            <Button
+              className="h-12 px-8 font-bold rounded-lg gap-2 shrink-0"
+              style={{ background: 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: '#2b211b' }}
+            >
+              <Send className="w-4 h-4" />
+              Subscribe
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-4">
+            No spam, ever. Unsubscribe anytime.
+          </p>
+        </motion.div>
       </section>
 
       <footer className="border-t border-border py-12 md:py-16 px-4" style={{ background: '#0f0d0b', color: '#fff' }}>

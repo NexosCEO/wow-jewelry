@@ -16,9 +16,6 @@ export function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
   return (
     <>
-      <div className="w-full text-center py-2 text-xs sm:text-sm font-medium tracking-wider" style={{ background: 'linear-gradient(135deg, var(--rose) 0%, var(--gold) 100%)', color: '#2b211b' }}>
-        FREE SHIPPING ON ALL ORDERS
-      </div>
       <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm backdrop-blur-sm bg-card/95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-20 md:h-24">
