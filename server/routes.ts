@@ -1745,6 +1745,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Contact form
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { name, email, subject, message } = req.body;
+      if (!name || !email || !message) {
+        return res.status(400).json({ message: "Name, email, and message are required" });
+      }
+
+      const { sendContactEmail } = await import('./emailService');
+      await sendContactEmail(name, email, subject || "No subject", message);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Contact form error:", error);
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

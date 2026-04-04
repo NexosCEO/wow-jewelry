@@ -18,6 +18,7 @@ import Checkout from "@/pages/Checkout";
 import Orders from "@/pages/Orders";
 import Admin from "@/pages/Admin";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 import { useToast } from "@/hooks/use-toast";
 
@@ -174,6 +175,7 @@ function Router() {
         <Route path="/orders" component={Orders} />
         <Route path="/admin" component={Admin} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
+        <Route path="/contact" component={Contact} />
         <Route component={NotFound} />
       </Switch>
 

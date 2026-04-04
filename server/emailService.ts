@@ -31,6 +31,25 @@ async function sendEmail(to: string, subject: string, text: string) {
   return result;
 }
 
+// Send contact form email
+export async function sendContactEmail(name: string, email: string, subject: string, message: string) {
+  const STORE_EMAIL = process.env.SMTP_USER || 'jewelryboutiquewow@gmail.com';
+
+  // Send to store owner
+  await sendEmail(
+    STORE_EMAIL,
+    `Contact Form: ${subject}`,
+    `New message from ${name} (${email}):\n\n${message}\n\n---\nReply directly to: ${email}`
+  );
+
+  // Send confirmation to customer
+  await sendEmail(
+    email,
+    'WOW by Dany — We received your message!',
+    `Hi ${name},\n\nThank you for reaching out to WOW by Dany! We've received your message and will get back to you within 24 hours.\n\nYour message:\n"${message}"\n\nWith love,\nWOW by Dany\njewelryboutiquewow@gmail.com`
+  );
+}
+
 // Send order notification email
 export async function sendOrderNotification(orderDetails: {
   orderId: string;
